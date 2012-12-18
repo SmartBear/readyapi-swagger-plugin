@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>smartbear</groupId>
-	<artifactId>swagger-soapui-plugin</artifactId>
+	<artifactId>soapui-swagger-plugin</artifactId>
 	<version>0.1-SNAPSHOT-plugin</version>
 
 	<dependencies>
