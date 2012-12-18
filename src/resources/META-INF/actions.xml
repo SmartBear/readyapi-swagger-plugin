@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:soapui-actions xmlns:tns="http://eviware.com/soapui/config">
+
+<tns:action id="AddSwaggerAction" actionClass="com.smartbear.restplugin.AddSwaggerAction"/>
+
+<tns:actionGroup id="EnabledWsdlProjectActions">
+   <tns:actionMapping actionId="AddSwaggerAction" position="AFTER" positionRef="AddWadlAction"/>
+</tns:actionGroup>
+
+</tns:soapui-actions>

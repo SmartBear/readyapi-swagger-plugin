@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/groovy"/>
+	<classpathentry including="**/*.java" kind="src" path="src/resources"/>
+	<classpathentry kind="src" path="src/test/groovy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/soapui"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/bcprov-jdk15-144.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/binding-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/cajo-1.142.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-cli-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-io-1.3.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/cssparser-0.9.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/downloader-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/engine-gecko-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/engine-ie-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/engine-webkit-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/ext-xmlbeans-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/ezmorph-1.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/flex-messaging-common-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/flex-messaging-core-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/flex-messaging-opt-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/flex-messaging-proxy-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/flex-messaging-remoting-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/forms-1.0.7.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/groovy-all-1.8.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/guava-11.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/hermes-1.14.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/htmlunit-2.7.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/htmlunit-core-js-2.7.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/httpclient-4.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/httpclient-cache-4.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/httpcore-4.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/httpcore-nio-4.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/httpmime-4.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/j2ee-xmlbeans-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/javamail-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jcifs-1.2.9.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jetty-6.1.26.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jetty-util-6.1.26.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jms-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/joda-time-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/js-1.7R2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/json-lib-2.2.2-jdk15.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jsr173_1.0_api-xmlbeans-2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jtidy-r872-jdk15.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/jxbrowser-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/l2fprod-common-directorychooser-7.3.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/l2fprod-common-fontchooser-7.3.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/looks-2.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/mockito-all-1.8.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/MozillaInterfaces-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/nekohtml-1.9.14.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/not-yet-commons-ssl-0.3.11.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/opensaml-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/openws-1.4.2-1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/policy-xmlbeans-1.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/rsyntaxtextarea-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/sac-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/saxon-9.1.0.8j.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/saxon-dom-9.1.0.8j.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/serializer-2.7.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/slf4j-log4j12-1.5.8.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/soapui-xmlbeans-4.5.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/soap-xmlbeans-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/swingx-soapui.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/wadl-xmlbeans-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/winpack-3.8.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/ws-commons-util-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/wsdl4j-1.6.2-fixed.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/wss4j-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xalan-2.7.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xbean_xpath-2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xbean-fixed-2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xercesImpl-2.9.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xml-apis-2.9.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xmlpublic-2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xmlsec-1.4.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xmltooling-1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xmlunit-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xom-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xstream-1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/SmartBear/soapUI-4.5.1.1-SNAPSHOT/lib/xulrunner-windows-3.0.jar"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
