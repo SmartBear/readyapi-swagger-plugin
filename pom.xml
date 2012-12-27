@@ -10,6 +10,13 @@
 	<artifactId>soapui-swagger-plugin</artifactId>
 	<version>0.1-SNAPSHOT-plugin</version>
 
+    <repositories>
+        <repository>
+            <id>soapUI Repository</id>
+            <url>http://www.soapui.org/repository/maven2</url>
+        </repository>
+    </repositories>
+
 	<dependencies>
 
 		<dependency>
