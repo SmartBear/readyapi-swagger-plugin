@@ -1,6 +1,25 @@
+/**
+ *  Copyright 2013 SmartBear Software, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.smartbear.restplugin;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
@@ -23,7 +42,10 @@ import com.eviware.x.form.support.AForm;
 
 public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 {
-	private XFormDialog dialog;
+    public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
+    public static final String API_DECLARATION_TYPE = "API Declaration";
+
+    private XFormDialog dialog;
 
 	public AddSwaggerAction()
 	{
@@ -36,11 +58,13 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 		if( dialog == null )
 		{
 			dialog = ADialogBuilder.buildDialog( Form.class );
+            dialog.setValue( Form.TYPE, RESOURCE_LISTING_TYPE);
 		}
-		else
-		{
-			dialog.setValue( Form.SWAGGERURL, "" );
-		}
+        else
+        {
+            dialog.setValue( Form.SWAGGERURL, "" );
+        }
+
 
 		while( dialog.show() )
 		{
@@ -59,12 +83,17 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 
 					// create the importer and import!
 					SwaggerImporter importer = new SwaggerImporter( project );
-					RestService[] services = importer.importSwagger( expUrl );
+                    List<RestService> result = new ArrayList<RestService>();
+
+                    if( dialog.getValue( Form.TYPE ).equals(RESOURCE_LISTING_TYPE))
+					    result.addAll(Arrays.asList(importer.importSwagger( expUrl )));
+                    else
+                        result.add( importer.importApiDeclaration( expUrl ));
 
 					// select the first imported REST Service (since a swagger definition can 
 					// define multiple APIs
-					if( services != null && services.length > 0 )
-						UISupport.select( services[0] );
+					if( !result.isEmpty() )
+						UISupport.select( result.get(0) );
 
 					break;
 				}
@@ -79,8 +108,12 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 	@AForm( name = "Add Swagger Definition", description = "Creates a REST Service from the specified Swagger definition" )
 	public interface Form
 	{
-		@AField( description = "Location or URL of swagger definition", type = AFieldType.FILE )
+        @AField( name = "Swagger Definition", description = "Location or URL of swagger definition", type = AFieldType.FILE )
 		public final static String SWAGGERURL = "Swagger Definition";
+
+        @AField( name = "Definition Type", description = "Resource Listing or API Declaration",
+                type=AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE} )
+        public final static String TYPE = "Definition Type";
 	}
 
 }

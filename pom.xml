@@ -8,7 +8,7 @@
 
 	<groupId>smartbear</groupId>
 	<artifactId>soapui-swagger-plugin</artifactId>
-	<version>0.1-SNAPSHOT-plugin</version>
+	<version>0.2-SNAPSHOT-plugin</version>
 
     <repositories>
         <repository>
@@ -18,6 +18,18 @@
     </repositories>
 
 	<dependencies>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0-b06</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.smartbear</groupId>
+            <artifactId>swagger4j</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.codehaus.gmaven.runtime</groupId>

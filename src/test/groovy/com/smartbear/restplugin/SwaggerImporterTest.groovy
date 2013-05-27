@@ -1,3 +1,19 @@
+/**
+ *  Copyright 2013 SmartBear Software, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.smartbear.restplugin;
 
 import com.eviware.soapui.impl.rest.RestService
@@ -30,17 +46,15 @@ class SwaggerImporterTest  extends GroovyTestCase {
 		assertEquals( 3, service.resourceList.size())
 	}
 
-	void testImportApi() {
-		def project = new WsdlProject();
-		SwaggerImporter importer = new SwaggerImporter( project )
+    void testImportApiDeclaration()
+    {
+        def project = new WsdlProject();
 
-		RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs.json/user" )
+        SwaggerImporter importer = new SwaggerImporter( project )
+        def service = importer.importApiDeclaration("http://www.apihub.com/apihub/swagger-api/9528/commits")
 
-		assertEquals( 1, result.length )
+        assertEquals( 3, service.resourceList.size() )
 
-		RestService service = result[0]
-		assertEquals( "http://petstore.swagger.wordnik.com", service.endpoints[0])
-		assertEquals( "/api", service.basePath, )
-		assertEquals( 6, service.resourceList.size())
-	}
+
+    }
 }

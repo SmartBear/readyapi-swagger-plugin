@@ -1,18 +1,35 @@
+/**
+ *  Copyright 2013 SmartBear Software, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.smartbear.restplugin
 
-import groovy.json.*
-
 import com.eviware.soapui.impl.rest.RestMethod
+import com.eviware.soapui.impl.rest.RestRequestInterface.RequestMethod
 import com.eviware.soapui.impl.rest.RestResource
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
-import com.eviware.soapui.impl.rest.RestRequestInterface.RequestMethod
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
+import com.smartbear.swagger4j.ApiDeclaration
+import com.smartbear.swagger4j.Parameter
+import com.smartbear.swagger4j.Swagger
 
 /**
- * A simple Swagger importer - written in groovy so we can use JsonSlurper
+ * A simple Swagger importer - now uses swagger4j library
  * 
  * Improvements that need to be made:
  * - better error handling
@@ -33,33 +50,29 @@ class SwaggerImporter {
 
 		def result = []
 
-		// resource listing?
-		if( url.endsWith( "/api-docs.json") )
-		{
-			// load swagger document
-			def doc = loadJsonDoc( url )
-			def basePath = doc.basePath
+        def resourceListing = Swagger.readSwagger( URI.create(url) )
+        resourceListing.apiList.each {
 
-			// loop apis and import each separately
-			doc.apis.each{
-				it
+            String name = it.path
+            if( name.startsWith( "/api-docs"))
+            {
+                def ix = name.indexOf( "/", 1 )
+                if( ix > 0 )
+                    name = name.substring( ix )
+            }
 
-				// replace format template in path
-				String realPath = it.path.replaceAll "\\{format\\}", "json"
-				url = basePath + realPath
-				
-				result.add( importApiDeclarations( url ))
-			}
-			
-		}
-		// expect an API declaration
-		else
-		{
-			result.add( importApiDeclarations( url ))
-		}
-		
+            Console.println( "Importing API declaration with path $it.path")
+            result.add( importApiDeclaration( it.declaration, name ))
+        }
+
 		return result.toArray()
 	}
+
+    public RestService importApiDeclaration( String url )
+    {
+        def declaration = Swagger.createReader().readApiDeclaration(URI.create(url))
+        return importApiDeclaration( declaration, declaration.basePath );
+    }
 
 	/**
 	 * Imports all swagger api declarations in the specified JSON document into a RestService
@@ -67,17 +80,13 @@ class SwaggerImporter {
 	 * @return the created RestService 
 	 */
 	
-	public RestService importApiDeclarations( def url ) {
-
-		// load the specified document
-		def doc = loadJsonDoc( url )
-				
+	public RestService importApiDeclaration( ApiDeclaration apiDeclaration, String name )
+    {
 		// create the RestService
-		RestService restService = createRestService( doc.basePath, url )
+		RestService restService = createRestService( apiDeclaration.basePath, name )
 		
 		// loop apis in document
-		doc.apis.each {
-			it
+		apiDeclaration.apiList.each {
 
 			// add a resource for this api
 			RestResource resource = restService.addNewResource( it.path, it.path )
@@ -96,23 +105,23 @@ class SwaggerImporter {
 			it.operations.each {
 				it
 
-				RestMethod method = resource.addNewMethod( it.nickname )
-				method.method = RequestMethod.valueOf( it.httpMethod )
-				method.description = it.description
+				RestMethod method = resource.addNewMethod( it.nickName )
+				method.method = RequestMethod.valueOf( it.method.name().toUpperCase() )
+				method.description = it.summary
 
 				// loop parameters and add accordingly
-				it.parameters.each {
+				it.parameterList.each {
 					it
 
 					// ignore body parameters
-					if( it.paramType != "body" ) {
+					if( it.paramType != Parameter.ParamType.body ) {
 
 						RestParameter p = method.params.addProperty( it.name )
-						def paramType = it.paramType.toUpperCase()
-						if( paramType == "PATH" )
-						   paramType = "TEMPLATE"
+						def paramType = it.paramType.name()
+						if( paramType == "path" )
+						   paramType = "template"
 
-						p.style = ParameterStyle.valueOf( paramType )
+						p.style = ParameterStyle.valueOf( paramType.toUpperCase() )
 						p.required = it.required
 					}
 				}
@@ -135,12 +144,5 @@ class SwaggerImporter {
 		restService.addEndpoint( path.substring( 0, pathPos ))
 
 		return restService
-	}
-	
-	private loadJsonDoc( String url )
-	{
-		def payload = new URL(url).text
-		def slurper = new JsonSlurper()
-		return slurper.parseText(payload)
 	}
 }

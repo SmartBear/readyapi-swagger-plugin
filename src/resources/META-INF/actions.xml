@@ -2,9 +2,11 @@
 <tns:soapui-actions xmlns:tns="http://eviware.com/soapui/config">
 
 <tns:action id="AddSwaggerAction" actionClass="com.smartbear.restplugin.AddSwaggerAction"/>
+<tns:action id="ExportSwaggerAction" actionClass="com.smartbear.restplugin.ExportSwaggerAction"/>
 
 <tns:actionGroup id="EnabledWsdlProjectActions">
    <tns:actionMapping actionId="AddSwaggerAction" position="AFTER" positionRef="AddWadlAction"/>
+   <tns:actionMapping actionId="ExportSwaggerAction" position="AFTER" positionRef="AddSwaggerAction"/>
 </tns:actionGroup>
 
 </tns:soapui-actions>
