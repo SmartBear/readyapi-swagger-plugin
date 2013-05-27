@@ -53,7 +53,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 
 	public ExportSwaggerAction()
 	{
-		super( "Export Swagger", "Exports a Swagger definition for selected REST APIs" );
+		super( "Export Swagger", "Creates a Swagger definition for selected REST APIs" );
 	}
 
 	public void perform( WsdlProject project, Object param )
@@ -115,7 +115,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                         Constants.Format.valueOf(dialog.getValue( Form.FORMAT ).toLowerCase()), services,
                         dialog.getValue(Form.BASEPATH));
 
-                UISupport.showInfoMessage( "Swagger resource listing is available at " + path );
+                UISupport.showInfoMessage( "Swagger resource listing has been created at [" + path + "]" );
 
                 settings.setString(BASE_PATH, dialog.getValue(Form.BASEPATH));
                 settings.setString(TARGET_PATH, dialog.getValue(Form.FOLDER));
@@ -131,13 +131,13 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 		}
 	}
 
-	@AForm( name = "Export Swagger Definition", description = "Creates a Swagger definitions for the REST Services in this project" )
+	@AForm( name = "Export Swagger Definition", description = "Creates a Swagger definition for selected REST APIs in this project" )
 	public interface Form
 	{
         @AField( name = "APIs", description = "Select which REST APIs to include in the Swagger definition", type = AFieldType.MULTILIST )
         public final static String APIS = "APIs";
 
-		@AField( name = "Target Folder", description = "Where to save the swagger definition", type = AFieldType.FOLDER )
+		@AField( name = "Target Folder", description = "Where to save the Swagger definition", type = AFieldType.FOLDER )
 		public final static String FOLDER = "Target Folder";
 
         @AField( name = "API Version", description = "API Version", type = AFieldType.STRING )
@@ -146,7 +146,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
         @AField( name = "Base Path", description = "Base Path that the Swagger definition will be hosted on", type = AFieldType.STRING )
         public final static String BASEPATH = "Base Path";
 
-        @AField( name = "Format", description = "Select swagger format", type = AFieldType.RADIOGROUP, values = { "json", "xml"})
+        @AField( name = "Format", description = "Select Swagger format", type = AFieldType.RADIOGROUP, values = { "json", "xml"})
         public final static String FORMAT = "Format";
 	}
 

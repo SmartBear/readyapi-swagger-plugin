@@ -49,7 +49,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 
 	public AddSwaggerAction()
 	{
-		super( "Add Swagger", "Imports a swagger definition" );
+		super( "Import Swagger", "Imports a Swagger definition into SoapUI" );
 	}
 
 	public void perform( WsdlProject project, Object param )
@@ -105,10 +105,10 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 		}
 	}
 
-	@AForm( name = "Add Swagger Definition", description = "Creates a REST Service from the specified Swagger definition" )
+	@AForm( name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition" )
 	public interface Form
 	{
-        @AField( name = "Swagger Definition", description = "Location or URL of swagger definition", type = AFieldType.FILE )
+        @AField( name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE )
 		public final static String SWAGGERURL = "Swagger Definition";
 
         @AField( name = "Definition Type", description = "Resource Listing or API Declaration",
