@@ -3,6 +3,8 @@
 
 <tns:action id="AddSwaggerAction" actionClass="com.smartbear.restplugin.AddSwaggerAction"/>
 <tns:action id="ExportSwaggerAction" actionClass="com.smartbear.restplugin.ExportSwaggerAction"/>
+<tns:action id="SwaggerCodeGenAction" actionClass="com.smartbear.restplugin.SwaggerCodeGenAction"/>
+
 
 <tns:actionGroup id="EnabledWsdlProjectActions">
    <tns:actionMapping actionId="AddSwaggerAction" position="AFTER" positionRef="AddWadlAction"/>

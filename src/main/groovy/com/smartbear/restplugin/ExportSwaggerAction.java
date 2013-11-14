@@ -31,7 +31,7 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
-import com.smartbear.swagger4j.Constants;
+import com.smartbear.swagger4j.SwaggerFormat;
 
 import java.io.File;
 
@@ -112,7 +112,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                     version = "1.0";
 
                 String path = exporter.exportToFolder( dialog.getValue( Form.FOLDER ), version,
-                        Constants.Format.valueOf(dialog.getValue( Form.FORMAT ).toLowerCase()), services,
+                        SwaggerFormat.valueOf(dialog.getValue( Form.FORMAT ).toLowerCase()), services,
                         dialog.getValue(Form.BASEPATH));
 
                 UISupport.showInfoMessage( "Swagger resource listing has been created at [" + path + "]" );

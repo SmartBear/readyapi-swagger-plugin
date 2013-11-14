@@ -17,6 +17,7 @@
 package com.smartbear.restplugin
 
 import com.eviware.soapui.impl.rest.RestRepresentation
+import com.eviware.soapui.impl.rest.RestRequestInterface
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
@@ -39,13 +40,13 @@ class SwaggerExporter {
 		this.project = project
 	}
 
-    String exportToFolder(String path, String apiVersion, Constants.Format format, RestService [] services, String basePath ) {
+    String exportToFolder(String path, String apiVersion, SwaggerFormat format, RestService [] services, String basePath ) {
 
         ResourceListing rl = generateResourceListing(services, apiVersion, format, basePath )
         return exportResourceListing(format, rl, path)
     }
 
-    public String exportResourceListing(Constants.Format format, ResourceListing rl, String path) {
+    public String exportResourceListing(SwaggerFormat format, ResourceListing rl, String path) {
         def store = new Utils.MapSwaggerStore()
         Swagger.createWriter(format).writeSwagger(store, rl)
 
@@ -55,12 +56,13 @@ class SwaggerExporter {
         return FileSwaggerStore.writeSwagger(path, rl, format)
     }
 
-    public ResourceListing generateResourceListing(RestService[] services, String apiVersion, Constants.Format format, String basePath) {
+    public ResourceListing generateResourceListing(RestService[] services, String apiVersion, SwaggerFormat format, String basePath) {
         if( StringUtils.isNullOrEmpty( basePath ))
             basePath = services[0].endpoints[0] + services[0].basePath
 
-        ResourceListing rl = Swagger.createResourceListing(basePath)
-        rl.apiVersion = apiVersion;
+        ResourceListing rl = Swagger.createResourceListing(SwaggerVersion.DEFAULT_VERSION)
+        rl.basePath = basePath
+        rl.apiVersion = apiVersion
 
         services.each {
 
@@ -78,25 +80,37 @@ class SwaggerExporter {
 
                     Console.println("Adding API for resource at $fullPath")
                     def api = apiDeclaration.addApi(fullPath)
+                    api.description = it.description
 
                     it.restMethodList.each {
                         Console.println("Adding Operation for method $it.name")
                         def op = api.addOperation(it.name, Operation.Method.valueOf(it.method.name()))
+                        op.summary = it.description
+                        op.responseClass = "string"
 
                         it.responseMediaTypes.each {
-                            op.addProduces(it)
+                            if( it != null )
+                                op.addProduces(it)
                         }
 
                         it.representations.each {
-                            if (it.type == RestRepresentation.Type.FAULT) {
+                            if (it.type == RestRepresentation.Type.FAULT || it.type == RestRepresentation.Type.RESPONSE ) {
                                 it.status.each {
-                                    op.addErrorResponse(Integer.valueOf(it), "")
+                                    op.addResponseMessage(Integer.valueOf(it), "")
                                 }
                             }
                         }
 
                         addParametersToOperation(it.params, op)
                         addParametersToOperation(it.overlayParams, op)
+
+                        if( it.method == RestRequestInterface.RequestMethod.POST || it.method == RestRequestInterface.RequestMethod.PUT )
+                        {
+                            def p = op.addParameter( "body", Parameter.ParamType.body );
+                            p.description = "Request body";
+                            p.required = true;
+                            p.type = "string";
+                        }
                     }
                 }
             }
@@ -111,6 +125,7 @@ class SwaggerExporter {
     }
 
     private void addParametersToOperation(RestParamsPropertyHolder params, Operation op) {
+
         for (name in params.getPropertyNames()) {
             def param = params.getProperty(name)
             if( op.getParameter( name ) == null )
@@ -131,16 +146,16 @@ class SwaggerExporter {
                     // needs to be extended to support all schema types
                     switch( param.type.localPart )
                     {
-                        case "byte"     : p.dataType = "byte"; break
-                        case "dateTime" : p.dataType = "Date"; break
-                        case "float"    : p.dataType = "float"; break
-                        case "double"   : p.dataType = "double"; break
-                        case "long"     : p.dataType = "long"; break
+                        case "byte"     : p.type = "byte"; break
+                        case "dateTime" : p.type = "Date"; break
+                        case "float"    : p.type = "float"; break
+                        case "double"   : p.type = "double"; break
+                        case "long"     : p.type = "long"; break
                         case "short"    :
                         case "int"      :
-                        case "integer"  : p.dataType = "int"; break
-                        case "boolean"  : p.dataType = "boolean"; break
-                        default         : p.dataType = "string"
+                        case "integer"  : p.type = "int"; break
+                        case "boolean"  : p.type = "boolean"; break
+                        default         : p.type = "string"
                     }
                 }
             }

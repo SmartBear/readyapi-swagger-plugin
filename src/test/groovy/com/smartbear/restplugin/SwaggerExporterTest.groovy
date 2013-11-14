@@ -2,8 +2,8 @@ package com.smartbear.restplugin;
 
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
-import com.smartbear.swagger4j.Constants
 import com.smartbear.swagger4j.Swagger
+import com.smartbear.swagger4j.SwaggerFormat
 
 /**
  * Basic tests that use the examples at wordnik - if they change these tests will probably break
@@ -17,15 +17,15 @@ class SwaggerExporterTest extends GroovyTestCase {
 
         SwaggerImporter importer = new SwaggerImporter( project )
 
-        RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs.json" )
+        RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs" )
 
         assertEquals( 2, result.length )
 
         SwaggerExporter exporter = new SwaggerExporter( project );
-        def listing = exporter.generateResourceListing( result, "1.0", Constants.Format.json, "" );
+        def listing = exporter.generateResourceListing( result, "1.0", SwaggerFormat.json, "" );
         listing.setBasePath( "." );
 
-        def path = exporter.exportResourceListing( Constants.Format.json, listing, "target/test-export" );
+        def path = exporter.exportResourceListing( SwaggerFormat.json, listing, "target/test-export" );
         def file = new File( path )
 
         assertTrue( file.exists());
