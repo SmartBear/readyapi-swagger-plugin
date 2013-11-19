@@ -8,7 +8,7 @@
 
 	<groupId>com.smartbear</groupId>
 	<artifactId>soapui-swagger-plugin</artifactId>
-	<version>0.3</version>
+	<version>0.3-plugin</version>
 
     <repositories>
         <repository>
@@ -184,7 +184,7 @@
                 <version>2.4</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/assembly/plugin-assembly.xml</descriptor>
+                        <descriptor>src/assembly/dist-assembly.xml</descriptor>
                     </descriptors>
                 </configuration>
             </plugin>
