@@ -33,17 +33,15 @@ class SwaggerImporterTest  extends GroovyTestCase {
 
 		RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs" )
 
-		assertEquals( 2, result.length )
+        RestService service = result[0]
+        assertTrue( service.endpoints.length > 0 )
 
-		RestService service = result[0]
 		assertEquals( "http://petstore.swagger.wordnik.com", service.endpoints[0])
 		assertEquals( "/api", service.basePath, )
-		assertEquals( 3, service.resourceList.size())
 
 		service = result[1]
 		assertEquals( "http://petstore.swagger.wordnik.com", service.endpoints[0])
 		assertEquals( "/api", service.basePath, )
-		assertEquals( 3, service.resourceList.size())
 	}
 
     void testImportApiDeclaration()
@@ -54,5 +52,7 @@ class SwaggerImporterTest  extends GroovyTestCase {
         def service = importer.importApiDeclaration("http://www.apihub.com/apihub/swagger-api/9528/commits")
 
         assertEquals( 3, service.resourceList.size() )
+
+        importer.importApiDeclaration(new File( "src/test/resources/api-docs").toURL().toString());
     }
 }

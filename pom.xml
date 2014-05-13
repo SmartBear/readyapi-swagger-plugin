@@ -8,7 +8,7 @@
 
 	<groupId>com.smartbear</groupId>
 	<artifactId>soapui-swagger-plugin</artifactId>
-	<version>0.3-plugin</version>
+	<version>0.3.1-plugin</version>
 
     <repositories>
         <repository>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.smartbear</groupId>
             <artifactId>swagger4j</artifactId>
-            <version>1.0-beta2</version>
+            <version>1.0-beta4</version>
         </dependency>
 
 		<dependency>
@@ -43,17 +43,13 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>eviware</groupId>
-			<artifactId>soapui</artifactId>
-			<version>4.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>eviware</groupId>
-			<artifactId>soapui-xmlbeans</artifactId>
-			<version>4.5.1</version>
-		</dependency>
-		
+
+        <dependency>
+            <groupId>com.smartbear.soapui</groupId>
+            <artifactId>soapui</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
 		<dependency>
 			<groupId>xmlbeans</groupId>
 			<artifactId>xbean</artifactId>

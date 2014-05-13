@@ -19,7 +19,7 @@ class SwaggerExporterTest extends GroovyTestCase {
 
         RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs" )
 
-        assertEquals( 2, result.length )
+        assertEquals( 3, result.length )
 
         SwaggerExporter exporter = new SwaggerExporter( project );
         def listing = exporter.generateResourceListing( result, "1.0", SwaggerFormat.json, "" );

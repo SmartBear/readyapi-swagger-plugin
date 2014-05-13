@@ -9,6 +9,7 @@
 <tns:actionGroup id="EnabledWsdlProjectActions">
    <tns:actionMapping actionId="AddSwaggerAction" position="AFTER" positionRef="AddWadlAction"/>
    <tns:actionMapping actionId="ExportSwaggerAction" position="AFTER" positionRef="AddSwaggerAction"/>
+   <tns:actionMapping actionId="SeperatorAction" position="BEFORE" positionRef="AddSwaggerAction"/>
 </tns:actionGroup>
 
 </tns:soapui-actions>

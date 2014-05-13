@@ -104,7 +104,7 @@ class SwaggerExporter {
                         addParametersToOperation(it.params, op)
                         addParametersToOperation(it.overlayParams, op)
 
-                        if( it.method == RestRequestInterface.RequestMethod.POST || it.method == RestRequestInterface.RequestMethod.PUT )
+                        if( it.method == RestRequestInterface.HttpMethod.POST || it.method == RestRequestInterface.HttpMethod.PUT )
                         {
                             def p = op.addParameter( "body", Parameter.ParamType.body );
                             p.description = "Request body";

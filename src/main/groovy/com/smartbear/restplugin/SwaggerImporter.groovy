@@ -16,8 +16,9 @@
 
 package com.smartbear.restplugin
 
+import com.eviware.soapui.SoapUI
 import com.eviware.soapui.impl.rest.RestMethod
-import com.eviware.soapui.impl.rest.RestRequestInterface.RequestMethod
+import com.eviware.soapui.impl.rest.RestRequestInterface
 import com.eviware.soapui.impl.rest.RestResource
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
@@ -62,7 +63,10 @@ class SwaggerImporter {
             }
 
             Console.println( "Importing API declaration with path $it.path")
-            result.add( importApiDeclaration( it.declaration, name ))
+
+            def restService = importApiDeclaration(it.declaration, name)
+            ensureEndpoint( restService, url )
+            result.add(restService)
         }
 
 		return result.toArray()
@@ -71,20 +75,39 @@ class SwaggerImporter {
     public RestService importApiDeclaration( String url )
     {
         def declaration = Swagger.createReader().readApiDeclaration(URI.create(url))
-        return importApiDeclaration( declaration, declaration.basePath );
+        def name = declaration.basePath == null ? url : declaration.basePath
+
+        def restService = importApiDeclaration( declaration, name );
+
+        ensureEndpoint(restService, url)
+
+        return restService
     }
 
-	/**
+    public void ensureEndpoint(RestService restService, String url) {
+        if (restService.endpoints.length == 0) {
+
+            def ix = url.indexOf("://")
+            if (ix > 0) {
+                ix = url.indexOf("/", ix + 3)
+
+                url = ix == -1 ? url : url.substring(0, ix)
+                restService.addEndpoint(url)
+            }
+        }
+    }
+
+    /**
 	 * Imports all swagger api declarations in the specified JSON document into a RestService
 	 * @url the url of the JSON document defining swagger APIs to import
-	 * @return the created RestService 
+	 * @return the created RestService
 	 */
-	
+
 	public RestService importApiDeclaration( ApiDeclaration apiDeclaration, String name )
     {
 		// create the RestService
 		RestService restService = createRestService( apiDeclaration.basePath, name )
-		
+
 		// loop apis in document
 		apiDeclaration.apiList.each {
 
@@ -106,7 +129,7 @@ class SwaggerImporter {
 				it
 
 				RestMethod method = resource.addNewMethod( it.nickName )
-				method.method = RequestMethod.valueOf( it.method.name().toUpperCase() )
+				method.method = RestRequestInterface.HttpMethod.valueOf( it.method.name().toUpperCase() )
 				method.description = it.summary
 
 				// loop parameters and add accordingly
@@ -120,8 +143,18 @@ class SwaggerImporter {
 						def paramType = it.paramType.name()
 						if( paramType == "path" )
 						   paramType = "template"
+                        else if( paramType == "form" )
+                            paramType = "query"
 
-						p.style = ParameterStyle.valueOf( paramType.toUpperCase() )
+                        try
+                        {
+						    p.style = ParameterStyle.valueOf( paramType.toUpperCase() )
+                        }
+                        catch( IllegalArgumentException e )
+                        {
+                            SoapUI.logError( e );
+                        }
+
 						p.required = it.required
 					}
 				}
@@ -136,13 +169,29 @@ class SwaggerImporter {
 
 	private RestService createRestService( String path, String name )
 	{
-		URL url = new URL( path )
-		def pathPos = path.length()-url.path.length()
+        RestService restService = project.addNewInterface( name, RestServiceFactory.REST_TYPE )
 
-		RestService restService = project.addNewInterface( name, RestServiceFactory.REST_TYPE )
-		restService.basePath = path.substring( pathPos )
-		restService.addEndpoint( path.substring( 0, pathPos ))
+        if( path != null )
+        {
+            try {
+                if( path.startsWith( "/"))
+                {
+                    restService.basePath = path
+                }
+                else {
+                    URL url = new URL(path)
+                    def pathPos = path.length() - url.path.length()
 
-		return restService
+                    restService.basePath = path.substring(pathPos)
+                    restService.addEndpoint(path.substring(0, pathPos))
+                }
+            }
+            catch( Exception e )
+            {
+                SoapUI.logError( e )
+            }
+        }
+
+        return restService
 	}
 }
