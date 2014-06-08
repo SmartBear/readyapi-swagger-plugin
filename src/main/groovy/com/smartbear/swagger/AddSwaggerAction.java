@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.smartbear.restplugin;
+package com.smartbear.swagger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import java.util.List;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.support.PathUtils;
+import com.eviware.soapui.plugins.ActionConfiguration;
 import com.eviware.soapui.support.StringUtils;
 import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
@@ -40,6 +41,7 @@ import com.eviware.x.form.support.AForm;
  * @author Ole Lensmar
  */
 
+@ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddWadlAction", separatorBefore = true )
 public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 {
     public static final String RESOURCE_LISTING_TYPE = "Resource Listing";

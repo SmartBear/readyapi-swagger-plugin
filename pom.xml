@@ -8,7 +8,7 @@
 
 	<groupId>com.smartbear</groupId>
 	<artifactId>soapui-swagger-plugin</artifactId>
-	<version>0.3.1-plugin</version>
+	<version>0.4</version>
 
     <repositories>
         <repository>
@@ -44,108 +44,20 @@
 			<scope>test</scope>
 		</dependency>
 
+
         <dependency>
             <groupId>com.smartbear.soapui</groupId>
             <artifactId>soapui</artifactId>
-            <version>5.0.0</version>
+            <version>5.1.0-SNAPSHOT</version>
         </dependency>
 
-		<dependency>
-			<groupId>xmlbeans</groupId>
-			<artifactId>xbean</artifactId>
-			<version>fixed-2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>xmlbeans</groupId>
-			<artifactId>xbean_xpath</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>xmlbeans</groupId>
-			<artifactId>xmlpublic</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>xmlbeans</groupId>
-			<artifactId>jsr173</artifactId>
-			<version>xmlbeans-2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
-		</dependency>
-		<dependency>
-			<groupId>wsdl4j</groupId>
-			<artifactId>wsdl4j</artifactId>
-			<version>1.6.2-fixed</version>
-		</dependency>
-		<dependency>
-			<groupId>fife</groupId>
-			<artifactId>rsyntaxtextarea</artifactId>
-			<version>1.3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-cli</groupId>
-			<artifactId>commons-cli</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.1.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>4.1.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient-cache</artifactId>
-			<version>4.1.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.1.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore-nio</artifactId>
-			<version>4.1.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>xml-security</groupId>
-			<artifactId>xmlsec</artifactId>
-			<version>1.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>serializer</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk15</artifactId>
-			<version>144</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.smartbear.soapui</groupId>
+            <artifactId>soapui-pro</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 

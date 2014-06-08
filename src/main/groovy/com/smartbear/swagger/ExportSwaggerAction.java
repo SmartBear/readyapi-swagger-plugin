@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package com.smartbear.restplugin;
+package com.smartbear.swagger;
 
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.rest.RestServiceFactory;
 import com.eviware.soapui.impl.settings.XmlBeansSettingsImpl;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
-import com.eviware.soapui.impl.wsdl.support.PathUtils;
 import com.eviware.soapui.model.support.ModelSupport;
+import com.eviware.soapui.plugins.ActionConfiguration;
 import com.eviware.soapui.support.StringUtils;
 import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
@@ -33,8 +33,6 @@ import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
 import com.smartbear.swagger4j.SwaggerFormat;
 
-import java.io.File;
-
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
  * import
@@ -42,6 +40,7 @@ import java.io.File;
  * @author Ole Lensmar
  */
 
+@ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddSwaggerAction")
 public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 {
     private static final String BASE_PATH = Form.class.getName() + Form.BASEPATH;

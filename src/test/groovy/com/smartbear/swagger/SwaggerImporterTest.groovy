@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.smartbear.restplugin;
+package com.smartbear.swagger;
 
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject

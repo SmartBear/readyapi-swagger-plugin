@@ -1,4 +1,4 @@
-package com.smartbear.restplugin;
+package com.smartbear.swagger;
 
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
