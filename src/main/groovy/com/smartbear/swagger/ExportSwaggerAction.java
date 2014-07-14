@@ -16,6 +16,7 @@
 
 package com.smartbear.swagger;
 
+import com.eviware.soapui.analytics.Analytics;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.rest.RestServiceFactory;
 import com.eviware.soapui.impl.settings.XmlBeansSettingsImpl;
@@ -120,6 +121,8 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                 settings.setString(TARGET_PATH, dialog.getValue(Form.FOLDER));
                 settings.setString(FORMAT, dialog.getValue(Form.FORMAT));
                 settings.setString(VERSION, dialog.getValue(Form.VERSION));
+
+                Analytics.trackAction("ExportSwagger");
 
                 break;
 			}

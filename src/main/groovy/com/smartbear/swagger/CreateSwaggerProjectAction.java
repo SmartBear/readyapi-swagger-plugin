@@ -16,24 +16,28 @@
 
 package com.smartbear.swagger;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.eviware.soapui.analytics.Analytics;
+import com.eviware.soapui.impl.WorkspaceImpl;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.support.PathUtils;
 import com.eviware.soapui.plugins.ActionConfiguration;
+import com.eviware.soapui.plugins.auto.PluginImportMethod;
 import com.eviware.soapui.support.StringUtils;
 import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
 import com.eviware.x.form.XFormDialog;
+import com.eviware.x.form.XFormField;
+import com.eviware.x.form.XFormFieldListener;
 import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
@@ -42,32 +46,40 @@ import com.eviware.x.form.support.AForm;
  * @author Ole Lensmar
  */
 
-@ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddWadlAction", separatorBefore = true )
-public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
+@PluginImportMethod( label = "Swagger Definition (REST)")
+public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceImpl>
 {
     public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
     public static final String API_DECLARATION_TYPE = "API Declaration";
 
     private XFormDialog dialog;
 
-	public AddSwaggerAction()
+	public CreateSwaggerProjectAction()
 	{
-		super( "Import Swagger", "Imports a Swagger definition into SoapUI" );
+        super( "Create Swagger Project", "Creates a new SoapUI Project from a Swagger definition");
 	}
 
-	public void perform( WsdlProject project, Object param )
+	public void perform( WorkspaceImpl workspace, Object param )
 	{
 		// initialize form
 		if( dialog == null )
 		{
 			dialog = ADialogBuilder.buildDialog( Form.class );
             dialog.setValue( Form.TYPE, RESOURCE_LISTING_TYPE);
+            dialog.getFormField( Form.SWAGGERURL ).addFormFieldListener( new XFormFieldListener() {
+                @Override
+                public void valueChanged(XFormField sourceField, String newValue, String oldValue) {
+                    initProjectName( newValue );
+                }
+            });
 		}
         else
         {
             dialog.setValue( Form.SWAGGERURL, "" );
+            dialog.setValue( Form.PROJECT_NAME, "" );
         }
 
+        WsdlProject project = null;
 
 		while( dialog.show() )
 		{
@@ -77,6 +89,8 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 				String url = dialog.getValue( Form.SWAGGERURL ).trim();
 				if( StringUtils.hasContent( url ) )
 				{
+                    project = workspace.createProject(dialog.getValue(Form.PROJECT_NAME));
+
 					// expand any property-expansions
 					String expUrl = PathUtils.expandPath( url, project );
 
@@ -98,7 +112,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 					if( !result.isEmpty() )
 						UISupport.select( result.get(0) );
 
-                    Analytics.trackAction("ImportSwagger");
+                    Analytics.trackAction("CreateSwaggerProject");
 
 					break;
 				}
@@ -108,11 +122,35 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 				UISupport.showErrorMessage( ex );
 			}
 		}
+
+        if( project != null && project.getInterfaceCount() == 0 )
+            workspace.removeProject( project );
 	}
 
-	@AForm( name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition" )
-	public interface Form
-	{
+    public void initProjectName(String newValue) {
+        if (StringUtils.isNullOrEmpty(dialog.getValue(Form.PROJECT_NAME)) && StringUtils.hasContent(newValue)) {
+            int ix = newValue.lastIndexOf('.');
+            if (ix > 0) {
+                newValue = newValue.substring(0, ix);
+            }
+
+            ix = newValue.lastIndexOf('/');
+            if (ix == -1) {
+                ix = newValue.lastIndexOf('\\');
+            }
+
+            if (ix != -1) {
+                dialog.setValue(Form.PROJECT_NAME, newValue.substring(ix + 1));
+            }
+        }
+    }
+
+    @AForm(name = "Create Swagger Project", description = "Creates a SoapUI Project from the specified Swagger definition")
+    public interface Form
+    {
+        @AField(name = "Project Name", description = "Name of the project", type = AField.AFieldType.STRING)
+        public final static String PROJECT_NAME = "Project Name";
+
         @AField( name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE )
 		public final static String SWAGGERURL = "Swagger Definition";
 
