@@ -15,13 +15,13 @@ class SwaggerExporterTest extends GroovyTestCase {
 	void testExportResourceListing() {
 		def project = new WsdlProject();
 
-        SwaggerImporter importer = new SwaggerImporter( project )
+        SwaggerImporter importer = new Swagger1XImporter(project)
 
         RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs" )
 
         assertEquals( 3, result.length )
 
-        SwaggerExporter exporter = new SwaggerExporter( project );
+        SwaggerExporter exporter = new Swagger1XExporter(project);
         def listing = exporter.generateResourceListing( result, "1.0", SwaggerFormat.json, "" );
         listing.setBasePath( "." );
 

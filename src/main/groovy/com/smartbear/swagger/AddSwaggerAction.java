@@ -16,11 +16,6 @@
 
 package com.smartbear.swagger;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.eviware.soapui.analytics.Analytics;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
@@ -34,6 +29,11 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
@@ -85,8 +85,8 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 						expUrl = new File( expUrl ).toURI().toURL().toString();
 
 					// create the importer and import!
-					SwaggerImporter importer = new SwaggerImporter( project );
                     List<RestService> result = new ArrayList<RestService>();
+                    SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(expUrl, project);
 
                     if( dialog.getValue( Form.TYPE ).equals(RESOURCE_LISTING_TYPE))
 					    result.addAll(Arrays.asList(importer.importSwagger( expUrl )));
@@ -98,7 +98,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 					if( !result.isEmpty() )
 						UISupport.select( result.get(0) );
 
-                    Analytics.trackAction("ImportSwagger");
+                    Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
 
 					break;
 				}

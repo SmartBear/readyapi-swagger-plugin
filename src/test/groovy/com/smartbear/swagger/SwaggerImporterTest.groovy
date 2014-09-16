@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.smartbear.swagger;
+package com.smartbear.swagger
 
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
@@ -29,9 +29,9 @@ class SwaggerImporterTest  extends GroovyTestCase {
 	void testImportResourceListing() {
 		def project = new WsdlProject();
 
-		SwaggerImporter importer = new SwaggerImporter( project )
+        Swagger1XImporter importer = new Swagger1XImporter(project)
 
-		RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs" )
+        RestService[] result = importer.importSwagger("http://petstore.swagger.wordnik.com/api/api-docs")
 
         RestService service = result[0]
         assertTrue( service.endpoints.length > 0 )
@@ -48,11 +48,19 @@ class SwaggerImporterTest  extends GroovyTestCase {
     {
         def project = new WsdlProject();
 
-        SwaggerImporter importer = new SwaggerImporter( project )
+        Swagger1XImporter importer = new Swagger1XImporter(project)
         def service = importer.importApiDeclaration("http://www.apihub.com/apihub/swagger-api/9528/commits")
 
         assertEquals( 3, service.resourceList.size() )
 
         importer.importApiDeclaration(new File( "src/test/resources/api-docs").toURL().toString());
+    }
+
+    void testImportSwagger2() {
+        def project = new WsdlProject();
+        Swagger2Importer importer = new Swagger2Importer(project)
+
+        importer.importSwagger("src/test/resources/petstore-2.0.json")
+        importer.importSwagger("src/test/resources/petstore-2.0.yaml")
     }
 }

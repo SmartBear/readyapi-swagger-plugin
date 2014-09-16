@@ -32,7 +32,6 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
-import com.smartbear.swagger4j.SwaggerFormat;
 
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
@@ -48,6 +47,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
     private static final String TARGET_PATH = Form.class.getName() + Form.FOLDER;
     private static final String FORMAT = Form.class.getName() + Form.FORMAT;
     private static final String VERSION = Form.class.getName() + Form.VERSION;
+    private static final String SWAGGER_VERSION = Form.class.getName() + Form.SWAGGER_VERSION;
 
     private XFormDialog dialog;
 
@@ -74,7 +74,8 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
             dialog.setValue(Form.VERSION, settings.getString(VERSION, "1.0"));
             dialog.setValue(Form.BASEPATH, settings.getString(BASE_PATH, "" ));
             dialog.setValue(Form.FOLDER, settings.getString(TARGET_PATH, "" ));
-		}
+            dialog.setValue(Form.SWAGGER_VERSION, settings.getString(SWAGGER_VERSION, "2.0"));
+        }
 
         XFormOptionsField apis = (XFormOptionsField) dialog.getFormField(Form.APIS);
         apis.setOptions(ModelSupport.getNames(project.getInterfaces(RestServiceFactory.REST_TYPE)));
@@ -83,8 +84,6 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 		{
 			try
 			{
-                SwaggerExporter exporter = new SwaggerExporter( project );
-
                 Object[] options = ((XFormOptionsField) dialog.getFormField(Form.APIS)).getSelectedOptions();
                 if( options.length == 0 )
                 {
@@ -107,13 +106,26 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                     throw new Exception( "You must select at least one REST API to export");
                 }
 
+                String swaggerVersion = dialog.getValue(Form.SWAGGER_VERSION);
+                String format = dialog.getValue(Form.FORMAT);
+
+                if (format.equals("xml") && swaggerVersion.equals("2.0")) {
+                    throw new Exception("XML format is only supported for Swagger Version 1.2");
+                }
+
+                if (format.equals("yaml") && swaggerVersion.equals("1.2")) {
+                    throw new Exception("YAML format is only supported for Swagger Version 2.0");
+                }
+
                 String version = dialog.getValue(Form.VERSION);
                 if( StringUtils.isNullOrEmpty( version ))
                     version = "1.0";
 
+                SwaggerExporter exporter = swaggerVersion.equals("1.2") ? new Swagger1XExporter(project) :
+                        new Swagger2Exporter(project);
+
                 String path = exporter.exportToFolder( dialog.getValue( Form.FOLDER ), version,
-                        SwaggerFormat.valueOf(dialog.getValue( Form.FORMAT ).toLowerCase()), services,
-                        dialog.getValue(Form.BASEPATH));
+                        format, services, dialog.getValue(Form.BASEPATH));
 
                 UISupport.showInfoMessage( "Swagger resource listing has been created at [" + path + "]" );
 
@@ -121,8 +133,10 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                 settings.setString(TARGET_PATH, dialog.getValue(Form.FOLDER));
                 settings.setString(FORMAT, dialog.getValue(Form.FORMAT));
                 settings.setString(VERSION, dialog.getValue(Form.VERSION));
+                settings.setString(SWAGGER_VERSION, dialog.getValue(Form.SWAGGER_VERSION));
 
-                Analytics.trackAction("ExportSwagger");
+                Analytics.trackAction("ExportSwagger", "Version", dialog.getValue(Form.SWAGGER_VERSION),
+                        "Format", dialog.getValue(Form.FORMAT));
 
                 break;
 			}
@@ -148,7 +162,11 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
         @AField( name = "Base Path", description = "Base Path that the Swagger definition will be hosted on", type = AFieldType.STRING )
         public final static String BASEPATH = "Base Path";
 
-        @AField( name = "Format", description = "Select Swagger format", type = AFieldType.RADIOGROUP, values = { "json", "xml"})
+        @AField(name = "Swagger Version", description = "Select Swagger version", type = AFieldType.RADIOGROUP, values = {"1.2", "2.0"})
+        public final static String SWAGGER_VERSION = "Swagger Version";
+
+
+        @AField(name = "Format", description = "Select Swagger format", type = AFieldType.RADIOGROUP, values = {"json", "yaml", "xml"})
         public final static String FORMAT = "Format";
 	}
 

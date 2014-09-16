@@ -11,6 +11,8 @@
             <includes>
                 <include>com.smartbear:swagger4j</include>
                 <include>org.glassfish:javax.json</include>
+                <include>com.wordnik:swagger-core</include>
+                <include>com.wordnik:swagger-models</include>
             </includes>
         </dependencySet>
         <dependencySet>
