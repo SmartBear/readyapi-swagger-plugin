@@ -73,7 +73,8 @@ class Swagger2Exporter implements SwaggerExporter {
 
                     if (it.method == RestRequestInterface.HttpMethod.POST || it.method == RestRequestInterface.HttpMethod.PUT) {
                         def param = new BodyParameter()
-                        operation.addParameter("body", param)
+                        operation.addParameter(param)
+                        param.name = "body"
                         param.description = "Request body"
                         param.required = true
                     }

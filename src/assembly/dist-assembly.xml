@@ -13,6 +13,7 @@
                 <include>org.glassfish:javax.json</include>
                 <include>com.wordnik:swagger-core</include>
                 <include>com.wordnik:swagger-models</include>
+                <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</include>
             </includes>
         </dependencySet>
         <dependencySet>
