@@ -42,8 +42,9 @@ public class Swagger1XExporter implements SwaggerExporter {
 
     public String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath) {
 
-        ResourceListing rl = generateResourceListing(services, apiVersion, SwaggerFormat.valueOf(format), basePath)
-        return exportResourceListing(format, rl, path)
+        def swaggerFormat = SwaggerFormat.valueOf(format)
+        ResourceListing rl = generateResourceListing(services, apiVersion, swaggerFormat, basePath)
+        return exportResourceListing(swaggerFormat, rl, path)
     }
 
     String exportResourceListing(SwaggerFormat format, ResourceListing rl, String path) {
