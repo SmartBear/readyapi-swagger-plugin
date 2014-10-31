@@ -17,5 +17,8 @@ class SwaggerUtilsTest extends GroovyTestCase {
 
         url = new File("src/test/resources/api-docs").toURL().toString()
         assertTrue(SwaggerUtils.createSwaggerImporter(url, project) instanceof Swagger1XImporter)
+
+        url = "https://developer.similarweb.com/api_docs/services/43832.json"
+        assertTrue(SwaggerUtils.createSwaggerImporter(url, project) instanceof Swagger2Importer)
     }
 }

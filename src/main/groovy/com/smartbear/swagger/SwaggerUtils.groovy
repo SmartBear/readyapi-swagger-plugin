@@ -17,7 +17,7 @@ class SwaggerUtils {
 
         def json = new JsonSlurper().parseText(new URL(url).text)
 
-        if (json?.swagger == 2.0)
+        if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
             return new Swagger2Importer(project)
         else
             return new Swagger1XImporter(project)

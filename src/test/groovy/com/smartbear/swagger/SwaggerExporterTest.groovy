@@ -26,6 +26,8 @@ class SwaggerExporterTest extends GroovyTestCase {
         listing.setBasePath( "." );
 
         def path = exporter.exportResourceListing( SwaggerFormat.json, listing, "target/test-export" );
+        assertNotNull(path)
+
         def file = new File( path )
 
         assertTrue( file.exists());
