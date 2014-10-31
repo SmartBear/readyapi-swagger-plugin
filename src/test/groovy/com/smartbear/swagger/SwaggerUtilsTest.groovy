@@ -20,5 +20,8 @@ class SwaggerUtilsTest extends GroovyTestCase {
 
         url = "https://developer.similarweb.com/api_docs/services/43832.json"
         assertTrue(SwaggerUtils.createSwaggerImporter(url, project) instanceof Swagger2Importer)
+
+        url = "https://pili-forrester.3scale.net/api_docs/services/42764.json"
+        assertTrue(SwaggerUtils.createSwaggerImporter(url, project) instanceof Swagger1XImporter)
     }
 }
