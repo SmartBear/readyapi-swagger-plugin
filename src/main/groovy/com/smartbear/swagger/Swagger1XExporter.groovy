@@ -23,7 +23,14 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
-import com.smartbear.swagger4j.*
+import com.smartbear.swagger4j.ApiDeclaration
+import com.smartbear.swagger4j.FileSwaggerStore
+import com.smartbear.swagger4j.Operation
+import com.smartbear.swagger4j.Parameter
+import com.smartbear.swagger4j.ResourceListing
+import com.smartbear.swagger4j.Swagger
+import com.smartbear.swagger4j.SwaggerFormat
+import com.smartbear.swagger4j.SwaggerVersion
 import com.smartbear.swagger4j.impl.Utils
 
 /**
@@ -51,7 +58,7 @@ public class Swagger1XExporter implements SwaggerExporter {
         def store = new Utils.MapSwaggerStore()
         Swagger.createWriter(format).writeSwagger(store, rl)
 
-        store.fileMap.each { k, v -> Console.println("$k : $v") }
+        //store.fileMap.each { k, v -> Console.println("$k : $v") }
         return FileSwaggerStore.writeSwagger(path, rl, format)
     }
 

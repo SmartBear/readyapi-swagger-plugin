@@ -36,13 +36,12 @@ import com.eviware.x.form.support.AForm;
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
  * import
- * 
+ *
  * @author Ole Lensmar
  */
 
 @ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddSwaggerAction")
-public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
-{
+public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     private static final String BASE_PATH = Form.class.getName() + Form.BASEPATH;
     private static final String TARGET_PATH = Form.class.getName() + Form.FOLDER;
     private static final String FORMAT = Form.class.getName() + Form.FORMAT;
@@ -51,59 +50,49 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 
     private XFormDialog dialog;
 
-	public ExportSwaggerAction()
-	{
-		super( "Export Swagger", "Creates a Swagger definition for selected REST APIs" );
-	}
+    public ExportSwaggerAction() {
+        super("Export Swagger", "Creates a Swagger definition for selected REST APIs");
+    }
 
-	public void perform( WsdlProject project, Object param )
-	{
-        if( project.getInterfaces(RestServiceFactory.REST_TYPE).isEmpty())
-        {
+    public void perform(WsdlProject project, Object param) {
+        if (project.getInterfaces(RestServiceFactory.REST_TYPE).isEmpty()) {
             UISupport.showErrorMessage("Project is missing REST APIs");
             return;
         }
 
-		// initialize form
+        // initialize form
         XmlBeansSettingsImpl settings = project.getSettings();
-        if( dialog == null )
-		{
-			dialog = ADialogBuilder.buildDialog( Form.class );
+        if (dialog == null) {
+            dialog = ADialogBuilder.buildDialog(Form.class);
 
             dialog.setValue(Form.FORMAT, settings.getString(FORMAT, "json"));
             dialog.setValue(Form.VERSION, settings.getString(VERSION, "1.0"));
-            dialog.setValue(Form.BASEPATH, settings.getString(BASE_PATH, "" ));
-            dialog.setValue(Form.FOLDER, settings.getString(TARGET_PATH, "" ));
+            dialog.setValue(Form.BASEPATH, settings.getString(BASE_PATH, ""));
+            dialog.setValue(Form.FOLDER, settings.getString(TARGET_PATH, ""));
             dialog.setValue(Form.SWAGGER_VERSION, settings.getString(SWAGGER_VERSION, "2.0"));
         }
 
         XFormOptionsField apis = (XFormOptionsField) dialog.getFormField(Form.APIS);
         apis.setOptions(ModelSupport.getNames(project.getInterfaces(RestServiceFactory.REST_TYPE)));
 
-		while( dialog.show() )
-		{
-			try
-			{
+        while (dialog.show()) {
+            try {
                 Object[] options = ((XFormOptionsField) dialog.getFormField(Form.APIS)).getSelectedOptions();
-                if( options.length == 0 )
-                {
-                    throw new Exception( "You must select at least one REST API ");
+                if (options.length == 0) {
+                    throw new Exception("You must select at least one REST API ");
                 }
 
-                RestService [] services = new RestService[options.length];
-                for( int c = 0; c < options.length; c++ )
-                {
-                    services[c] = (RestService) project.getInterfaceByName( String.valueOf(options[c]) );
-                    if( services[c].getEndpoints().length == 0 )
-                    {
-                        throw new Exception( "Selected APIs must contain at least one endpoint");
+                RestService[] services = new RestService[options.length];
+                for (int c = 0; c < options.length; c++) {
+                    services[c] = (RestService) project.getInterfaceByName(String.valueOf(options[c]));
+                    if (services[c].getEndpoints().length == 0) {
+                        throw new Exception("Selected APIs must contain at least one endpoint");
                     }
                 }
 
                 // double-check
-                if( services.length == 0 )
-                {
-                    throw new Exception( "You must select at least one REST API to export");
+                if (services.length == 0) {
+                    throw new Exception("You must select at least one REST API to export");
                 }
 
                 String swaggerVersion = dialog.getValue(Form.SWAGGER_VERSION);
@@ -118,16 +107,17 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                 }
 
                 String version = dialog.getValue(Form.VERSION);
-                if( StringUtils.isNullOrEmpty( version ))
+                if (StringUtils.isNullOrEmpty(version)) {
                     version = "1.0";
+                }
 
                 SwaggerExporter exporter = swaggerVersion.equals("1.2") ? new Swagger1XExporter(project) :
                         new Swagger2Exporter(project);
 
-                String path = exporter.exportToFolder( dialog.getValue( Form.FOLDER ), version,
+                String path = exporter.exportToFolder(dialog.getValue(Form.FOLDER), version,
                         format, services, dialog.getValue(Form.BASEPATH));
 
-                UISupport.showInfoMessage( "Swagger resource listing has been created at [" + path + "]" );
+                UISupport.showInfoMessage("Swagger resource listing has been created at [" + path + "]");
 
                 settings.setString(BASE_PATH, dialog.getValue(Form.BASEPATH));
                 settings.setString(TARGET_PATH, dialog.getValue(Form.FOLDER));
@@ -139,35 +129,31 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject>
                         "Format", dialog.getValue(Form.FORMAT));
 
                 break;
-			}
-			catch( Exception ex )
-			{
-				UISupport.showErrorMessage( ex );
-			}
-		}
-	}
+            } catch (Exception ex) {
+                UISupport.showErrorMessage(ex);
+            }
+        }
+    }
 
-	@AForm( name = "Export Swagger Definition", description = "Creates a Swagger definition for selected REST APIs in this project" )
-	public interface Form
-	{
-        @AField( name = "APIs", description = "Select which REST APIs to include in the Swagger definition", type = AFieldType.MULTILIST )
+    @AForm(name = "Export Swagger Definition", description = "Creates a Swagger definition for selected REST APIs in this project")
+    public interface Form {
+        @AField(name = "APIs", description = "Select which REST APIs to include in the Swagger definition", type = AFieldType.MULTILIST)
         public final static String APIS = "APIs";
 
-		@AField( name = "Target Folder", description = "Where to save the Swagger definition", type = AFieldType.FOLDER )
-		public final static String FOLDER = "Target Folder";
+        @AField(name = "Target Folder", description = "Where to save the Swagger definition", type = AFieldType.FOLDER)
+        public final static String FOLDER = "Target Folder";
 
-        @AField( name = "API Version", description = "API Version", type = AFieldType.STRING )
+        @AField(name = "API Version", description = "API Version", type = AFieldType.STRING)
         public final static String VERSION = "API Version";
 
-        @AField( name = "Base Path", description = "Base Path that the Swagger definition will be hosted on", type = AFieldType.STRING )
+        @AField(name = "Base Path", description = "Base Path that the Swagger definition will be hosted on", type = AFieldType.STRING)
         public final static String BASEPATH = "Base Path";
 
         @AField(name = "Swagger Version", description = "Select Swagger version", type = AFieldType.RADIOGROUP, values = {"1.2", "2.0"})
         public final static String SWAGGER_VERSION = "Swagger Version";
 
-
         @AField(name = "Format", description = "Select Swagger format", type = AFieldType.RADIOGROUP, values = {"json", "yaml", "xml"})
         public final static String FORMAT = "Format";
-	}
+    }
 
 }

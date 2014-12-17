@@ -8,7 +8,7 @@
 
 	<groupId>com.smartbear</groupId>
 	<artifactId>soapui-swagger-plugin</artifactId>
-    <version>2.0</version>
+    <version>2.1</version>
 
     <repositories>
         <repository>
@@ -48,12 +48,6 @@
         <dependency>
             <groupId>com.smartbear.soapui</groupId>
             <artifactId>soapui</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.smartbear.soapui</groupId>
-            <artifactId>soapui-pro</artifactId>
             <version>5.1.0-SNAPSHOT</version>
         </dependency>
 
