@@ -1,5 +1,5 @@
 ---
-swagger: 2.0
+swagger: "2.0"
 info:
   description: "This is a sample server Petstore server.  You can find out more about\
     \ Swagger at <a href=\"http://swagger.wordnik.com\">http://swagger.wordnik.com</a>\
@@ -13,7 +13,10 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.wordnik.com"
 basePath: "/v2"
+schemes:
+- "http"
 paths:
   /pet:
     post:
@@ -29,7 +32,7 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: body
+      - in: "body"
         name: "body"
         description: "Pet object that needs to be added to the store"
         required: false
@@ -38,6 +41,10 @@ paths:
       responses:
         405:
           description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
     put:
       tags:
       - "pet"
@@ -51,7 +58,7 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: body
+      - in: "body"
         name: "body"
         description: "Pet object that needs to be added to the store"
         required: false
@@ -64,6 +71,10 @@ paths:
           description: "Pet not found"
         400:
           description: "Invalid ID supplied"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/findByStatus:
     get:
       tags:
@@ -75,14 +86,15 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: query
-        name: "status"
+      - name: "status"
+        in: "query"
         description: "Status values that need to be considered for filter"
         required: false
         type: "array"
         items:
           type: "string"
-        collectionFormat: "default"
+        collectionFormat: "multi"
+        default: "available"
       responses:
         200:
           description: "successful operation"
@@ -92,6 +104,10 @@ paths:
               $ref: "#/definitions/Pet"
         400:
           description: "Invalid status value"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/findByTags:
     get:
       tags:
@@ -104,14 +120,14 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: query
-        name: "tags"
+      - name: "tags"
+        in: "query"
         description: "Tags to filter by"
         required: false
         type: "array"
         items:
           type: "string"
-        collectionFormat: "default"
+        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -121,6 +137,10 @@ paths:
               $ref: "#/definitions/Pet"
         400:
           description: "Invalid tag value"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
   /pet/{petId}:
     get:
       tags:
@@ -133,8 +153,8 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "petId"
+      - name: "petId"
+        in: "path"
         description: "ID of pet that needs to be fetched"
         required: true
         type: "integer"
@@ -148,6 +168,45 @@ paths:
             $ref: "#/definitions/Pet"
         400:
           description: "Invalid ID supplied"
+      security:
+      - api_key: []
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+    post:
+      tags:
+      - "pet"
+      summary: "Updates a pet in the store with form data"
+      description: ""
+      operationId: "updatePetWithForm"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "petId"
+        in: "path"
+        description: "ID of pet that needs to be updated"
+        required: true
+        type: "string"
+      - name: "name"
+        in: "formData"
+        description: "Updated name of the pet"
+        required: false
+        type: "string"
+      - name: "status"
+        in: "formData"
+        description: "Updated status of the pet"
+        required: false
+        type: "string"
+      responses:
+        405:
+          description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
     delete:
       tags:
       - "pet"
@@ -158,8 +217,13 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "petId"
+      - name: "api_key"
+        in: "header"
+        description: ""
+        required: false
+        type: "string"
+      - name: "petId"
+        in: "path"
         description: "Pet id to delete"
         required: true
         type: "integer"
@@ -167,6 +231,30 @@ paths:
       responses:
         400:
           description: "Invalid pet value"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /store/inventory:
+    get:
+      tags:
+      - "store"
+      summary: "Returns pet inventories by status"
+      description: "Returns a map of status codes to quantities"
+      operationId: "getInventory"
+      produces:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "integer"
+              format: "int32"
+      security:
+      - api_key: []
   /store/order:
     post:
       tags:
@@ -178,13 +266,17 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: body
+      - in: "body"
         name: "body"
         description: "order placed for purchasing the pet"
         required: false
         schema:
           $ref: "#/definitions/Order"
       responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Order"
         400:
           description: "Invalid Order"
   /store/order/{orderId}:
@@ -199,8 +291,8 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "orderId"
+      - name: "orderId"
+        in: "path"
         description: "ID of pet that needs to be fetched"
         required: true
         type: "string"
@@ -224,8 +316,8 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "orderId"
+      - name: "orderId"
+        in: "path"
         description: "ID of the order that needs to be deleted"
         required: true
         type: "string"
@@ -245,7 +337,7 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: body
+      - in: "body"
         name: "body"
         description: "Created user object"
         required: false
@@ -265,14 +357,14 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: body
+      - in: "body"
         name: "body"
         description: "List of user object"
         required: false
         schema:
           type: "array"
           items:
-            $ref: "User"
+            $ref: "#/definitions/User"
       responses:
         default:
           description: "successful operation"
@@ -287,7 +379,7 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: body
+      - in: "body"
         name: "body"
         description: "List of user object"
         required: false
@@ -309,13 +401,13 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: query
-        name: "username"
+      - name: "username"
+        in: "query"
         description: "The user name for login"
         required: false
         type: "string"
-      - in: query
-        name: "password"
+      - name: "password"
+        in: "query"
         description: "The password for login in clear text"
         required: false
         type: "string"
@@ -350,8 +442,8 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "username"
+      - name: "username"
+        in: "path"
         description: "The name that needs to be fetched. Use user1 for testing. "
         required: true
         type: "string"
@@ -374,12 +466,12 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "username"
+      - name: "username"
+        in: "path"
         description: "name that need to be deleted"
         required: true
         type: "string"
-      - in: body
+      - in: "body"
         name: "body"
         description: "Updated user object"
         required: false
@@ -400,8 +492,8 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: path
-        name: "username"
+      - name: "username"
+        in: "path"
         description: "The name that needs to be deleted"
         required: true
         type: "string"
@@ -410,6 +502,18 @@ paths:
           description: "User not found"
         400:
           description: "Invalid username supplied"
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.wordnik.com/api/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
 definitions:
   User:
     properties:
@@ -431,7 +535,9 @@ definitions:
       userStatus:
         type: "integer"
         format: "int32"
-        position: 0
+        description: "User Status"
+    xml:
+      name: "User"
   Category:
     properties:
       id:
@@ -439,8 +545,10 @@ definitions:
         format: "int64"
       name:
         type: "string"
+    xml:
+      name: "Category"
   Pet:
-    enum:
+    required:
     - "name"
     - "photoUrls"
     properties:
@@ -448,22 +556,29 @@ definitions:
         type: "integer"
         format: "int64"
       category:
-        $ref: "Category"
+        $ref: "#/definitions/Category"
       name:
         type: "string"
         example: "doggie"
-        position: 0
       photoUrls:
         type: "array"
+        xml:
+          name: "photoUrl"
+          wrapped: true
         items:
           type: "string"
       tags:
         type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
         items:
-          $ref: "Tag"
+          $ref: "#/definitions/Tag"
       status:
         type: "string"
-        position: 0
+        description: "pet status in the store"
+    xml:
+      name: "Pet"
   Tag:
     properties:
       id:
@@ -471,6 +586,8 @@ definitions:
         format: "int64"
       name:
         type: "string"
+    xml:
+      name: "Tag"
   Order:
     properties:
       id:
@@ -487,6 +604,8 @@ definitions:
         format: "date-time"
       status:
         type: "string"
-        position: 0
+        description: "Order Status"
       complete:
         type: "boolean"
+    xml:
+      name: "Order"

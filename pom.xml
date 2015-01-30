@@ -2,12 +2,12 @@
 <!-- Generated from archetype; please customize. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.smartbear</groupId>
-	<artifactId>soapui-swagger-plugin</artifactId>
+    <groupId>com.smartbear</groupId>
+    <artifactId>soapui-swagger-plugin</artifactId>
     <version>2.1</version>
 
     <repositories>
@@ -17,7 +17,7 @@
         </repository>
     </repositories>
 
-	<dependencies>
+    <dependencies>
 
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -31,30 +31,24 @@
             <version>1.0-beta5</version>
         </dependency>
 
-		<dependency>
-			<groupId>org.codehaus.gmaven.runtime</groupId>
-			<artifactId>gmaven-runtime-1.8</artifactId>
-			<version>1.5</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-
-
         <dependency>
-            <groupId>com.smartbear.soapui</groupId>
-            <artifactId>soapui</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <groupId>org.codehaus.gmaven.runtime</groupId>
+            <artifactId>gmaven-runtime-1.8</artifactId>
+            <version>1.5</version>
         </dependency>
 
         <dependency>
-            <groupId>com.smartbear.soapui</groupId>
-            <artifactId>soapui-pro</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.smartbear</groupId>
+            <artifactId>ready-api-soapui-pro</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -63,35 +57,48 @@
             <version>1.5.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+
     </dependencies>
 
-	<build>
+    <build>
 
-		<resources>
-			<resource>
-				<directory>src/resources</directory>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+            </resource>
+        </resources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.gmaven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>1.5</version>
-				<configuration>
-					<providerSelection>1.8</providerSelection>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generateStubs</goal>
-							<goal>compile</goal>
-							<goal>generateTestStubs</goal>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <providerSelection>1.8</providerSelection>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>generateTestStubs</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -103,8 +110,8 @@
                 </configuration>
             </plugin>
 
-		</plugins>
+        </plugins>
 
-	</build>
-	<name>SoapUI Swagger plugin</name>
+    </build>
+    <name>SoapUI Swagger plugin</name>
 </project>

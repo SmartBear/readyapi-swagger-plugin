@@ -7,34 +7,33 @@ import com.smartbear.swagger4j.SwaggerFormat
 
 /**
  * Basic tests that use the examples at wordnik - if they change these tests will probably break
- * 
+ *
  * @author Ole Lensmar
  */
 
 class SwaggerExporterTest extends GroovyTestCase {
-	void testExportResourceListing() {
-		def project = new WsdlProject();
+    void testExportResourceListing() {
+        def project = new WsdlProject();
 
         SwaggerImporter importer = new Swagger1XImporter(project)
 
-        RestService [] result = importer.importSwagger( "http://petstore.swagger.wordnik.com/api/api-docs" )
+        RestService[] result = importer.importSwagger("http://petstore.swagger.wordnik.com/api/api-docs")
 
-        assertEquals( 3, result.length )
+        assertEquals(3, result.length)
 
         SwaggerExporter exporter = new Swagger1XExporter(project);
-        def listing = exporter.generateResourceListing( result, "1.0", SwaggerFormat.json, "" );
-        listing.setBasePath( "." );
+        def listing = exporter.generateResourceListing(result, "1.0", SwaggerFormat.json, "");
+        listing.setBasePath(".");
 
-        def path = exporter.exportResourceListing( SwaggerFormat.json, listing, "target/test-export" );
+        def path = exporter.exportResourceListing(SwaggerFormat.json, listing, "target/test-export");
         assertNotNull(path)
 
-        def file = new File( path )
+        def file = new File(path)
 
-        assertTrue( file.exists());
-        assertTrue( path.endsWith( ".json"))
+        assertTrue(file.exists());
 
         def resourceListing = Swagger.createReader().readResourceListing(file.toURI())
-        assertEquals( resourceListing.apiVersion, listing.apiVersion )
-        assertEquals( resourceListing.apiList.size(), listing.apiList.size() )
-	}
+        assertEquals(resourceListing.apiVersion, listing.apiVersion)
+        assertEquals(resourceListing.apiList.size(), listing.apiList.size())
+    }
 }

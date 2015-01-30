@@ -46,7 +46,7 @@ import java.util.List;
 public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
 {
     public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
-    public static final String API_DECLARATION_TYPE = "API Declaration";
+    public static final String API_DECLARATION_TYPE = "API Declaration (only for Swagger 1.X)";
 
     private XFormDialog dialog;
 

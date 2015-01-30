@@ -16,11 +16,11 @@
 
 package com.smartbear.swagger
 
-import com.eviware.soapui.impl.rest.RestRepresentation
 import com.eviware.soapui.impl.rest.RestRequestInterface
-import com.eviware.soapui.impl.rest.RestService
+import com.eviware.soapui.impl.rest.RestResource
 import com.eviware.soapui.impl.rest.mock.RestMockRequest
 import com.eviware.soapui.impl.rest.mock.RestMockResult
+import com.eviware.soapui.impl.rest.mock.RestMockService
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.model.mock.MockResult
@@ -35,8 +35,8 @@ import com.wordnik.swagger.models.parameters.HeaderParameter
 import com.wordnik.swagger.models.parameters.Parameter
 import com.wordnik.swagger.models.parameters.PathParameter
 import com.wordnik.swagger.models.parameters.QueryParameter
+import com.wordnik.swagger.models.properties.StringProperty
 import com.wordnik.swagger.util.Json
-import com.wordnik.swagger.util.Yaml
 
 /**
  * A simple Swagger exporter - now uses swagger4j library
@@ -44,7 +44,7 @@ import com.wordnik.swagger.util.Yaml
  * @author Ole Lensmar
  */
 
-class Swagger2FromVirtGenerator implements SwaggerExporter {
+class Swagger2FromVirtGenerator {
 
     private final RestMockRequest mockRequest
 
@@ -53,52 +53,70 @@ class Swagger2FromVirtGenerator implements SwaggerExporter {
         this.mockRequest = mockRequest
     }
 
-    String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath) {
+    String createSwagger(RestMockService mockService) {
 
         Swagger swagger = new Swagger();
-        swagger.basePath = basePath
+        swagger.basePath = "/"
         swagger.info = new Info()
 
-        swagger.info.version = apiVersion
-        swagger.info.title = services[0].name
+        swagger.info.version = mockService.getPropertyValue("swagger.info.version")
+        swagger.info.description = mockService.getPropertyValue("swagger.info.description")
+        swagger.info.title = mockService.name
 
-        services.each {
-            it.allResources.each {
-                Path p = new Path()
+        mockService.mockOperationList.each {
 
-                it.restMethodList.each {
-                    Operation operation = new Operation()
-                    operation.operationId = it.resource.name
+            Path p = new Path()
 
-                    it.representations.each {
-                        if (it.type == RestRepresentation.Type.RESPONSE || it.type == RestRepresentation.Type.FAULT)
-                            it.status?.each { operation.addResponse(String.valueOf(it), new Response()) }
-                        else if (it.type == RestRepresentation.Type.REQUEST && it.mediaType != null)
-                            operation.addConsumes(it.mediaType)
+            Operation operation = new Operation()
+            operation.operationId = it.name
+
+            it.mockResponses.each {
+
+                def mockResponse = it
+                def response = new Response()
+
+                response.description = it.name
+                response.examples = new HashMap<>()
+                response.examples.put(it.contentType, it.responseContent)
+
+                mockResponse.responseHeaders.keySet().each {
+                    if (response.headers == null) {
+                        response.headers = new HashMap<>()
                     }
 
-                    p.set(it.method.name().toLowerCase(), operation)
-
-                    addParametersToOperation(it.params, operation)
-                    addParametersToOperation(it.overlayParams, operation)
-
-                    if (it.method == RestRequestInterface.HttpMethod.POST || it.method == RestRequestInterface.HttpMethod.PUT) {
-                        def param = new BodyParameter()
-                        operation.addParameter(param)
-                        param.name = "body"
-                        param.description = "Request body"
-                        param.required = true
-                    }
+                    def property = new StringProperty()
+                    property.example = mockResponse.responseHeaders.get(it)
+                    response.headers.put(it, property)
                 }
 
-                swagger.path(it.fullPath, p)
+                operation.addResponse(mockResponse.responseHttpStatus.toString(), response)
+
+                if (!operation.produces?.contains(mockResponse.contentType)) {
+                    operation.addProduces(mockResponse.contentType)
+                }
             }
+
+            p.set(it.method.name().toLowerCase(), operation)
+
+            if (it.operation instanceof RestResource) {
+                addParametersToOperation((it.operation as RestResource).params, operation)
+            }
+
+            if (it.method == RestRequestInterface.HttpMethod.POST || it.method == RestRequestInterface.HttpMethod.PUT) {
+                def param = new BodyParameter()
+                operation.addParameter(param)
+                param.name = "body"
+                param.description = "Request body"
+                param.required = true
+            }
+
+            swagger.path(it.resourcePath, p)
         }
 
-        ObjectMapper mapper = format.equals("yaml") ? Yaml.mapper() : Json.mapper();
-        mapper.writeValue(new FileWriter(path + File.separatorChar + "api-docs." + format), swagger);
-
-        return path;
+        ObjectMapper mapper = Json.mapper();
+        StringWriter writer = new StringWriter()
+        mapper.writeValue(writer, swagger);
+        return writer.toString();
     }
 
     private void addParametersToOperation(RestParamsPropertyHolder params, Operation op) {
@@ -147,7 +165,21 @@ class Swagger2FromVirtGenerator implements SwaggerExporter {
     MockResult generate() {
         RestMockResult result = new RestMockResult(mockRequest)
         result.contentType = "application/json"
-        result.responseContent = "{}"
+        result.responseContent = createSwagger(mockRequest.context.mockService)
+        result.statusCode = 200
+
+        def httpResponse = mockRequest.httpResponse
+        httpResponse.contentType = "application/json"
+        httpResponse.status = 200
+
+        // add so swagger-ui can be used to access
+        httpResponse.addHeader("Access-Control-Allow-Headers", "Origin, X-Atmosphere-tracking-id, X-Atmosphere-Framework, X-Cache-Date, Content-Type, X-Atmosphere-Transport, *")
+        httpResponse.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS , PUT")
+        httpResponse.addHeader("Access-Control-Allow-Origin", "*")
+        httpResponse.addHeader("Access-Control-Request-Headers", "Origin, X-Atmosphere-tracking-id, X-Atmosphere-Framework, X-Cache-Date, Content-Type, X-Atmosphere-Transport, *")
+
+        httpResponse.writer.write(result.responseContent)
+        httpResponse.flushBuffer()
 
         return result
     }

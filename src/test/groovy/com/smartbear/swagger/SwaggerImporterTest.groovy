@@ -59,8 +59,6 @@ class SwaggerImporterTest  extends GroovyTestCase {
     void testImportSwagger2() {
         def project = new WsdlProject();
         Swagger2Importer importer = new Swagger2Importer(project)
-
-        importer.importSwagger("src/test/resources/petstore-2.0.json")
-        importer.importSwagger("src/test/resources/petstore-2.0.yaml")
+        importer.importSwagger("src/test/resources/petstore-2.0.json")[0]
     }
 }

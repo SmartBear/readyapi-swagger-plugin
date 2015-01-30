@@ -17,14 +17,19 @@
 package com.smartbear.swagger
 
 import com.eviware.soapui.SoapUI
-import com.eviware.soapui.impl.rest.*
+import com.eviware.soapui.impl.rest.RestMethod
+import com.eviware.soapui.impl.rest.RestRepresentation
+import com.eviware.soapui.impl.rest.RestRequestInterface
+import com.eviware.soapui.impl.rest.RestResource
+import com.eviware.soapui.impl.rest.RestService
+import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.wordnik.swagger.models.Info
 import com.wordnik.swagger.models.Operation
 import com.wordnik.swagger.models.Path
-import com.wordnik.swagger.util.SwaggerLoader
+import io.swagger.parser.SwaggerParser
 
 /**
  * A simple Swagger 2.0 importer - now uses swagger-core library
@@ -48,7 +53,7 @@ class Swagger2Importer implements SwaggerImporter {
 
         def result = []
 
-        def swagger = new SwaggerLoader().read(url)
+        def swagger = new SwaggerParser().read(url)
         RestService restService = createRestService(swagger.basePath, swagger.info)
         swagger.paths.each {
             importPath(restService, it.key, it.value)
@@ -137,12 +142,37 @@ class Swagger2Importer implements SwaggerImporter {
             }
         }
 
-
         operation.responses?.each {
-            method.addNewRepresentation(RestRepresentation.Type.RESPONSE).status = it.key == "default" ? [] : [it.key]
+            def response = it
+
+            if (operation.produces?.empty) {
+                def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
+
+                representation.status = response.key == "default" ? [] : [response.key]
+
+                // just take the first example
+                if (!response.value.examples?.isEmpty()) {
+                    representation.mediaType = response.value.examples.iterator().next()
+                    representation.sampleContent = response.value.examples[representation.mediaType]
+                }
+            } else {
+                operation.produces?.each {
+                    def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
+                    representation.mediaType = it
+
+                    representation.status = response.key == "default" ? [] : [response.key]
+                    response.value.examples?.each {
+
+                        if (it.key == representation.mediaType) {
+                            representation.sampleContent = it.value
+                            representation.mediaType = it.key
+                        }
+                    }
+                }
+            }
         }
 
-        if (method.representations.length == 0) {
+        if (method.getRepresentations(RestRepresentation.Type.RESPONSE, null)?.length == 0) {
             operation.produces?.each {
                 method.addNewRepresentation(RestRepresentation.Type.RESPONSE).mediaType = it
             }
