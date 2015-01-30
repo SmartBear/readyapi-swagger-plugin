@@ -24,6 +24,7 @@ import com.eviware.soapui.impl.rest.mock.RestMockService
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.model.mock.MockResult
+import com.eviware.soapui.support.StringUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wordnik.swagger.models.Info
 import com.wordnik.swagger.models.Operation
@@ -59,9 +60,13 @@ class Swagger2FromVirtGenerator {
         swagger.basePath = "/"
         swagger.info = new Info()
 
-        swagger.info.version = mockService.getPropertyValue("swagger.info.version")
-        swagger.info.description = mockService.getPropertyValue("swagger.info.description")
         swagger.info.title = mockService.name
+        swagger.info.version = mockService.getPropertyValue("swagger.info.version")
+        if (StringUtils.isNullOrEmpty(swagger.info.version)) {
+            swagger.info.version = "1.0"
+        }
+
+        swagger.info.description = mockService.getPropertyValue("swagger.info.description")
 
         mockService.mockOperationList.each {
 

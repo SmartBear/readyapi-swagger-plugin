@@ -8,7 +8,6 @@ import com.eviware.soapui.model.mock.MockRunner;
 import com.eviware.soapui.model.mock.MockService;
 import com.eviware.soapui.model.support.MockRunListenerAdapter;
 import com.eviware.soapui.plugins.ListenerConfiguration;
-import com.eviware.soapui.support.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,8 +21,7 @@ public class SwaggerGeneratorMockRunListener extends MockRunListenerAdapter {
 
         if (mockService instanceof RestMockService && request.getPathInfo().equals("/api-docs.json")) {
 
-            String version = mockService.getPropertyValue("swagger.info.version");
-            if (StringUtils.hasContent(version)) {
+            if (!mockService.hasProperty("swagger.disable")) {
                 try {
                     return new Swagger2FromVirtGenerator(new RestMockRequest(request, response, (WsdlMockRunContext) runner.getMockContext())).generate();
                 } catch (Exception e) {
