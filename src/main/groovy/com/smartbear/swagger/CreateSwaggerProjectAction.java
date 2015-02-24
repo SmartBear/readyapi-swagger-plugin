@@ -102,7 +102,7 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
                     // select the first imported REST Service (since a swagger definition can
                     // define multiple APIs
                     if (!result.isEmpty()) {
-                        UISupport.select(result.get(0));
+                        UISupport.selectAndShow(result.get(0));
                     }
 
                     Analytics.trackAction("CreateSwaggerProject");

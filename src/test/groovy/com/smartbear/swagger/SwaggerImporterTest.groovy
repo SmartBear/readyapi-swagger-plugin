@@ -57,7 +57,9 @@ class SwaggerImporterTest  extends GroovyTestCase {
         SwaggerImporter importer = new Swagger2Importer(project)
         importer.importSwagger("src/test/resources/petstore-2.0.json")[0]
 
-        importer.importSwagger("src/test/resources/default-swagger.json")[0]
-        importer.importSwagger("src/test/resources/default-swagger.yaml")[0]
+        def url = new File("src/test/resources/default swagger.json").toURI().toURL().toString()
+
+        importer.importSwagger(url)[0]
+        importer.importSwagger("src/test/resources/default swagger.yaml")[0]
     }
 }

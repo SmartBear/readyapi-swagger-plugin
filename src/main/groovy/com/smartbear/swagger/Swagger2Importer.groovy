@@ -30,6 +30,8 @@ import com.wordnik.swagger.models.Info
 import com.wordnik.swagger.models.Operation
 import com.wordnik.swagger.models.Path
 import io.swagger.parser.SwaggerParser
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * A simple Swagger 2.0 importer - now uses swagger-core library
@@ -44,6 +46,7 @@ import io.swagger.parser.SwaggerParser
 class Swagger2Importer implements SwaggerImporter {
 
     private final WsdlProject project
+    private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
 
     public Swagger2Importer(WsdlProject project) {
         this.project = project
@@ -52,6 +55,11 @@ class Swagger2Importer implements SwaggerImporter {
     public RestService[] importSwagger(String url) {
 
         def result = []
+
+        if (url.startsWith("file:"))
+            url = new File(new URL(url).toURI()).absolutePath
+
+        logger.info("Importing swagger [$url]")
 
         def swagger = new SwaggerParser().read(url)
         RestService restService = createRestService(swagger.basePath, swagger.info)
@@ -199,7 +207,9 @@ class Swagger2Importer implements SwaggerImporter {
         if (path != null) {
             try {
                 if (path.startsWith("/")) {
-                    restService.basePath = path
+                    if (path.length() > 1) {
+                        restService.basePath = path
+                    }
                 } else {
                     URL url = new URL(path)
                     def pathPos = path.length() - url.path.length()

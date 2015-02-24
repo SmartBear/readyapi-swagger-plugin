@@ -38,87 +38,77 @@ import java.util.List;
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
  * import
- * 
+ *
  * @author Ole Lensmar
  */
 
-@ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddWadlAction", separatorBefore = true )
-public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject>
-{
+@ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddWadlAction", separatorBefore = true)
+public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
     public static final String API_DECLARATION_TYPE = "API Declaration (only for Swagger 1.X)";
 
     private XFormDialog dialog;
 
-	public AddSwaggerAction()
-	{
-		super( "Import Swagger", "Imports a Swagger definition into SoapUI" );
-	}
+    public AddSwaggerAction() {
+        super("Import Swagger", "Imports a Swagger definition into SoapUI");
+    }
 
-	public void perform( WsdlProject project, Object param )
-	{
-		// initialize form
-		if( dialog == null )
-		{
-			dialog = ADialogBuilder.buildDialog( Form.class );
-            dialog.setValue( Form.TYPE, RESOURCE_LISTING_TYPE);
-		}
-        else
-        {
-            dialog.setValue( Form.SWAGGERURL, "" );
+    public void perform(WsdlProject project, Object param) {
+        // initialize form
+        if (dialog == null) {
+            dialog = ADialogBuilder.buildDialog(Form.class);
+            dialog.setValue(Form.TYPE, RESOURCE_LISTING_TYPE);
+        } else {
+            dialog.setValue(Form.SWAGGERURL, "");
         }
 
+        while (dialog.show()) {
+            try {
+                // get the specified URL
+                String url = dialog.getValue(Form.SWAGGERURL).trim();
+                if (StringUtils.hasContent(url)) {
+                    // expand any property-expansions
+                    String expUrl = PathUtils.expandPath(url, project);
 
-		while( dialog.show() )
-		{
-			try
-			{
-				// get the specified URL
-				String url = dialog.getValue( Form.SWAGGERURL ).trim();
-				if( StringUtils.hasContent( url ) )
-				{
-					// expand any property-expansions
-					String expUrl = PathUtils.expandPath( url, project );
+                    // if this is a file - convert it to a file URL
+                    if (new File(expUrl).exists()) {
+                        expUrl = new File(expUrl).toURI().toURL().toString();
+                    }
 
-					// if this is a file - convert it to a file URL
-					if( new File( expUrl ).exists() )
-						expUrl = new File( expUrl ).toURI().toURL().toString();
-
-					// create the importer and import!
+                    // create the importer and import!
                     List<RestService> result = new ArrayList<RestService>();
                     SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(expUrl, project);
 
-                    if( dialog.getValue( Form.TYPE ).equals(RESOURCE_LISTING_TYPE))
-					    result.addAll(Arrays.asList(importer.importSwagger( expUrl )));
-                    else
-                        result.add( importer.importApiDeclaration( expUrl ));
+                    if (dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE)) {
+                        result.addAll(Arrays.asList(importer.importSwagger(expUrl)));
+                    } else {
+                        result.add(importer.importApiDeclaration(expUrl));
+                    }
 
-					// select the first imported REST Service (since a swagger definition can 
-					// define multiple APIs
-					if( !result.isEmpty() )
-						UISupport.select( result.get(0) );
+                    // select the first imported REST Service (since a swagger definition can
+                    // define multiple APIs
+                    if (!result.isEmpty()) {
+                        UISupport.select(result.get(0));
+                    }
 
                     Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
 
-					break;
-				}
-			}
-			catch( Exception ex )
-			{
-				UISupport.showErrorMessage( ex );
-			}
-		}
-	}
+                    break;
+                }
+            } catch (Exception ex) {
+                UISupport.showErrorMessage(ex);
+            }
+        }
+    }
 
-	@AForm( name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition" )
-	public interface Form
-	{
-        @AField( name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE )
-		public final static String SWAGGERURL = "Swagger Definition";
+    @AForm(name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition")
+    public interface Form {
+        @AField(name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE)
+        public final static String SWAGGERURL = "Swagger Definition";
 
-        @AField( name = "Definition Type", description = "Resource Listing or API Declaration",
-                type=AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE} )
+        @AField(name = "Definition Type", description = "Resource Listing or API Declaration",
+                type = AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE})
         public final static String TYPE = "Definition Type";
-	}
+    }
 
 }
