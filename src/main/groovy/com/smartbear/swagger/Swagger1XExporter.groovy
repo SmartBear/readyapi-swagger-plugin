@@ -102,7 +102,9 @@ public class Swagger1XExporter implements SwaggerExporter {
                         it.representations.each {
                             if (it.type == RestRepresentation.Type.FAULT || it.type == RestRepresentation.Type.RESPONSE) {
                                 it.status.each {
-                                    op.addResponseMessage(Integer.valueOf(it), "")
+                                    if (op.getResponseMessage(Integer.valueOf(it)) == null) {
+                                        op.addResponseMessage(Integer.valueOf(it), "")
+                                    }
                                 }
                             }
                         }

@@ -178,10 +178,10 @@ class Swagger2FromVirtGenerator {
         httpResponse.status = 200
 
         // add so swagger-ui can be used to access
-        httpResponse.addHeader("Access-Control-Allow-Headers", "Origin, X-Atmosphere-tracking-id, X-Atmosphere-Framework, X-Cache-Date, Content-Type, X-Atmosphere-Transport, *")
-        httpResponse.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS , PUT")
+        httpResponse.addHeader("Access-Control-Allow-Headers", "*")
+        httpResponse.addHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS, PATCH, PUT")
         httpResponse.addHeader("Access-Control-Allow-Origin", "*")
-        httpResponse.addHeader("Access-Control-Request-Headers", "Origin, X-Atmosphere-tracking-id, X-Atmosphere-Framework, X-Cache-Date, Content-Type, X-Atmosphere-Transport, *")
+        httpResponse.addHeader("Access-Control-Request-Headers", "*")
 
         httpResponse.writer.write(result.responseContent)
         httpResponse.flushBuffer()

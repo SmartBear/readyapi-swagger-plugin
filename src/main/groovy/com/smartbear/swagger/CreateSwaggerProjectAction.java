@@ -48,7 +48,7 @@ import java.util.List;
 @PluginImportMethod(label = "Swagger Definition (REST)")
 public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
     public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
-    public static final String API_DECLARATION_TYPE = "API Declaration";
+    public static final String API_DECLARATION_TYPE = "API Declaration (Swagger 1.X only)";
 
     private XFormDialog dialog;
 

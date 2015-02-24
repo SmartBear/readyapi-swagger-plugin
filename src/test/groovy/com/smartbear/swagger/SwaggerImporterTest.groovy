@@ -29,20 +29,16 @@ class SwaggerImporterTest  extends GroovyTestCase {
 	void testImportResourceListing() {
 		def project = new WsdlProject();
 
-        Swagger1XImporter importer = new Swagger1XImporter(project)
+        SwaggerImporter importer = new Swagger2Importer(project)
 
-        RestService[] result = importer.importSwagger("http://petstore.swagger.wordnik.com/api/api-docs")
+        RestService[] result = importer.importSwagger("http://petstore.swagger.io/v2/swagger.json")
 
         RestService service = result[0]
         assertTrue( service.endpoints.length > 0 )
 
-		assertEquals( "http://petstore.swagger.wordnik.com", service.endpoints[0])
-		assertEquals( "/api", service.basePath, )
-
-		service = result[1]
-		assertEquals( "http://petstore.swagger.wordnik.com", service.endpoints[0])
-		assertEquals( "/api", service.basePath, )
-	}
+        assertEquals("http://petstore.swagger.io", service.endpoints[0])
+        assertEquals("/v2", service.basePath,)
+    }
 
     void testImportApiDeclaration()
     {
@@ -58,7 +54,10 @@ class SwaggerImporterTest  extends GroovyTestCase {
 
     void testImportSwagger2() {
         def project = new WsdlProject();
-        Swagger2Importer importer = new Swagger2Importer(project)
+        SwaggerImporter importer = new Swagger2Importer(project)
         importer.importSwagger("src/test/resources/petstore-2.0.json")[0]
+
+        importer.importSwagger("src/test/resources/default-swagger.json")[0]
+        importer.importSwagger("src/test/resources/default-swagger.yaml")[0]
     }
 }
