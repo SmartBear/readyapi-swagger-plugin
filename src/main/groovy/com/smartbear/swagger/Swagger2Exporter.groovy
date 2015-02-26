@@ -23,24 +23,32 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wordnik.swagger.models.*
-import com.wordnik.swagger.models.parameters.*
+import com.wordnik.swagger.models.Info
+import com.wordnik.swagger.models.Operation
+import com.wordnik.swagger.models.Path
+import com.wordnik.swagger.models.Response
+import com.wordnik.swagger.models.Swagger
+import com.wordnik.swagger.models.parameters.BodyParameter
+import com.wordnik.swagger.models.parameters.HeaderParameter
+import com.wordnik.swagger.models.parameters.Parameter
+import com.wordnik.swagger.models.parameters.PathParameter
+import com.wordnik.swagger.models.parameters.QueryParameter
 import com.wordnik.swagger.util.Json
 import com.wordnik.swagger.util.Yaml
 
 /**
  * A simple Swagger exporter - now uses swagger4j library
- * 
+ *
  * @author Ole Lensmar
  */
 
 class Swagger2Exporter implements SwaggerExporter {
 
-	private final WsdlProject project
+    private final WsdlProject project
 
     public Swagger2Exporter(WsdlProject project) {
-		this.project = project
-	}
+        this.project = project
+    }
 
     String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath) {
 
@@ -110,18 +118,17 @@ class Swagger2Exporter implements SwaggerExporter {
                     p.description = param.description
 
                     // needs to be extended to support all schema types
-                    switch( param.type.localPart )
-                    {
-                        case "byte"     : p.type = "byte"; break
-                        case "dateTime" : p.type = "Date"; break
-                        case "float"    : p.type = "float"; break
-                        case "double"   : p.type = "double"; break
-                        case "long"     : p.type = "long"; break
-                        case "short"    :
-                        case "int"      :
-                        case "integer"  : p.type = "int"; break
-                        case "boolean"  : p.type = "boolean"; break
-                        default         : p.type = "string"
+                    switch (param.type.localPart) {
+                        case "byte": p.type = "byte"; break
+                        case "dateTime": p.type = "Date"; break
+                        case "float": p.type = "float"; break
+                        case "double": p.type = "double"; break
+                        case "long": p.type = "long"; break
+                        case "short":
+                        case "int":
+                        case "integer": p.type = "int"; break
+                        case "boolean": p.type = "boolean"; break
+                        default: p.type = "string"
                     }
                 }
             }

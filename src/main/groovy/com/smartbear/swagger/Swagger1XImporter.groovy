@@ -17,7 +17,11 @@
 package com.smartbear.swagger
 
 import com.eviware.soapui.SoapUI
-import com.eviware.soapui.impl.rest.*
+import com.eviware.soapui.impl.rest.RestMethod
+import com.eviware.soapui.impl.rest.RestRequestInterface
+import com.eviware.soapui.impl.rest.RestResource
+import com.eviware.soapui.impl.rest.RestService
+import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
