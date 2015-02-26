@@ -18,6 +18,8 @@
                 <include>com.wordnik:swagger-core</include>
                 <include>com.wordnik:swagger-annotations</include>
                 <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                <include>com.fasterxml.jackson.core:jackson-core</include>
+                <include>com.fasterxml.jackson.core:jackson-databind</include>
                 <include>com.fasterxml.jackson.datatype:jackson-datatype-joda</include>
                 <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</include>
             </includes>

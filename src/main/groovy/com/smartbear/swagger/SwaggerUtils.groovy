@@ -52,16 +52,21 @@ class SwaggerUtils {
                 // create the importer and import!
                 List<RestService> result = new ArrayList<RestService>();
 
-                if (isResourceListing) {
-                    result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
-                } else {
-                    result.add(importer.importApiDeclaration(finalExpUrl));
-                }
+                try {
+                    if (isResourceListing) {
+                        result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
+                    } else {
+                        result.add(importer.importApiDeclaration(finalExpUrl));
+                    }
 
-                // select the first imported REST Service (since a swagger definition can
-                // define multiple APIs
-                if (!result.isEmpty()) {
-                    UISupport.selectAndShow(result.get(0));
+                    // select the first imported REST Service (since a swagger definition can
+                    // define multiple APIs
+                    if (!result.isEmpty()) {
+                        UISupport.selectAndShow(result.get(0));
+                    }
+                }
+                catch (Throwable t) {
+                    UISupport.showErrorMessage(t);
                 }
 
                 return null;
