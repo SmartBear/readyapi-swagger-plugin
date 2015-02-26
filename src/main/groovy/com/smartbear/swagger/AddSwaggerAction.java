@@ -17,7 +17,6 @@
 package com.smartbear.swagger;
 
 import com.eviware.soapui.analytics.Analytics;
-import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.support.PathUtils;
 import com.eviware.soapui.plugins.ActionConfiguration;
@@ -31,9 +30,6 @@ import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
@@ -53,7 +49,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
         super("Import Swagger", "Imports a Swagger definition into SoapUI");
     }
 
-    public void perform(WsdlProject project, Object param) {
+    public void perform(final WsdlProject project, Object param) {
         // initialize form
         if (dialog == null) {
             dialog = ADialogBuilder.buildDialog(Form.class);
@@ -75,24 +71,8 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                         expUrl = new File(expUrl).toURI().toURL().toString();
                     }
 
-                    // create the importer and import!
-                    List<RestService> result = new ArrayList<RestService>();
-                    SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(expUrl, project);
-
-                    if (dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE)) {
-                        result.addAll(Arrays.asList(importer.importSwagger(expUrl)));
-                    } else {
-                        result.add(importer.importApiDeclaration(expUrl));
-                    }
-
-                    // select the first imported REST Service (since a swagger definition can
-                    // define multiple APIs
-                    if (!result.isEmpty()) {
-                        UISupport.select(result.get(0));
-                    }
-
+                    SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(project, expUrl, dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE));
                     Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
-
                     break;
                 }
             } catch (Exception ex) {
@@ -100,6 +80,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
             }
         }
     }
+
 
     @AForm(name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition")
     public interface Form {

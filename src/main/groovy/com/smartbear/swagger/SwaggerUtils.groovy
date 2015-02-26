@@ -1,6 +1,11 @@
 package com.smartbear.swagger
 
+import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
+import com.eviware.soapui.support.UISupport
+import com.eviware.x.dialogs.Worker
+import com.eviware.x.dialogs.XProgressDialog
+import com.eviware.x.dialogs.XProgressMonitor
 import groovy.json.JsonSlurper
 
 /**
@@ -33,5 +38,36 @@ class SwaggerUtils {
             return new Swagger2Importer(project)
         else
             return new Swagger1XImporter(project)
+    }
+
+    static SwaggerImporter importSwaggerFromUrl(
+            final WsdlProject project, final String finalExpUrl, final boolean isResourceListing) throws Exception {
+
+        final SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(finalExpUrl, project);
+
+        XProgressDialog dlg = UISupport.getDialogs().createProgressDialog("Importing Swagger", 0, "", false);
+        dlg.run(new Worker.WorkerAdapter() {
+            @Override
+            public Object construct(XProgressMonitor xProgressMonitor) {
+                // create the importer and import!
+                List<RestService> result = new ArrayList<RestService>();
+
+                if (isResourceListing) {
+                    result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
+                } else {
+                    result.add(importer.importApiDeclaration(finalExpUrl));
+                }
+
+                // select the first imported REST Service (since a swagger definition can
+                // define multiple APIs
+                if (!result.isEmpty()) {
+                    UISupport.selectAndShow(result.get(0));
+                }
+
+                return null;
+            }
+        });
+
+        return importer;
     }
 }

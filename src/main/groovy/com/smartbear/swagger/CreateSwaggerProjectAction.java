@@ -18,7 +18,6 @@ package com.smartbear.swagger;
 
 import com.eviware.soapui.analytics.Analytics;
 import com.eviware.soapui.impl.WorkspaceImpl;
-import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.support.PathUtils;
 import com.eviware.soapui.plugins.auto.PluginImportMethod;
@@ -34,9 +33,6 @@ import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
@@ -89,23 +85,8 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
                         expUrl = new File(expUrl).toURI().toURL().toString();
                     }
 
-                    // create the importer and import!
-                    SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(expUrl, project);
-                    List<RestService> result = new ArrayList<RestService>();
-
-                    if (dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE)) {
-                        result.addAll(Arrays.asList(importer.importSwagger(expUrl)));
-                    } else {
-                        result.add(importer.importApiDeclaration(expUrl));
-                    }
-
-                    // select the first imported REST Service (since a swagger definition can
-                    // define multiple APIs
-                    if (!result.isEmpty()) {
-                        UISupport.selectAndShow(result.get(0));
-                    }
-
-                    Analytics.trackAction("CreateSwaggerProject");
+                    SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(project, expUrl, dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE));
+                    Analytics.trackAction("CreateSwaggerProject", "Importer", importer.getClass().getSimpleName());
 
                     break;
                 }

@@ -21,42 +21,39 @@ import com.eviware.soapui.impl.wsdl.WsdlProject
 
 /**
  * Basic tests that use the examples at wordnik - if they change these tests will probably break
- * 
+ *
  * @author Ole Lensmar
  */
 
-class SwaggerImporterTest  extends GroovyTestCase {
-	void testImportResourceListing() {
-		def project = new WsdlProject();
+class SwaggerImporterTest extends GroovyTestCase {
+    void testImportResourceListing() {
+        def project = new WsdlProject();
 
         SwaggerImporter importer = new Swagger2Importer(project)
 
         RestService[] result = importer.importSwagger("http://petstore.swagger.io/v2/swagger.json")
 
         RestService service = result[0]
-        assertTrue( service.endpoints.length > 0 )
+        assertTrue(service.endpoints.length > 0)
 
         assertEquals("http://petstore.swagger.io", service.endpoints[0])
         assertEquals("/v2", service.basePath,)
     }
 
-    void testImportApiDeclaration()
-    {
+    void testImportApiDeclaration() {
         def project = new WsdlProject();
 
         Swagger1XImporter importer = new Swagger1XImporter(project)
         def service = importer.importApiDeclaration("http://www.apihub.com/apihub/swagger-api/9528/commits")
 
-        assertEquals( 3, service.resourceList.size() )
+        assertEquals(3, service.resourceList.size())
 
-        importer.importApiDeclaration(new File( "src/test/resources/api-docs").toURL().toString());
+        importer.importApiDeclaration(new File("src/test/resources/api-docs").toURL().toString());
     }
 
     void testImportSwagger2() {
         def project = new WsdlProject();
         SwaggerImporter importer = new Swagger2Importer(project)
-        importer.importSwagger("src/test/resources/petstore-2.0.json")[0]
-
         def url = new File("src/test/resources/default swagger.json").toURI().toURL().toString()
 
         importer.importSwagger(url)[0]
