@@ -26,6 +26,7 @@ import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
+import com.eviware.soapui.support.StringUtils
 import com.wordnik.swagger.models.Info
 import com.wordnik.swagger.models.Operation
 import com.wordnik.swagger.models.Path
@@ -122,18 +123,28 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     RestMethod addOperation(RestResource resource, Operation operation, RestRequestInterface.HttpMethod httpMethod) {
-        RestMethod method = resource.addNewMethod(operation.operationId)
+
+        def opName = operation.operationId
+
+        if (StringUtils.isNullOrEmpty(opName)) {
+            opName = httpMethod.toString()
+        }
+
+        RestMethod method = resource.addNewMethod(opName)
         method.method = httpMethod
         method.description = operation.summary
 
         // loop parameters and add accordingly
         operation.parameters.each {
 
+            def paramName = it.name == null ? it.ref : it.name
+            if (StringUtils.isNullOrEmpty(paramName)) {
+                logger.warn("Can not import property without opName or ref [" + it.toString() + "]")
+            }
             // ignore body parameters
-            if (it.in != "body") {
-
-                RestParameter p = method.params.addProperty(it.name)
-                def paramType = it.in
+            else if (it.in != "body") {
+                RestParameter p = method.params.addProperty(paramName)
+                def paramType = it.in == null ? "query" : it.in
                 if (paramType == "path")
                     paramType = "template"
                 else if (paramType == "formData")
