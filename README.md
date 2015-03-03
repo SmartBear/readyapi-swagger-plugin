@@ -3,7 +3,7 @@
 Provider the following swagger-related features in Ready! API:
 * Possibility to create projects, Virts and REST APIs from an existing swagger definition
 * Possibility to export a swagger definition for any REST API defined in Ready! API 
-* Automatically generates a swagger 2.0 definition for REST Virts - available at <Virt endpoint>/api-docs.json
+* Automatically generates a swagger 2.0 definition for REST Virts - available at &lt;Virt endpoint&gt;/api-docs.json
 * Supports both Swagger 1.X and 2.0 for imports and exports
 
 Download and install via the Plugin Manager / Repository Browser from inside Ready! API. Older versions are available for SoapUI open-source as well (see below)
