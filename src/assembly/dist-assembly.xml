@@ -1,21 +1,32 @@
 <assembly>
     <id>dist</id>
     <formats>
-        <format>zip</format>
+        <format>jar</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
             <unpack>false</unpack>
-            <outputDirectory>/ext</outputDirectory>
+            <outputDirectory>/lib</outputDirectory>
             <includes>
                 <include>com.smartbear:swagger4j</include>
                 <include>org.glassfish:javax.json</include>
+                <include>javax.json:javax.json-api</include>
+                <include>commons-lang:commons-lang</include>
+                <include>io.swagger:swagger-parser</include>
+                <include>com.wordnik:swagger-models</include>
+                <include>com.wordnik:swagger-core</include>
+                <include>com.wordnik:swagger-annotations</include>
+                <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                <include>com.fasterxml.jackson.core:jackson-core</include>
+                <include>com.fasterxml.jackson.core:jackson-databind</include>
+                <include>com.fasterxml.jackson.datatype:jackson-datatype-joda</include>
+                <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</include>
             </includes>
         </dependencySet>
         <dependencySet>
-            <unpack>false</unpack>
-            <outputDirectory>/plugins</outputDirectory>
+            <unpack>true</unpack>
+            <outputDirectory>/</outputDirectory>
             <includes>
                 <include>com.smartbear:soapui-swagger-plugin</include>
             </includes>
@@ -24,14 +35,14 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/META-INF</outputDirectory>
             <includes>
                 <include>LICENSE*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/assembly</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/META-INF</outputDirectory>
             <includes>
                 <include>readme.txt</include>
             </includes>

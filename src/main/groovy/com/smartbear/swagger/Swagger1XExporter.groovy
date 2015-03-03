@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.smartbear.restplugin
+package com.smartbear.swagger
 
 import com.eviware.soapui.impl.rest.RestRepresentation
 import com.eviware.soapui.impl.rest.RestRequestInterface
@@ -23,41 +23,47 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
-import com.smartbear.swagger4j.*
+import com.smartbear.swagger4j.ApiDeclaration
+import com.smartbear.swagger4j.FileSwaggerStore
+import com.smartbear.swagger4j.Operation
+import com.smartbear.swagger4j.Parameter
+import com.smartbear.swagger4j.ResourceListing
+import com.smartbear.swagger4j.Swagger
+import com.smartbear.swagger4j.SwaggerFormat
+import com.smartbear.swagger4j.SwaggerVersion
 import com.smartbear.swagger4j.impl.Utils
 
 /**
  * A simple Swagger exporter - now uses swagger4j library
- * 
+ *
  * @author Ole Lensmar
  */
 
-class SwaggerExporter {
+public class Swagger1XExporter implements SwaggerExporter {
 
-	private final WsdlProject project
+    private final WsdlProject project
 
-	public SwaggerExporter( WsdlProject project ) {
-		this.project = project
-	}
-
-    String exportToFolder(String path, String apiVersion, SwaggerFormat format, RestService [] services, String basePath ) {
-
-        ResourceListing rl = generateResourceListing(services, apiVersion, format, basePath )
-        return exportResourceListing(format, rl, path)
+    public Swagger1XExporter(WsdlProject project) {
+        this.project = project
     }
 
-    public String exportResourceListing(SwaggerFormat format, ResourceListing rl, String path) {
+    public String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath) {
+
+        def swaggerFormat = SwaggerFormat.valueOf(format)
+        ResourceListing rl = generateResourceListing(services, apiVersion, swaggerFormat, basePath)
+        return exportResourceListing(swaggerFormat, rl, path)
+    }
+
+    String exportResourceListing(SwaggerFormat format, ResourceListing rl, String path) {
         def store = new Utils.MapSwaggerStore()
         Swagger.createWriter(format).writeSwagger(store, rl)
 
-        store.fileMap.each { k, v -> Console.println("$k : $v") }
-
-
+        //store.fileMap.each { k, v -> Console.println("$k : $v") }
         return FileSwaggerStore.writeSwagger(path, rl, format)
     }
 
-    public ResourceListing generateResourceListing(RestService[] services, String apiVersion, SwaggerFormat format, String basePath) {
-        if( StringUtils.isNullOrEmpty( basePath ))
+    ResourceListing generateResourceListing(RestService[] services, String apiVersion, SwaggerFormat format, String basePath) {
+        if (StringUtils.isNullOrEmpty(basePath))
             basePath = services[0].endpoints[0] + services[0].basePath
 
         ResourceListing rl = Swagger.createResourceListing(SwaggerVersion.DEFAULT_VERSION)
@@ -89,14 +95,16 @@ class SwaggerExporter {
                         op.responseClass = "string"
 
                         it.responseMediaTypes.each {
-                            if( it != null )
+                            if (it != null)
                                 op.addProduces(it)
                         }
 
                         it.representations.each {
-                            if (it.type == RestRepresentation.Type.FAULT || it.type == RestRepresentation.Type.RESPONSE ) {
+                            if (it.type == RestRepresentation.Type.FAULT || it.type == RestRepresentation.Type.RESPONSE) {
                                 it.status.each {
-                                    op.addResponseMessage(Integer.valueOf(it), "")
+                                    if (op.getResponseMessage(Integer.valueOf(it)) == null) {
+                                        op.addResponseMessage(Integer.valueOf(it), "")
+                                    }
                                 }
                             }
                         }
@@ -104,9 +112,8 @@ class SwaggerExporter {
                         addParametersToOperation(it.params, op)
                         addParametersToOperation(it.overlayParams, op)
 
-                        if( it.method == RestRequestInterface.HttpMethod.POST || it.method == RestRequestInterface.HttpMethod.PUT )
-                        {
-                            def p = op.addParameter( "body", Parameter.ParamType.body );
+                        if (it.method == RestRequestInterface.HttpMethod.POST || it.method == RestRequestInterface.HttpMethod.PUT) {
+                            def p = op.addParameter("body", Parameter.ParamType.body);
                             p.description = "Request body";
                             p.required = true;
                             p.type = "string";
@@ -128,8 +135,7 @@ class SwaggerExporter {
 
         for (name in params.getPropertyNames()) {
             def param = params.getProperty(name)
-            if( op.getParameter( name ) == null )
-            {
+            if (op.getParameter(name) == null) {
                 def style = null
 
                 switch (param.style) {
@@ -144,18 +150,17 @@ class SwaggerExporter {
                     p.description = param.description
 
                     // needs to be extended to support all schema types
-                    switch( param.type.localPart )
-                    {
-                        case "byte"     : p.type = "byte"; break
-                        case "dateTime" : p.type = "Date"; break
-                        case "float"    : p.type = "float"; break
-                        case "double"   : p.type = "double"; break
-                        case "long"     : p.type = "long"; break
-                        case "short"    :
-                        case "int"      :
-                        case "integer"  : p.type = "int"; break
-                        case "boolean"  : p.type = "boolean"; break
-                        default         : p.type = "string"
+                    switch (param.type.localPart) {
+                        case "byte": p.type = "byte"; break
+                        case "dateTime": p.type = "Date"; break
+                        case "float": p.type = "float"; break
+                        case "double": p.type = "double"; break
+                        case "long": p.type = "long"; break
+                        case "short":
+                        case "int":
+                        case "integer": p.type = "int"; break
+                        case "boolean": p.type = "boolean"; break
+                        default: p.type = "string"
                     }
                 }
             }

@@ -1,4 +1,19 @@
-## soapui-swagger-plugin
+# Ready! API Swagger Plugin
+
+Provider the following swagger-related features in Ready! API:
+* Possibility to create projects, Virts and REST APIs from an existing swagger definition
+* Possibility to export a swagger definition for any REST API defined in Ready! API 
+* Automatically generates a swagger 2.0 definition for REST Virts - available at &lt;Virt endpoint&gt;/api-docs.json
+* Supports both Swagger 1.X and 2.0 for imports and exports
+
+Download and install via the Plugin Manager / Repository Browser from inside Ready! API. Older versions are available for SoapUI open-source as well (see below)
+
+### Release History
+
+* March 2015 - Version 2.1 - Bug-fix release which ties into the updated plugin system in Ready! API and adds dynamic swagger generation for REST Virts 
+* September 2014 - Version 2.0 - Initial release for Ready! API with Swagger 2.0 support
+
+Previous releases were on sourceforge (and are still available there) 
 
 * Version 2.0 (aligned with version 2.0 of Swagger) - now only available via the Plugin Repository from inside Ready! API and SoapUI Pro - adds Swagger 2.0 support
 * Version 0.3.1 - Dependency update to latest swagger4j library - and some internal refactoring

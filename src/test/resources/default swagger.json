@@ -1,0 +1,29 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "2.0",
+        "title": "Virt 1"
+    },
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/",
+    "paths": {
+        "/test": {
+            "get": {
+                "operationId": "/test",
+                "produces": [
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Response 1",
+                        "examples": {
+                            "application/xml": ""
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
