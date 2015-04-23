@@ -32,7 +32,10 @@ class SwaggerUtils {
         if (url.endsWith(".xml"))
             return new Swagger1XImporter(project)
 
-        def json = new JsonSlurper().parseText(new URL(url).text)
+        def conn = new URL(url).openConnection()
+        conn.addRequestProperty("Accept", "*/*")
+
+        def json = new JsonSlurper().parseText(conn.inputStream.text)
 
         if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
             return new Swagger2Importer(project)
@@ -49,6 +52,10 @@ class SwaggerUtils {
         dlg.run(new Worker.WorkerAdapter() {
             @Override
             public Object construct(XProgressMonitor xProgressMonitor) {
+
+                ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(SwaggerUtils.class.getClassLoader());
+
                 // create the importer and import!
                 List<RestService> result = new ArrayList<RestService>();
 
@@ -67,6 +74,9 @@ class SwaggerUtils {
                 }
                 catch (Throwable t) {
                     UISupport.showErrorMessage(t);
+                }
+                finally {
+                    Thread.currentThread().setContextClassLoader(contextClassLoader);
                 }
 
                 return null;
