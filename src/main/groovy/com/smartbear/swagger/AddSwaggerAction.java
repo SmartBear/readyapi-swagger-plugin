@@ -81,7 +81,6 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
         }
     }
 
-
     @AForm(name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition")
     public interface Form {
         @AField(name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE)
