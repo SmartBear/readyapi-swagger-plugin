@@ -136,8 +136,9 @@ class Swagger2Exporter implements SwaggerExporter {
     }
 
     boolean operationHasParameter(Operation operation, String name) {
-        operation?.parameters.each { if (it.name == name) return true }
+        boolean found = false
+        operation?.parameters.each { if (it.name == name) found = true }
 
-        return false
+        return found
     }
 }
