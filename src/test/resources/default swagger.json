@@ -5,9 +5,11 @@
         "title": "Virt 1"
     },
     "schemes": [
+        "http",
         "https"
     ],
-    "basePath": "/",
+    "host": "api.company.com",
+    "basePath": "/test",
     "paths": {
         "/test": {
             "get": {

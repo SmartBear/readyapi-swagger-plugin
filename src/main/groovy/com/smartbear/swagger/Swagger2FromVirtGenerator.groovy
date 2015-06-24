@@ -26,18 +26,18 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterSt
 import com.eviware.soapui.model.mock.MockResult
 import com.eviware.soapui.support.StringUtils
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wordnik.swagger.models.Info
-import com.wordnik.swagger.models.Operation
-import com.wordnik.swagger.models.Path
-import com.wordnik.swagger.models.Response
-import com.wordnik.swagger.models.Swagger
-import com.wordnik.swagger.models.parameters.BodyParameter
-import com.wordnik.swagger.models.parameters.HeaderParameter
-import com.wordnik.swagger.models.parameters.Parameter
-import com.wordnik.swagger.models.parameters.PathParameter
-import com.wordnik.swagger.models.parameters.QueryParameter
-import com.wordnik.swagger.models.properties.StringProperty
-import com.wordnik.swagger.util.Json
+import io.swagger.models.Info
+import io.swagger.models.Operation
+import io.swagger.models.Path
+import io.swagger.models.Response
+import io.swagger.models.Swagger
+import io.swagger.models.parameters.BodyParameter
+import io.swagger.models.parameters.HeaderParameter
+import io.swagger.models.parameters.Parameter
+import io.swagger.models.parameters.PathParameter
+import io.swagger.models.parameters.QueryParameter
+import io.swagger.models.properties.StringProperty
+import io.swagger.util.Json
 
 /**
  * A simple Swagger exporter - now uses swagger4j library
