@@ -14,9 +14,7 @@
                 <include>javax.json:javax.json-api</include>
                 <include>commons-lang:commons-lang</include>
                 <include>io.swagger:swagger-parser</include>
-                <include>com.wordnik:swagger-models</include>
-                <include>com.wordnik:swagger-core</include>
-                <include>com.wordnik:swagger-annotations</include>
+                <include>io.swagger:swagger-core</include>
                 <include>com.fasterxml.jackson.core:jackson-annotations</include>
                 <include>com.fasterxml.jackson.core:jackson-core</include>
                 <include>com.fasterxml.jackson.core:jackson-databind</include>
