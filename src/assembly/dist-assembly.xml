@@ -15,6 +15,7 @@
                 <include>commons-lang:commons-lang</include>
                 <include>io.swagger:swagger-parser</include>
                 <include>io.swagger:swagger-core</include>
+                <include>io.swagger:swagger-models</include>
                 <include>com.fasterxml.jackson.core:jackson-annotations</include>
                 <include>com.fasterxml.jackson.core:jackson-core</include>
                 <include>com.fasterxml.jackson.core:jackson-databind</include>
