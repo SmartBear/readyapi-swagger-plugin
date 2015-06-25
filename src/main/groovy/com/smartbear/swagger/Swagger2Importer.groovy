@@ -63,7 +63,7 @@ class Swagger2Importer implements SwaggerImporter {
         logger.info("Importing swagger [$url]")
 
         def swagger = new SwaggerParser().read(url)
-        RestService restService = createRestService(swagger)
+        RestService restService = createRestService(swagger, url)
         swagger.paths.each {
             importPath(restService, it.key, it.value)
         }
@@ -207,7 +207,7 @@ class Swagger2Importer implements SwaggerImporter {
         return method
     }
 
-    private RestService createRestService(Swagger swagger) {
+    private RestService createRestService(Swagger swagger, String url) {
 
         String name = swagger.info?.title
         if (name == null)
@@ -227,7 +227,11 @@ class Swagger2Importer implements SwaggerImporter {
             }
 
             if (restService.endpoints.length == 0) {
-                restService.addEndpoint("http://" + swagger.host)
+                if (url.toLowerCase().startsWith("http") && url.indexOf(':') > 0) {
+                    restService.addEndpoint(url.substring(0, url.indexOf(':')).toLowerCase() + "://" + swagger.host)
+                } else {
+                    restService.addEndpoint("http://" + swagger.host)
+                }
             }
         }
 
