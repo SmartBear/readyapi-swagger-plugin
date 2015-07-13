@@ -27,9 +27,9 @@ import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
-import com.wordnik.swagger.models.Info
-import com.wordnik.swagger.models.Operation
-import com.wordnik.swagger.models.Path
+import io.swagger.models.Operation
+import io.swagger.models.Path
+import io.swagger.models.Swagger
 import io.swagger.parser.SwaggerParser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -63,7 +63,7 @@ class Swagger2Importer implements SwaggerImporter {
         logger.info("Importing swagger [$url]")
 
         def swagger = new SwaggerParser().read(url)
-        RestService restService = createRestService(swagger.basePath, swagger.info)
+        RestService restService = createRestService(swagger, url)
         swagger.paths.each {
             importPath(restService, it.key, it.value)
         }
@@ -164,13 +164,13 @@ class Swagger2Importer implements SwaggerImporter {
         operation.responses?.each {
             def response = it
 
-            if (operation.produces?.empty) {
+            if (operation.produces == null || operation.produces.empty) {
                 def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
 
                 representation.status = response.key == "default" ? [] : [response.key]
 
                 // just take the first example
-                if (!response.value.examples?.isEmpty()) {
+                if (response.value.examples != null && !response.value.examples.isEmpty()) {
                     representation.mediaType = response.value.examples.iterator().next()
                     representation.sampleContent = response.value.examples[representation.mediaType]
                 }
@@ -207,31 +207,36 @@ class Swagger2Importer implements SwaggerImporter {
         return method
     }
 
-    private RestService createRestService(String path, Info info) {
-        String name = info?.title
+    private RestService createRestService(Swagger swagger, String url) {
+
+        String name = swagger.info?.title
         if (name == null)
             name = path
 
         RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
-        restService.description = info.description
+        restService.description = swagger.info?.description
 
-        if (path != null) {
-            try {
-                if (path.startsWith("/")) {
-                    if (path.length() > 1) {
-                        restService.basePath = path
+        if (swagger.host != null) {
+            if (swagger.schemes != null) {
+                swagger.schemes.each { it ->
+                    def scheme = it.toValue().toLowerCase()
+                    if (scheme.startsWith("http")) {
+                        restService.addEndpoint(scheme + "://" + swagger.host)
                     }
-                } else {
-                    URL url = new URL(path)
-                    def pathPos = path.length() - url.path.length()
-
-                    restService.basePath = path.substring(pathPos)
-                    restService.addEndpoint(path.substring(0, pathPos))
                 }
             }
-            catch (Exception e) {
-                SoapUI.logError(e)
+
+            if (restService.endpoints.length == 0) {
+                if (url.toLowerCase().startsWith("http") && url.indexOf(':') > 0) {
+                    restService.addEndpoint(url.substring(0, url.indexOf(':')).toLowerCase() + "://" + swagger.host)
+                } else {
+                    restService.addEndpoint("http://" + swagger.host)
+                }
             }
+        }
+
+        if (swagger.basePath != null) {
+            restService.basePath = swagger.basePath
         }
 
         return restService

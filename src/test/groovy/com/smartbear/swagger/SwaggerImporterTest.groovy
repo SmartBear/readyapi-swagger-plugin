@@ -42,12 +42,7 @@ class SwaggerImporterTest extends GroovyTestCase {
 
     void testImportApiDeclaration() {
         def project = new WsdlProject();
-
         Swagger1XImporter importer = new Swagger1XImporter(project)
-        def service = importer.importApiDeclaration("http://www.apihub.com/apihub/swagger-api/9528/commits")
-
-        assertEquals(3, service.resourceList.size())
-
         importer.importApiDeclaration(new File("src/test/resources/api-docs").toURL().toString());
     }
 
@@ -56,7 +51,9 @@ class SwaggerImporterTest extends GroovyTestCase {
         SwaggerImporter importer = new Swagger2Importer(project)
         def url = new File("src/test/resources/default swagger.json").toURI().toURL().toString()
 
-        importer.importSwagger(url)[0]
+        def restService = importer.importSwagger(url)[0]
+        assertEquals(2, restService.endpoints.length)
+
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
     }
 }
