@@ -15,6 +15,7 @@ Download and install via the Plugin Manager / Repository Browser from inside Rea
 
 Previous releases were on sourceforge (and are still available there) 
 
+* Version 2.0 (aligned with version 2.0 of Swagger) - now only available via the Plugin Repository from inside Ready! API and SoapUI Pro - adds Swagger 2.0 support
 * Version 0.3.1 - Dependency update to latest swagger4j library - and some internal refactoring
 * Version 0.3 - Adds Swagger 1.2 support - uses updated swagger4j library, See [http://olensmar.blogspot.se/2013/11/updated-swagger-support-for-soapui.html](http://olensmar.blogspot.se/2013/11/updated-swagger-support-for-soapui.html)
 * Version 0.2 - See [http://olensmar.blogspot.se/2013/05/soapui-swagger-true.html](http://olensmar.blogspot.se/2013/05/soapui-swagger-true.html)
