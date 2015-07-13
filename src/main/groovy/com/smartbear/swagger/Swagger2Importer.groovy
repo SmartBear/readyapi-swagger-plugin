@@ -164,13 +164,13 @@ class Swagger2Importer implements SwaggerImporter {
         operation.responses?.each {
             def response = it
 
-            if (operation.produces?.empty) {
+            if (operation.produces == null || operation.produces.empty) {
                 def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
 
                 representation.status = response.key == "default" ? [] : [response.key]
 
                 // just take the first example
-                if (!response.value.examples?.isEmpty()) {
+                if (response.value.examples != null && !response.value.examples.isEmpty()) {
                     representation.mediaType = response.value.examples.iterator().next()
                     representation.sampleContent = response.value.examples[representation.mediaType]
                 }
