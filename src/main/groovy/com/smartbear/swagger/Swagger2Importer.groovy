@@ -47,10 +47,16 @@ import org.slf4j.LoggerFactory
 class Swagger2Importer implements SwaggerImporter {
 
     private final WsdlProject project
+    private final String defaultMediaType;
     private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
 
-    public Swagger2Importer(WsdlProject project) {
+    public Swagger2Importer(WsdlProject project, String defaultMediaType) {
         this.project = project
+        this.defaultMediaType = defaultMediaType
+    }
+
+    public Swagger2Importer(WsdlProject project) {
+        this(project, "application/json")
     }
 
     public RestService[] importSwagger(String url) {
@@ -169,6 +175,7 @@ class Swagger2Importer implements SwaggerImporter {
                 def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
 
                 representation.status = response.key == "default" ? [] : [response.key]
+                representation.mediaType = defaultMediaType
 
                 // just take the first example
                 if (response.value.examples != null && !response.value.examples.isEmpty()) {
