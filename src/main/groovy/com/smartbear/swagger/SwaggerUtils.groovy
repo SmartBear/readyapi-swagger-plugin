@@ -12,6 +12,7 @@ import groovy.json.JsonSlurper
  * Created by ole on 16/09/14.
  */
 class SwaggerUtils {
+    public static final String DEFAULT_MEDIA_TYPE = "application/json";
 
     /**
      * Selects the appropriate SwaggerImporter for the specified URL. For .yaml urls the Swagger2Importer
@@ -21,13 +22,14 @@ class SwaggerUtils {
      *
      * @param url
      * @param project
+     * @param defaulMediaType
      * @return the corresponding SwaggerImporter based on the described "algorithm"
      */
 
-    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project) {
+    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType) {
 
         if (url.endsWith(".yaml"))
-            return new Swagger2Importer(project)
+            return new Swagger2Importer(project, defaulMediaType)
 
         if (url.endsWith(".xml"))
             return new Swagger1XImporter(project)
@@ -38,15 +40,24 @@ class SwaggerUtils {
         def json = new JsonSlurper().parseText(conn.inputStream.text)
 
         if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
-            return new Swagger2Importer(project)
+            return new Swagger2Importer(project, defaulMediaType)
         else
             return new Swagger1XImporter(project)
     }
 
+    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project) {
+        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE)
+    }
+
     static SwaggerImporter importSwaggerFromUrl(
             final WsdlProject project, final String finalExpUrl, final boolean isResourceListing) throws Exception {
+        return importSwaggerFromUrl(project, finalExpUrl, isResourceListing, "application/json");
+    }
 
-        final SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(finalExpUrl, project);
+    static SwaggerImporter importSwaggerFromUrl(
+            final WsdlProject project, final String finalExpUrl, final boolean isResourceListing, final String defaultMediaType) throws Exception {
+
+        final SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(finalExpUrl, project, defaultMediaType);
 
         XProgressDialog dlg = UISupport.getDialogs().createProgressDialog("Importing Swagger", 0, "", false);
         dlg.run(new Worker.WorkerAdapter() {
