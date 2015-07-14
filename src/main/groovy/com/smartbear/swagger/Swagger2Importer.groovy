@@ -138,7 +138,7 @@ class Swagger2Importer implements SwaggerImporter {
 
         RestMethod method = resource.addNewMethod(opName)
         method.method = httpMethod
-        method.description = operation.summary
+        method.description = (operation.description ?: "").concat(System.getProperty("line.separator")).concat(operation.summary ?: "")
 
         // loop parameters and add accordingly
         operation.parameters.each {
