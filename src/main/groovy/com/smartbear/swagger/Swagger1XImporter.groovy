@@ -150,6 +150,7 @@ class Swagger1XImporter implements SwaggerImporter {
                             SoapUI.logError(e);
                         }
 
+                        p.description = it.description
                         p.required = it.required
                     }
                 }
