@@ -32,7 +32,7 @@ class SwaggerUtils {
             return new Swagger2Importer(project, defaulMediaType)
 
         if (url.endsWith(".xml"))
-            return new Swagger1XImporter(project)
+            return new Swagger1XImporter(project, defaulMediaType)
 
         def conn = new URL(url).openConnection()
         conn.addRequestProperty("Accept", "*/*")
@@ -42,7 +42,7 @@ class SwaggerUtils {
         if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
             return new Swagger2Importer(project, defaulMediaType)
         else
-            return new Swagger1XImporter(project)
+            return new Swagger1XImporter(project, defaulMediaType)
     }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project) {

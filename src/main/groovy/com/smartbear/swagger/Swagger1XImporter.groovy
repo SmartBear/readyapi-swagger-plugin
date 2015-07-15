@@ -43,9 +43,15 @@ import com.smartbear.swagger4j.Swagger
 class Swagger1XImporter implements SwaggerImporter {
 
     private final WsdlProject project
+    private final String defaultMediaType;
+
+    public Swagger1XImporter(WsdlProject project, String defaultMediaType) {
+        this.project = project
+        this.defaultMediaType = defaultMediaType
+    }
 
     public Swagger1XImporter(WsdlProject project) {
-        this.project = project
+        this(project, "application/json")
     }
 
     public RestService[] importSwagger(String url) {
@@ -164,8 +170,7 @@ class Swagger1XImporter implements SwaggerImporter {
                         def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
 
                         representation.status = [response.code]
-                        //TODO: not implemented
-                        //representation.mediaType = defaultMediaType
+                        representation.mediaType = defaultMediaType
                         representation.sampleContent = response.message
                     } else {
                         operation.produces?.each {
