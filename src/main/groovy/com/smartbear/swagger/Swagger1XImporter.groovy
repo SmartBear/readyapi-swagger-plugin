@@ -18,6 +18,7 @@ package com.smartbear.swagger
 
 import com.eviware.soapui.SoapUI
 import com.eviware.soapui.impl.rest.RestMethod
+import com.eviware.soapui.impl.rest.RestRepresentation
 import com.eviware.soapui.impl.rest.RestRequestInterface
 import com.eviware.soapui.impl.rest.RestResource
 import com.eviware.soapui.impl.rest.RestService
@@ -42,9 +43,15 @@ import com.smartbear.swagger4j.Swagger
 class Swagger1XImporter implements SwaggerImporter {
 
     private final WsdlProject project
+    private final String defaultMediaType;
+
+    public Swagger1XImporter(WsdlProject project, String defaultMediaType) {
+        this.project = project
+        this.defaultMediaType = defaultMediaType
+    }
 
     public Swagger1XImporter(WsdlProject project) {
-        this.project = project
+        this(project, "application/json")
     }
 
     public RestService[] importSwagger(String url) {
@@ -124,6 +131,7 @@ class Swagger1XImporter implements SwaggerImporter {
             // loop all operations - import as methods
             it.operations.each {
                 it
+                def operation = it
 
                 RestMethod method = resource.addNewMethod(it.nickName)
                 method.method = RestRequestInterface.HttpMethod.valueOf(it.method.name().toUpperCase())
@@ -150,7 +158,27 @@ class Swagger1XImporter implements SwaggerImporter {
                             SoapUI.logError(e);
                         }
 
+                        p.description = it.description
                         p.required = it.required
+                    }
+                }
+
+                it.responseMessages?.each {
+                    def response = it
+
+                    if (operation.produces == null || operation.produces.empty) {
+                        def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
+
+                        representation.status = [response.code]
+                        representation.mediaType = defaultMediaType
+                        representation.sampleContent = response.message
+                    } else {
+                        operation.produces?.each {
+                            def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
+                            representation.mediaType = it
+                            representation.status = [response.code]
+                            representation.sampleContent = response.message
+                        }
                     }
                 }
 
