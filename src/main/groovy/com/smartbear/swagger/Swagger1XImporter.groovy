@@ -18,6 +18,7 @@ package com.smartbear.swagger
 
 import com.eviware.soapui.SoapUI
 import com.eviware.soapui.impl.rest.RestMethod
+import com.eviware.soapui.impl.rest.RestRepresentation
 import com.eviware.soapui.impl.rest.RestRequestInterface
 import com.eviware.soapui.impl.rest.RestResource
 import com.eviware.soapui.impl.rest.RestService
@@ -124,6 +125,7 @@ class Swagger1XImporter implements SwaggerImporter {
             // loop all operations - import as methods
             it.operations.each {
                 it
+                def operation = it
 
                 RestMethod method = resource.addNewMethod(it.nickName)
                 method.method = RestRequestInterface.HttpMethod.valueOf(it.method.name().toUpperCase())
@@ -152,6 +154,26 @@ class Swagger1XImporter implements SwaggerImporter {
 
                         p.description = it.description
                         p.required = it.required
+                    }
+                }
+
+                it.responseMessages?.each {
+                    def response = it
+
+                    if (operation.produces == null || operation.produces.empty) {
+                        def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
+
+                        representation.status = [response.code]
+                        //TODO: not implemented
+                        //representation.mediaType = defaultMediaType
+                        representation.sampleContent = response.message
+                    } else {
+                        operation.produces?.each {
+                            def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
+                            representation.mediaType = it
+                            representation.status = [response.code]
+                            representation.sampleContent = response.message
+                        }
                     }
                 }
 
