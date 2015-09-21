@@ -25,6 +25,7 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
+import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
 import io.swagger.models.Operation
@@ -48,11 +49,17 @@ class Swagger2Importer implements SwaggerImporter {
 
     private final WsdlProject project
     private final String defaultMediaType;
+    private final boolean forRefactoring
     private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType) {
+        this(project, defaultMediaType, false)
+    }
+
+    public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
         this.project = project
         this.defaultMediaType = defaultMediaType
+        this.forRefactoring = forRefactoring
     }
 
     public Swagger2Importer(WsdlProject project) {
@@ -221,7 +228,9 @@ class Swagger2Importer implements SwaggerImporter {
         if (name == null)
             name = path
 
-        RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
+        RestService restService = forRefactoring ?
+                InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :
+                project.addNewInterface(name, RestServiceFactory.REST_TYPE)
         restService.description = swagger.info?.description
 
         if (swagger.host != null) {

@@ -25,6 +25,7 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
+import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.smartbear.swagger4j.ApiDeclaration
 import com.smartbear.swagger4j.Parameter
@@ -44,10 +45,16 @@ class Swagger1XImporter implements SwaggerImporter {
 
     private final WsdlProject project
     private final String defaultMediaType;
+    private final boolean forRefactoring
 
     public Swagger1XImporter(WsdlProject project, String defaultMediaType) {
+        this(project, defaultMediaType, false)
+    }
+
+    public Swagger1XImporter(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
         this.project = project
         this.defaultMediaType = defaultMediaType
+        this.forRefactoring = forRefactoring;
     }
 
     public Swagger1XImporter(WsdlProject project) {
@@ -191,7 +198,9 @@ class Swagger1XImporter implements SwaggerImporter {
     }
 
     private RestService createRestService(String path, String name) {
-        RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
+        RestService restService = forRefactoring ?
+                InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :
+                project.addNewInterface(name, RestServiceFactory.REST_TYPE)
 
         if (path != null) {
             try {

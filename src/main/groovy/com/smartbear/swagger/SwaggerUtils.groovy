@@ -13,6 +13,7 @@ import groovy.json.JsonSlurper
  */
 class SwaggerUtils {
     public static final String DEFAULT_MEDIA_TYPE = "application/json";
+    public static final boolean DEFAULT_FOR_REFACTORING_VALUE = false;
 
     /**
      * Selects the appropriate SwaggerImporter for the specified URL. For .yaml urls the Swagger2Importer
@@ -26,13 +27,14 @@ class SwaggerUtils {
      * @return the corresponding SwaggerImporter based on the described "algorithm"
      */
 
-    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType) {
+    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType,
+                                                 boolean forRefactoring) {
 
         if (url.endsWith(".yaml"))
-            return new Swagger2Importer(project, defaulMediaType)
+            return new Swagger2Importer(project, defaulMediaType, forRefactoring)
 
         if (url.endsWith(".xml"))
-            return new Swagger1XImporter(project, defaulMediaType)
+            return new Swagger1XImporter(project, defaulMediaType, forRefactoring)
 
         def conn = new URL(url).openConnection()
         conn.addRequestProperty("Accept", "*/*")
@@ -40,13 +42,21 @@ class SwaggerUtils {
         def json = new JsonSlurper().parseText(conn.inputStream.text)
 
         if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
-            return new Swagger2Importer(project, defaulMediaType)
+            return new Swagger2Importer(project, defaulMediaType, forRefactoring)
         else
-            return new Swagger1XImporter(project, defaulMediaType)
+            return new Swagger1XImporter(project, defaulMediaType, forRefactoring)
+    }
+
+    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, boolean forRefactoring) {
+        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, forRefactoring)
+    }
+
+    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType) {
+        return createSwaggerImporter(url, project, defaulMediaType, DEFAULT_FOR_REFACTORING_VALUE)
     }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project) {
-        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE)
+        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, DEFAULT_FOR_REFACTORING_VALUE)
     }
 
     static SwaggerImporter importSwaggerFromUrl(
