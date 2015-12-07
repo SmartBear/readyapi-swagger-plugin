@@ -203,6 +203,9 @@ class Swagger2Importer implements SwaggerImporter {
                 BodyParameter bodyParam = it
 
                 operation.consumes?.each {
+                    def representation = method.addNewRepresentation(RestRepresentation.Type.REQUEST)
+                    representation.mediaType = it
+
                     def request = method.addNewRequest("Request " + (method.requestList.size() + 1))
                     def op = new ObjectProperty(bodyParam.schema.properties)
 
@@ -214,22 +217,10 @@ class Swagger2Importer implements SwaggerImporter {
 
                     Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
                     if (output instanceof Example) {
-
-                        def sampleValue = null
-                        def mapper = null
-
-                        switch (it) {
-                            case "application/xml": sampleValue = new XmlExampleSerializer().serialize(output); break;
-                            case "application/yaml": mapper = yamlMapper; break;
-                            case "application/json": mapper = jsonMapper; break;
-                        }
-
-                        if (mapper != null) {
-                            sampleValue = mapper.writer().writeValueAsString(output)
-                        }
-
-                        request.requestContent = sampleValue
+                        request.requestContent = serializeExample(it, output)
                         request.mediaType = it
+
+                        representation.sampleContent = request.requestContent
                     }
                 }
             }
@@ -238,7 +229,6 @@ class Swagger2Importer implements SwaggerImporter {
         if (method.requestList.isEmpty()) {
             method.addNewRequest("Request 1")
         }
-
 
         operation.responses?.each {
             def response = it
@@ -261,10 +251,16 @@ class Swagger2Importer implements SwaggerImporter {
 
                     representation.status = response.key == "default" ? [] : [response.key]
                     response.value.examples?.each {
-
                         if (it.key == representation.mediaType) {
                             representation.sampleContent = it.value
                             representation.mediaType = it.key
+                        }
+                    }
+
+                    if (representation.sampleContent == null) {
+                        Object output = ExampleBuilder.fromProperty(response.value.schema, swagger.definitions);
+                        if (output instanceof Example) {
+                            representation.sampleContent = serializeExample(representation.mediaType, output)
                         }
                     }
                 }
@@ -282,6 +278,22 @@ class Swagger2Importer implements SwaggerImporter {
         }
 
         return method
+    }
+
+    public String serializeExample(String mediaType, Example output) {
+        def sampleValue = null
+        def mapper = null
+
+        switch (mediaType) {
+            case "application/xml": sampleValue = new XmlExampleSerializer().serialize(output); break;
+            case "application/yaml": mapper = yamlMapper; break;
+            case "application/json": mapper = jsonMapper; break;
+        }
+
+        if (mapper != null) {
+            sampleValue = mapper.writer().writeValueAsString(output)
+        }
+        return sampleValue
     }
 
     private RestService createRestService(Swagger swagger, String url) {
