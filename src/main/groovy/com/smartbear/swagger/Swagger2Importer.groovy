@@ -298,7 +298,15 @@ class Swagger2Importer implements SwaggerImporter {
 
     private RestService createRestService(Swagger swagger, String url) {
 
-        String name = swagger.info && swagger.info.title ? swagger.info.title : new URL(url).host
+        String name = swagger.info && swagger.info.title ? swagger.info.title : null
+        if (name == null) {
+            if (url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://")) {
+                name = new URL(url).host
+            } else {
+                def ix = url.lastIndexOf('/')
+                name = ix == -1 || ix == url.length() - 1 ? url : url.substring(ix + 1)
+            }
+        }
 
         RestService restService = forRefactoring ?
                 InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :

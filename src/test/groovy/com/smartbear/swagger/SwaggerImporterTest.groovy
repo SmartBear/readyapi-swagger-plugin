@@ -55,5 +55,6 @@ class SwaggerImporterTest extends GroovyTestCase {
         assertEquals(2, restService.endpoints.length)
 
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
+        importer.importSwagger("https://api.rocrooster.net/api-docs.json")[0]
     }
 }
