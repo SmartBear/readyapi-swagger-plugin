@@ -28,10 +28,21 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterSt
 import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
+import io.swagger.inflector.examples.ExampleBuilder
+import io.swagger.inflector.examples.XmlExampleSerializer
+import io.swagger.inflector.examples.models.Example
+import io.swagger.inflector.processors.JsonNodeExampleSerializer
 import io.swagger.models.Operation
 import io.swagger.models.Path
+import io.swagger.models.RefModel
 import io.swagger.models.Swagger
+import io.swagger.models.parameters.BodyParameter
+import io.swagger.models.properties.ObjectProperty
 import io.swagger.parser.SwaggerParser
+import io.swagger.util.Json
+import io.swagger.util.Yaml
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -47,10 +58,23 @@ import org.slf4j.LoggerFactory
 
 class Swagger2Importer implements SwaggerImporter {
 
+    static ObjectMapper yamlMapper
+    static ObjectMapper jsonMapper
     private final WsdlProject project
     private final String defaultMediaType;
     private final boolean forRefactoring
     private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
+    private Swagger swagger
+
+    static {
+        yamlMapper = Yaml.mapper()
+        jsonMapper = Json.mapper()
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(new JsonNodeExampleSerializer());
+
+        yamlMapper.registerModule(simpleModule);
+        jsonMapper.registerModule(simpleModule);
+    }
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType) {
         this(project, defaultMediaType, false)
@@ -75,7 +99,7 @@ class Swagger2Importer implements SwaggerImporter {
 
         logger.info("Importing swagger [$url]")
 
-        def swagger = new SwaggerParser().read(url)
+        swagger = new SwaggerParser().read(url)
         RestService restService = createRestService(swagger, url)
         swagger.paths.each {
             importPath(restService, it.key, it.value)
@@ -147,6 +171,8 @@ class Swagger2Importer implements SwaggerImporter {
         method.method = httpMethod
         method.description = (operation.description ?: "").concat(System.getProperty("line.separator")).concat(operation.summary ?: "")
 
+        // add a default request for the generated method
+
         // loop parameters and add accordingly
         operation.parameters.each {
 
@@ -172,7 +198,36 @@ class Swagger2Importer implements SwaggerImporter {
 
                 p.description = it.description
                 p.required = it.required
+            } else {
+
+                BodyParameter bodyParam = it
+
+                operation.consumes?.each {
+                    def representation = method.addNewRepresentation(RestRepresentation.Type.REQUEST)
+                    representation.mediaType = it
+
+                    def request = method.addNewRequest("Request " + (method.requestList.size() + 1))
+                    def op = new ObjectProperty(bodyParam.schema.properties)
+
+                    if (bodyParam.schema instanceof RefModel) {
+                        RefModel refModel = bodyParam.schema
+                        op = new ObjectProperty(swagger.definitions.get(refModel.simpleRef).properties)
+                        op.name(refModel.simpleRef)
+                    }
+
+                    Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
+                    if (output instanceof Example) {
+                        request.requestContent = serializeExample(it, output)
+                        request.mediaType = it
+
+                        representation.sampleContent = request.requestContent
+                    }
+                }
             }
+        }
+
+        if (method.requestList.isEmpty()) {
+            method.addNewRequest("Request 1")
         }
 
         operation.responses?.each {
@@ -196,10 +251,16 @@ class Swagger2Importer implements SwaggerImporter {
 
                     representation.status = response.key == "default" ? [] : [response.key]
                     response.value.examples?.each {
-
                         if (it.key == representation.mediaType) {
                             representation.sampleContent = it.value
                             representation.mediaType = it.key
+                        }
+                    }
+
+                    if (representation.sampleContent == null) {
+                        Object output = ExampleBuilder.fromProperty(response.value.schema, swagger.definitions);
+                        if (output instanceof Example) {
+                            representation.sampleContent = serializeExample(representation.mediaType, output)
                         }
                     }
                 }
@@ -216,17 +277,36 @@ class Swagger2Importer implements SwaggerImporter {
             method.addNewRepresentation(RestRepresentation.Type.REQUEST).mediaType = it
         }
 
-        // add a default request for the generated method
-        method.addNewRequest("Request 1")
-
         return method
+    }
+
+    public String serializeExample(String mediaType, Example output) {
+        def sampleValue = null
+        def mapper = null
+
+        switch (mediaType) {
+            case "application/xml": sampleValue = new XmlExampleSerializer().serialize(output); break;
+            case "application/yaml": mapper = yamlMapper; break;
+            case "application/json": mapper = jsonMapper; break;
+        }
+
+        if (mapper != null) {
+            sampleValue = mapper.writer().writeValueAsString(output)
+        }
+        return sampleValue
     }
 
     private RestService createRestService(Swagger swagger, String url) {
 
-        String name = swagger.info?.title
-        if (name == null)
-            name = path
+        String name = swagger.info && swagger.info.title ? swagger.info.title : null
+        if (name == null) {
+            if (url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://")) {
+                name = new URL(url).host
+            } else {
+                def ix = url.lastIndexOf('/')
+                name = ix == -1 || ix == url.length() - 1 ? url : url.substring(ix + 1)
+            }
+        }
 
         RestService restService = forRefactoring ?
                 InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :

@@ -74,6 +74,10 @@ class Swagger2Exporter implements SwaggerExporter {
                             operation.addConsumes(it.mediaType)
                     }
 
+                    if (operation.responses.isEmpty()) {
+                        operation.addResponse(200, new Response())
+                    }
+
                     p.set(it.method.name().toLowerCase(), operation)
 
                     addParametersToOperation(it.params, operation)

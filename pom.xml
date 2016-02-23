@@ -8,12 +8,31 @@
 
     <groupId>com.smartbear</groupId>
     <artifactId>soapui-swagger-plugin</artifactId>
-    <version>2.2.1</version>
+    <version>2.3.0</version>
+
+    <name>Ready! API Swagger plugin</name>
+
+    <properties>
+        <jackson-version>2.4.2</jackson-version>
+        <swagger-version>1.5.6</swagger-version>
+        <swagger-parser.version>1.0.18-SNAPSHOT</swagger-parser.version>
+        <swagger-inflector.version>1.0.4-SNAPSHOT</swagger-inflector.version>
+    </properties>
 
     <repositories>
         <repository>
             <id>soapUI Repository</id>
             <url>http://www.soapui.org/repository/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -38,9 +57,21 @@
         </dependency>
 
         <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-inflector</artifactId>
+            <version>${swagger-inflector.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.codehaus.gmaven.runtime</groupId>
             <artifactId>gmaven-runtime-1.8</artifactId>
             <version>1.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.3</version>
         </dependency>
 
         <dependency>
@@ -49,7 +80,6 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-
 
         <dependency>
             <groupId>com.smartbear</groupId>
@@ -69,7 +99,6 @@
             <version>${swagger-version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -79,7 +108,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-parser</artifactId>
-            <version>1.0.11</version>
+            <version>${swagger-parser.version}</version>
         </dependency>
 
         <dependency>
@@ -145,10 +174,4 @@
         </plugins>
 
     </build>
-    <name>SoapUI Swagger plugin</name>
-
-    <properties>
-        <jackson-version>2.4.2</jackson-version>
-        <swagger-version>1.5.4</swagger-version>
-    </properties>
 </project>

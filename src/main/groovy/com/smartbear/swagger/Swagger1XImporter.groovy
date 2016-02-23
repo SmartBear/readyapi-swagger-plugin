@@ -140,7 +140,13 @@ class Swagger1XImporter implements SwaggerImporter {
                 it
                 def operation = it
 
-                RestMethod method = resource.addNewMethod(it.nickName)
+                def methodName = it.nickName
+                def cnt = 0
+                while (resource.getRestMethodByName(methodName) != null) {
+                    methodName = it.nickName + " " + (++cnt)
+                }
+
+                RestMethod method = resource.addNewMethod(methodName)
                 method.method = RestRequestInterface.HttpMethod.valueOf(it.method.name().toUpperCase())
                 method.description = it.summary
 
