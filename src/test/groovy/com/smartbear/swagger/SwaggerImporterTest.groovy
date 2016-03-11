@@ -56,5 +56,6 @@ class SwaggerImporterTest extends GroovyTestCase {
 
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
         importer.importSwagger("https://api.rocrooster.net/api-docs.json")[0]
+        importer.importSwagger("https://internal-api.swaggerhub.com/apis/olensmar/Debug/v1")[0]
     }
 }

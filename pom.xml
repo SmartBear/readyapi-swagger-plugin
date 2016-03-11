@@ -8,13 +8,13 @@
 
     <groupId>com.smartbear</groupId>
     <artifactId>soapui-swagger-plugin</artifactId>
-    <version>2.3.0</version>
+    <version>2.3.1-SNAPSHOT</version>
 
     <name>Ready! API Swagger plugin</name>
 
     <properties>
         <jackson-version>2.4.2</jackson-version>
-        <swagger-version>1.5.6</swagger-version>
+        <swagger-version>1.5.8-SNAPSHOT</swagger-version>
         <swagger-parser.version>1.0.18-SNAPSHOT</swagger-parser.version>
         <swagger-inflector.version>1.0.4-SNAPSHOT</swagger-inflector.version>
     </properties>
