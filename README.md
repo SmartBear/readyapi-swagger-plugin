@@ -10,6 +10,7 @@ Download and install via the Plugin Manager / Repository Browser from inside Rea
 
 ### Release History
 
+* Feb 2016 - Version 2.3.0 - Creates sample messages for POST/PUT requests / responses, dependency updates, bugfixes 
 * March 2015 - Version 2.1 - Bug-fix release which ties into the updated plugin system in Ready! API and adds dynamic swagger generation for REST Virts 
 * September 2014 - Version 2.0 - Initial release for Ready! API with Swagger 2.0 support
 
