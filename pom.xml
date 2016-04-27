@@ -14,9 +14,9 @@
 
     <properties>
         <jackson-version>2.4.2</jackson-version>
-        <swagger-version>1.5.8-SNAPSHOT</swagger-version>
-        <swagger-parser.version>1.0.18-SNAPSHOT</swagger-parser.version>
-        <swagger-inflector.version>1.0.4-SNAPSHOT</swagger-inflector.version>
+        <swagger-version>1.5.8</swagger-version>
+        <swagger-parser.version>1.0.19</swagger-parser.version>
+        <swagger-inflector.version>1.0.6-SNAPSHOT</swagger-inflector.version>
     </properties>
 
     <repositories>
@@ -128,6 +128,13 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>${jackson-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.16</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
