@@ -23,18 +23,18 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wordnik.swagger.models.Info
-import com.wordnik.swagger.models.Operation
-import com.wordnik.swagger.models.Path
-import com.wordnik.swagger.models.Response
-import com.wordnik.swagger.models.Swagger
-import com.wordnik.swagger.models.parameters.BodyParameter
-import com.wordnik.swagger.models.parameters.HeaderParameter
-import com.wordnik.swagger.models.parameters.Parameter
-import com.wordnik.swagger.models.parameters.PathParameter
-import com.wordnik.swagger.models.parameters.QueryParameter
-import com.wordnik.swagger.util.Json
-import com.wordnik.swagger.util.Yaml
+import io.swagger.models.Info
+import io.swagger.models.Operation
+import io.swagger.models.Path
+import io.swagger.models.Response
+import io.swagger.models.Swagger
+import io.swagger.models.parameters.BodyParameter
+import io.swagger.models.parameters.HeaderParameter
+import io.swagger.models.parameters.Parameter
+import io.swagger.models.parameters.PathParameter
+import io.swagger.models.parameters.QueryParameter
+import io.swagger.util.Json
+import io.swagger.util.Yaml
 
 /**
  * A simple Swagger exporter - now uses swagger4j library
@@ -72,6 +72,10 @@ class Swagger2Exporter implements SwaggerExporter {
                             it.status?.each { operation.addResponse(String.valueOf(it), new Response()) }
                         else if (it.type == RestRepresentation.Type.REQUEST && it.mediaType != null)
                             operation.addConsumes(it.mediaType)
+                    }
+
+                    if (operation.responses.isEmpty()) {
+                        operation.addResponse(200, new Response())
                     }
 
                     p.set(it.method.name().toLowerCase(), operation)

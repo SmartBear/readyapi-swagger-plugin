@@ -54,6 +54,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
         if (dialog == null) {
             dialog = ADialogBuilder.buildDialog(Form.class);
             dialog.setValue(Form.TYPE, RESOURCE_LISTING_TYPE);
+            dialog.setValue(Form.DEFAULTMEDIATYPE, SwaggerUtils.DEFAULT_MEDIA_TYPE);
         } else {
             dialog.setValue(Form.SWAGGERURL, "");
         }
@@ -71,7 +72,11 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                         expUrl = new File(expUrl).toURI().toURL().toString();
                     }
 
-                    SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(project, expUrl, dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE));
+                    SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(
+                            project,
+                            expUrl,
+                            dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE),
+                            dialog.getValue(Form.DEFAULTMEDIATYPE));
                     Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
                     break;
                 }
@@ -81,11 +86,13 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
         }
     }
 
-
     @AForm(name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition")
     public interface Form {
         @AField(name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE)
         public final static String SWAGGERURL = "Swagger Definition";
+
+        @AField(name = "Default Media Type", description = "Default Media Type of the responses", type = AFieldType.STRING)
+        public final static String DEFAULTMEDIATYPE = "Default Media Type";
 
         @AField(name = "Definition Type", description = "Resource Listing or API Declaration",
                 type = AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE})

@@ -25,12 +25,24 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
+import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
-import com.wordnik.swagger.models.Info
-import com.wordnik.swagger.models.Operation
-import com.wordnik.swagger.models.Path
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
+import io.swagger.inflector.examples.ExampleBuilder
+import io.swagger.inflector.examples.XmlExampleSerializer
+import io.swagger.inflector.examples.models.Example
+import io.swagger.inflector.processors.JsonNodeExampleSerializer
+import io.swagger.models.Operation
+import io.swagger.models.Path
+import io.swagger.models.RefModel
+import io.swagger.models.Swagger
+import io.swagger.models.parameters.BodyParameter
+import io.swagger.models.properties.ObjectProperty
 import io.swagger.parser.SwaggerParser
+import io.swagger.util.Json
+import io.swagger.util.Yaml
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -46,11 +58,36 @@ import org.slf4j.LoggerFactory
 
 class Swagger2Importer implements SwaggerImporter {
 
+    static ObjectMapper yamlMapper
+    static ObjectMapper jsonMapper
     private final WsdlProject project
+    private final String defaultMediaType;
+    private final boolean forRefactoring
     private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
+    private Swagger swagger
+
+    static {
+        yamlMapper = Yaml.mapper()
+        jsonMapper = Json.mapper()
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(new JsonNodeExampleSerializer());
+
+        yamlMapper.registerModule(simpleModule);
+        jsonMapper.registerModule(simpleModule);
+    }
+
+    public Swagger2Importer(WsdlProject project, String defaultMediaType) {
+        this(project, defaultMediaType, false)
+    }
+
+    public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
+        this.project = project
+        this.defaultMediaType = defaultMediaType
+        this.forRefactoring = forRefactoring
+    }
 
     public Swagger2Importer(WsdlProject project) {
-        this.project = project
+        this(project, "application/json")
     }
 
     public RestService[] importSwagger(String url) {
@@ -62,8 +99,8 @@ class Swagger2Importer implements SwaggerImporter {
 
         logger.info("Importing swagger [$url]")
 
-        def swagger = new SwaggerParser().read(url)
-        RestService restService = createRestService(swagger.basePath, swagger.info)
+        swagger = new SwaggerParser().read(url)
+        RestService restService = createRestService(swagger, url)
         swagger.paths.each {
             importPath(restService, it.key, it.value)
         }
@@ -132,7 +169,9 @@ class Swagger2Importer implements SwaggerImporter {
 
         RestMethod method = resource.addNewMethod(opName)
         method.method = httpMethod
-        method.description = operation.summary
+        method.description = (operation.description ?: "").concat(System.getProperty("line.separator")).concat(operation.summary ?: "")
+
+        // add a default request for the generated method
 
         // loop parameters and add accordingly
         operation.parameters.each {
@@ -157,20 +196,51 @@ class Swagger2Importer implements SwaggerImporter {
                     SoapUI.logError(e);
                 }
 
+                p.description = it.description
                 p.required = it.required
+            } else {
+
+                BodyParameter bodyParam = it
+
+                operation.consumes?.each {
+                    def representation = method.addNewRepresentation(RestRepresentation.Type.REQUEST)
+                    representation.mediaType = it
+
+                    def request = method.addNewRequest("Request " + (method.requestList.size() + 1))
+                    def op = new ObjectProperty(bodyParam.schema.properties)
+
+                    if (bodyParam.schema instanceof RefModel) {
+                        RefModel refModel = bodyParam.schema
+                        op = new ObjectProperty(swagger.definitions.get(refModel.simpleRef).properties)
+                        op.name(refModel.simpleRef)
+                    }
+
+                    Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
+                    if (output instanceof Example) {
+                        request.requestContent = serializeExample(it, output)
+                        request.mediaType = it
+
+                        representation.sampleContent = request.requestContent
+                    }
+                }
             }
+        }
+
+        if (method.requestList.isEmpty()) {
+            method.addNewRequest("Request 1")
         }
 
         operation.responses?.each {
             def response = it
 
-            if (operation.produces?.empty) {
+            if (operation.produces == null || operation.produces.empty) {
                 def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
 
                 representation.status = response.key == "default" ? [] : [response.key]
+                representation.mediaType = defaultMediaType
 
                 // just take the first example
-                if (!response.value.examples?.isEmpty()) {
+                if (response.value.examples != null && !response.value.examples.isEmpty()) {
                     representation.mediaType = response.value.examples.iterator().next()
                     representation.sampleContent = response.value.examples[representation.mediaType]
                 }
@@ -181,10 +251,16 @@ class Swagger2Importer implements SwaggerImporter {
 
                     representation.status = response.key == "default" ? [] : [response.key]
                     response.value.examples?.each {
-
                         if (it.key == representation.mediaType) {
                             representation.sampleContent = it.value
                             representation.mediaType = it.key
+                        }
+                    }
+
+                    if (representation.sampleContent == null) {
+                        Object output = ExampleBuilder.fromProperty(response.value.schema, swagger.definitions);
+                        if (output instanceof Example) {
+                            representation.sampleContent = serializeExample(representation.mediaType, output)
                         }
                     }
                 }
@@ -201,37 +277,63 @@ class Swagger2Importer implements SwaggerImporter {
             method.addNewRepresentation(RestRepresentation.Type.REQUEST).mediaType = it
         }
 
-        // add a default request for the generated method
-        method.addNewRequest("Request 1")
-
         return method
     }
 
-    private RestService createRestService(String path, Info info) {
-        String name = info?.title
-        if (name == null)
-            name = path
+    public String serializeExample(String mediaType, Example output) {
+        def sampleValue = null
+        def mapper = null
 
-        RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
-        restService.description = info.description
+        switch (mediaType) {
+            case "application/xml": sampleValue = new XmlExampleSerializer().serialize(output); break;
+            case "application/yaml": mapper = yamlMapper; break;
+            case "application/json": mapper = jsonMapper; break;
+        }
 
-        if (path != null) {
-            try {
-                if (path.startsWith("/")) {
-                    if (path.length() > 1) {
-                        restService.basePath = path
+        if (mapper != null) {
+            sampleValue = mapper.writer().writeValueAsString(output)
+        }
+        return sampleValue
+    }
+
+    private RestService createRestService(Swagger swagger, String url) {
+
+        String name = swagger.info && swagger.info.title ? swagger.info.title : null
+        if (name == null) {
+            if (url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://")) {
+                name = new URL(url).host
+            } else {
+                def ix = url.lastIndexOf('/')
+                name = ix == -1 || ix == url.length() - 1 ? url : url.substring(ix + 1)
+            }
+        }
+
+        RestService restService = forRefactoring ?
+                InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :
+                project.addNewInterface(name, RestServiceFactory.REST_TYPE)
+        restService.description = swagger.info?.description
+
+        if (swagger.host != null) {
+            if (swagger.schemes != null) {
+                swagger.schemes.each { it ->
+                    def scheme = it.toValue().toLowerCase()
+                    if (scheme.startsWith("http")) {
+                        restService.addEndpoint(scheme + "://" + swagger.host)
                     }
-                } else {
-                    URL url = new URL(path)
-                    def pathPos = path.length() - url.path.length()
-
-                    restService.basePath = path.substring(pathPos)
-                    restService.addEndpoint(path.substring(0, pathPos))
                 }
             }
-            catch (Exception e) {
-                SoapUI.logError(e)
+
+            if (restService.endpoints.length == 0) {
+                if (url.toLowerCase().startsWith("http") && url.indexOf(':') > 0) {
+                    restService.addEndpoint(url.substring(0, url.indexOf(':')).toLowerCase() + "://" + swagger.host)
+                } else {
+                    restService.addEndpoint("http://" + swagger.host)
+                }
             }
+        }
+
+        if (swagger.basePath != null) {
+            restService.basePath = swagger.basePath
         }
 
         return restService
