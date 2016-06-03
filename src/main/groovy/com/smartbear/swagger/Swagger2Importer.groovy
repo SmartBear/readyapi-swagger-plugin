@@ -189,7 +189,7 @@ class Swagger2Importer implements SwaggerImporter {
                     paramType = "query"
 
                 // path parameters are added at resource level
-                RestParameter p = paramType == "template" ? method.resource.params.addParameter(paramName)
+                RestParameter p = paramType == "template" ? method.resource.params.addProperty(paramName)
                         : method.params.addProperty(paramName)
 
                 try {
