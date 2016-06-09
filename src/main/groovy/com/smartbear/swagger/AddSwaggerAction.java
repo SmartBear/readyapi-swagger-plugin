@@ -89,14 +89,14 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     @AForm(name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition")
     public interface Form {
         @AField(name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE)
-        public final static String SWAGGERURL = "Swagger Definition";
+        String SWAGGERURL = "Swagger Definition";
 
         @AField(name = "Default Media Type", description = "Default Media Type of the responses", type = AFieldType.STRING)
-        public final static String DEFAULTMEDIATYPE = "Default Media Type";
+        String DEFAULTMEDIATYPE = "Default Media Type";
 
         @AField(name = "Definition Type", description = "Resource Listing or API Declaration",
                 type = AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE})
-        public final static String TYPE = "Definition Type";
+        String TYPE = "Definition Type";
     }
 
 }

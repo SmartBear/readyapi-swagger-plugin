@@ -138,22 +138,22 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     @AForm(name = "Export Swagger Definition", description = "Creates a Swagger definition for selected REST APIs in this project")
     public interface Form {
         @AField(name = "APIs", description = "Select which REST APIs to include in the Swagger definition", type = AFieldType.MULTILIST)
-        public final static String APIS = "APIs";
+        String APIS = "APIs";
 
         @AField(name = "Target Folder", description = "Where to save the Swagger definition", type = AFieldType.FOLDER)
-        public final static String FOLDER = "Target Folder";
+        String FOLDER = "Target Folder";
 
         @AField(name = "API Version", description = "API Version", type = AFieldType.STRING)
-        public final static String VERSION = "API Version";
+        String VERSION = "API Version";
 
         @AField(name = "Base Path", description = "Base Path that the Swagger definition will be hosted on", type = AFieldType.STRING)
-        public final static String BASEPATH = "Base Path";
+        String BASEPATH = "Base Path";
 
         @AField(name = "Swagger Version", description = "Select Swagger version", type = AFieldType.RADIOGROUP, values = {"1.2", "2.0"})
-        public final static String SWAGGER_VERSION = "Swagger Version";
+        String SWAGGER_VERSION = "Swagger Version";
 
         @AField(name = "Format", description = "Select Swagger format", type = AFieldType.RADIOGROUP, values = {"json", "yaml", "xml"})
-        public final static String FORMAT = "Format";
+        String FORMAT = "Format";
     }
 
 }

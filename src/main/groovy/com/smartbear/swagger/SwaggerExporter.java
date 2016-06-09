@@ -7,5 +7,5 @@ import com.eviware.soapui.impl.rest.RestService;
  */
 public interface SwaggerExporter {
 
-    public String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath);
+    String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath);
 }
