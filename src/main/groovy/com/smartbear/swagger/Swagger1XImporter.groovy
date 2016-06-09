@@ -157,12 +157,15 @@ class Swagger1XImporter implements SwaggerImporter {
                     // ignore body parameters
                     if (it.paramType != Parameter.ParamType.body) {
 
-                        RestParameter p = method.params.addProperty(it.name)
                         def paramType = it.paramType.name()
                         if (paramType == "path")
                             paramType = "template"
                         else if (paramType == "form")
                             paramType = "query"
+
+                        // path parameters are added at resource level
+                        RestParameter p = paramType == "template" ? method.resource.params.addProperty(it.name)
+                                : method.params.addProperty(it.name)
 
                         try {
                             p.style = ParameterStyle.valueOf(paramType.toUpperCase())

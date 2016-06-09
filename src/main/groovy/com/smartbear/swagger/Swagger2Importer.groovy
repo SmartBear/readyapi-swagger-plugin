@@ -182,12 +182,15 @@ class Swagger2Importer implements SwaggerImporter {
             }
             // ignore body parameters
             else if (it.in != "body") {
-                RestParameter p = method.params.addProperty(paramName)
                 def paramType = it.in == null ? "query" : it.in
                 if (paramType == "path")
                     paramType = "template"
                 else if (paramType == "formData")
                     paramType = "query"
+
+                // path parameters are added at resource level
+                RestParameter p = paramType == "template" ? method.resource.params.addProperty(paramName)
+                        : method.params.addProperty(paramName)
 
                 try {
                     p.style = ParameterStyle.valueOf(paramType.toUpperCase())
