@@ -64,8 +64,10 @@ class SwaggerUtils {
         return importSwaggerFromUrl(project, finalExpUrl, isResourceListing, "application/json");
     }
 
-    static SwaggerImporter importSwaggerFromUrl(
-            final WsdlProject project, final String finalExpUrl, final boolean isResourceListing, final String defaultMediaType) throws Exception {
+    static SwaggerImporter importSwaggerFromUrl(final WsdlProject project,
+                                                final String finalExpUrl,
+                                                final boolean isResourceListing,
+                                                final String defaultMediaType) throws Exception {
 
         final SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(finalExpUrl, project, defaultMediaType);
 
