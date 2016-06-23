@@ -74,7 +74,7 @@ class Swagger2Exporter implements SwaggerExporter {
                             operation.addConsumes(it.mediaType)
                     }
 
-                    if (operation.responses == null || !operation.responses) {
+                    if ( !operation.responses || operation.responses.isEmpty()) {
                         operation.addResponse(200, new Response())
                     }
 
