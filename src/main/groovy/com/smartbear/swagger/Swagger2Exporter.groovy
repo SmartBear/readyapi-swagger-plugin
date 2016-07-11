@@ -75,7 +75,7 @@ class Swagger2Exporter implements SwaggerExporter {
                     }
 
                     if ( !operation.responses || operation.responses.isEmpty()) {
-                        operation.addResponse(200, new Response())
+                        operation.addResponse("200", new Response())
                     }
 
                     p.set(it.method.name().toLowerCase(), operation)

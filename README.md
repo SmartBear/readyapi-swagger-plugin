@@ -8,6 +8,12 @@ Provider the following swagger-related features in Ready! API:
 
 Download and install via the Plugin Manager / Repository Browser from inside Ready! API. Older versions are available for SoapUI open-source as well (see below)
 
+Build with 
+
+```
+mvn clean install assembly:single
+```
+
 ### Release History
 
 * June 2016 - Version 2.3.1 - Dependency updates for improved message creation

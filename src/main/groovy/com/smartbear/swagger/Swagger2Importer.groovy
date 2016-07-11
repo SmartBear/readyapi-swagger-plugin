@@ -337,6 +337,9 @@ class Swagger2Importer implements SwaggerImporter {
 
         if (swagger.basePath != null) {
             restService.basePath = swagger.basePath
+            if( restService.basePath.endsWith('/')){
+                restService.basePath = restService.basePath.substring(0,restService.basePath.length()-1)
+            }
         }
 
         return restService
