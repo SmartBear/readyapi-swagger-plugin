@@ -117,7 +117,7 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     void ensureEndpoint(RestService restService, String url) {
-        if (restService.endpoints.length == 0) {
+        if (restService != null && restService.endpoints.length == 0) {
 
             def ix = url.indexOf("://")
             if (ix > 0) {
@@ -136,6 +136,9 @@ class Swagger2Importer implements SwaggerImporter {
      */
 
     RestResource importPath(RestService restService, String path, Path resource) {
+        if (restService == null) {
+            return null
+        }
         RestResource res = restService.addNewResource(path, path)
 
         if (resource.get != null)
@@ -311,9 +314,14 @@ class Swagger2Importer implements SwaggerImporter {
             }
         }
 
-        RestService restService = forRefactoring ?
-                InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :
-                project.addNewInterface(name, RestServiceFactory.REST_TYPE)
+        RestService restService;
+        if (forRefactoring) {
+            restService = InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name)
+        } else if (project != null) {
+            restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
+        } else {
+            return null
+        }
         restService.description = swagger.info?.description
 
         if (swagger.host != null) {
