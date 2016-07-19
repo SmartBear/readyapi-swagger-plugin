@@ -303,6 +303,9 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     private RestService createRestService(Swagger swagger, String url) {
+        if (project == null) {
+            return null
+        }
 
         String name = swagger.info && swagger.info.title ? swagger.info.title : null
         if (name == null) {
@@ -314,14 +317,7 @@ class Swagger2Importer implements SwaggerImporter {
             }
         }
 
-        RestService restService;
-        if (forRefactoring) {
-            restService = InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name)
-        } else if (project != null) {
-            restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
-        } else {
-            return null
-        }
+        RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE);
         restService.description = swagger.info?.description
 
         if (swagger.host != null) {
