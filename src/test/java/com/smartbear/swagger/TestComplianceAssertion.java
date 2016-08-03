@@ -26,10 +26,7 @@ public class TestComplianceAssertion {
         WsdlTestCase wsdlTestCase = project.addNewTestSuite("TestSuite").addNewTestCase("TestCase");
         HttpTestRequestStep testStep =
             (HttpTestRequestStep) wsdlTestCase.addTestStep(HttpRequestStepFactory.HTTPREQUEST_TYPE,
-                "Request","http://petstore.swagger.io/v2/pet/findByTags", "GET" );
-
-        testStep.getTestRequest().getParams().addProperty( "tags");
-        testStep.getTestRequest().setSendEmptyParameters(true);
+                "Request","https://api.swaggerhub.com/apis", "GET" );
 
         // run it
         WsdlTestCaseRunner runner = wsdlTestCase.run(new StringToObjectMap(), false);
@@ -38,7 +35,7 @@ public class TestComplianceAssertion {
         // create the assertion
         TestAssertionConfig config = TestAssertionConfig.Factory.newInstance();
         XmlObjectConfigurationBuilder builder = new XmlObjectConfigurationBuilder();
-        builder.add("swaggerUrl", "http://petstore.swagger.io/v2/swagger.json");
+        builder.add("swaggerUrl", "https://api.swaggerhub.com/swagger.json");
         config.setConfiguration( builder.finish() );
 
         SwaggerComplianceAssertion assertion = new SwaggerComplianceAssertion(config, testStep);
