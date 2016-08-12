@@ -25,7 +25,6 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
-import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -213,20 +212,25 @@ class Swagger2Importer implements SwaggerImporter {
                     representation.mediaType = it
 
                     def request = method.addNewRequest("Request " + (method.requestList.size() + 1))
-                    def op = new ObjectProperty(bodyParam.schema.properties)
+                    request.mediaType = it
 
-                    if (bodyParam.schema instanceof RefModel) {
-                        RefModel refModel = bodyParam.schema
-                        op = new ObjectProperty(swagger.definitions.get(refModel.simpleRef).properties)
-                        op.name(refModel.simpleRef)
-                    }
+                    if (bodyParam.schema != null) {
+                        def op = new ObjectProperty(bodyParam.schema.properties)
 
-                    Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
-                    if (output instanceof Example) {
-                        request.requestContent = serializeExample(it, output)
-                        request.mediaType = it
+                        if (bodyParam.schema instanceof RefModel) {
+                            RefModel refModel = bodyParam.schema
+                            def modelDefinition = swagger.definitions.get(refModel.simpleRef)
+                            if (modelDefinition != null) {
+                                op = new ObjectProperty(modelDefinition.properties)
+                                op.name(refModel.simpleRef)
+                            }
+                        }
 
-                        representation.sampleContent = request.requestContent
+                        Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
+                        if (output instanceof Example) {
+                            request.requestContent = serializeExample(it, output)
+                            representation.sampleContent = request.requestContent
+                        }
                     }
                 }
             }
