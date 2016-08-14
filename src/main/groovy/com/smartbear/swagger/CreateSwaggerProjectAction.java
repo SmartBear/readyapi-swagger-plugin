@@ -42,7 +42,7 @@ import java.io.File;
  */
 
 @PluginImportMethod(label = "Swagger Definition (REST)")
-public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
+public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceImpl> implements SilentImportMethodRetriever {
     public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
     public static final String API_DECLARATION_TYPE = "API Declaration (Swagger 1.X only)";
 
@@ -119,6 +119,20 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
             if (ix != -1) {
                 dialog.setValue(Form.PROJECT_NAME, newValue.substring(ix + 1));
             }
+        }
+    }
+
+    /**
+     * This method is used by version 1.8.2 and later of Ready! API, where silent import methods exist.
+     * The late binding of the SilentSwaggerImporter class, which implements the new interface SilentImportMethod, is done to
+     * make the plugin backwards-compatible with earlier versions of Ready! API.
+     * @return An instance of SilentSwaggerImporter in modern versions of Ready! API, null in earlier versions
+     */
+    public Object getImportMethod() {
+        try {
+            return Class.forName("com.smartbear.swagger.SilentSwaggerImporter").newInstance();
+        } catch (Exception e) {
+            return null;
         }
     }
 
