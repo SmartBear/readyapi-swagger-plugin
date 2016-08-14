@@ -11,7 +11,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
+//Instantiated using reflection
+@SuppressWarnings("unused")
 public class SilentSwaggerImporter implements SilentImportMethod {
+
+    private CreateSwaggerProjectAction createSwaggerProjectAction = new CreateSwaggerProjectAction();
+
     public boolean acceptsURL(URL url) {
         return url.toString().toLowerCase().contains("swagger.");
     }
@@ -19,11 +24,11 @@ public class SilentSwaggerImporter implements SilentImportMethod {
     public Collection<Interface> importApi(URL url, WsdlProject wsdlProject) throws UnsupportedDefinitionException {
         SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(url.toString(), wsdlProject);
         Interface[] services = importer.importSwagger(url.toString());
-        return Arrays.asList( services );
+        return Arrays.asList(services);
     }
 
     public SoapUIAction<WorkspaceImpl> getImportAction() {
-        return new CreateSwaggerProjectAction();
+        return createSwaggerProjectAction;
     }
 
     public String getLabel() {
