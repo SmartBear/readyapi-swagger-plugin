@@ -157,9 +157,9 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
 
                     Operation operation = findOperation(swagger.getPath(swaggerPath), method);
                     if (operation != null) {
-                        validateOperation(messageExchange,
-                                messageExchange.getResponseContent(),
-                                swagger, path, method, operation);
+                        validateOperation(swagger, operation, String.valueOf(messageExchange.getResponseStatusCode()),
+                            messageExchange.getResponseContent()
+                        );
 
                         return true;
                     } else {
@@ -194,8 +194,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return null;
     }
 
-    private void validateOperation(HttpMessageExchange messageExchange, String contentAsString, Swagger swagger, String path, RestRequestInterface.HttpMethod methodName, Operation operation) throws AssertionException {
-        String responseCode = String.valueOf(messageExchange.getResponseStatusCode());
+    void validateOperation(Swagger swagger, Operation operation, String responseCode, String contentAsString) throws AssertionException {
 
         Response responseSchema = operation.getResponses().get(responseCode);
         if (responseSchema == null) {
@@ -206,20 +205,20 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             validateResponse(contentAsString, swagger, responseSchema);
         } else if (strictMode) {
             throw new AssertionException(new AssertionError(
-                    "Missing response for a " + responseCode + " response from " + methodName + " " + path + " in Swagger definition"));
+                "Missing response for a " + responseCode + " response for operation " + operation.toString() + " in Swagger definition"));
         }
     }
 
-    private void validateResponse(String contentAsString, Swagger swagger, Response responseSchema) throws AssertionException {
+    void validateResponse(String contentAsString, Swagger swagger, Response responseSchema) throws AssertionException {
         if (responseSchema.getSchema() != null) {
             Property schema = responseSchema.getSchema();
             if (schema instanceof RefProperty) {
                 Model model = swagger.getDefinitions().get(((RefProperty) schema).getSimpleRef());
                 if (model != null) {
-                    validate(contentAsString, null);
+                    validatePayload(contentAsString, null);
                 }
             } else {
-                validate(contentAsString, Json.pretty(schema));
+                validatePayload(contentAsString, Json.pretty(schema));
             }
         }
     }
@@ -247,7 +246,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return true;
     }
 
-    private Swagger getSwagger(SubmitContext submitContext) throws AssertionException {
+    Swagger getSwagger(SubmitContext submitContext) throws AssertionException {
         if (swagger == null && swaggerUrl != null) {
             SwaggerParser parser = new SwaggerParser();
             swagger = parser.read(submitContext.expand(swaggerUrl));
@@ -259,7 +258,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return swagger;
     }
 
-    public void validate(String payload, String schema) throws AssertionException {
+    public void validatePayload(String payload, String schema) throws AssertionException {
         try {
             JsonSchema jsonSchema;
 
@@ -303,7 +302,6 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return null;
     }
 
-    @Override
     public void configureAssertion(Map<String, Object> configMap) {
         swaggerUrl = (String) configMap.get(SWAGGER_URL);
         strictMode = Boolean.valueOf((String) configMap.get(STRICT_MODE));
