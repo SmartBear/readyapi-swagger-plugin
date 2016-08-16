@@ -29,6 +29,7 @@ import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.smartbear.swagger4j.ApiDeclaration
 import com.smartbear.swagger4j.Parameter
+import com.smartbear.swagger4j.ResourceListing
 import com.smartbear.swagger4j.Swagger
 
 /**
@@ -65,8 +66,8 @@ class Swagger1XImporter implements SwaggerImporter {
 
         def result = []
 
-        def resourceListing = Swagger.readSwagger(URI.create(url))
-        resourceListing.apiList.each {
+        ResourceListing resourceListing = Swagger.readSwagger(URI.create(url))
+        resourceListing.apis.each {
 
             String name = it.path
             if (name.startsWith("/api-docs")) {
