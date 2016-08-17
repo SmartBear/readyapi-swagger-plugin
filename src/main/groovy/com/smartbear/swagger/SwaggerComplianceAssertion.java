@@ -36,12 +36,17 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.parser.SwaggerParser;
+import io.swagger.parser.util.ClasspathHelper;
 import io.swagger.util.Json;
+import org.apache.commons.io.FileUtils;
 import org.apache.xmlbeans.XmlObject;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @PluginTestAssertion(id = "SwaggerComplianceAssertion", label = "Swagger Compliance Assertion",
@@ -158,7 +163,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                     Operation operation = findOperation(swagger.getPath(swaggerPath), method);
                     if (operation != null) {
                         validateOperation(swagger, operation, String.valueOf(messageExchange.getResponseStatusCode()),
-                            messageExchange.getResponseContent()
+                                messageExchange.getResponseContent()
                         );
 
                         return true;
@@ -205,7 +210,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             validateResponse(contentAsString, swagger, responseSchema);
         } else if (strictMode) {
             throw new AssertionException(new AssertionError(
-                "Missing response for a " + responseCode + " response for operation " + operation.toString() + " in Swagger definition"));
+                    "Missing response for a " + responseCode + " response for operation " + operation.toString() + " in Swagger definition"));
         }
     }
 
@@ -248,14 +253,31 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
 
     Swagger getSwagger(SubmitContext submitContext) throws AssertionException {
         if (swagger == null && swaggerUrl != null) {
-            SwaggerParser parser = new SwaggerParser();
-            swagger = parser.read(submitContext.expand(swaggerUrl));
+            if (swaggerUrl.startsWith("file:/")) {
+                swagger = parseFileContent();
+            } else {
+                swagger = new SwaggerParser().read(submitContext.expand(swaggerUrl));
+            }
             if (swagger == null) {
                 throw new AssertionException(new AssertionError("Failed to load Swagger definition from [" + swaggerUrl + "]"));
             }
             swaggerSchema = null;
         }
         return swagger;
+    }
+
+    private Swagger parseFileContent() throws AssertionException {
+        try {
+            SwaggerParser parser = new SwaggerParser();
+            java.nio.file.Path path = Paths.get(URI.create(swaggerUrl));
+            if (Files.exists(path)) {
+                return parser.parse(FileUtils.readFileToString(path.toFile(), "UTF-8"));
+            } else {
+                return parser.parse(ClasspathHelper.loadFileFromClasspath(swaggerUrl));
+            }
+        } catch (IOException e) {
+            throw new AssertionException(new AssertionError("Failed to load Swagger definition from [" + swaggerUrl + "]"));
+        }
     }
 
     public void validatePayload(String payload, String schema) throws AssertionException {

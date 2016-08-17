@@ -32,7 +32,7 @@ public class TestComplianceAssertion {
         // create the assertion
         TestAssertionConfig config = TestAssertionConfig.Factory.newInstance();
         XmlObjectConfigurationBuilder builder = new XmlObjectConfigurationBuilder();
-        builder.add("swaggerUrl", "file://" + new File("src/test/resources/petstore-2.0.json").getAbsolutePath());
+        builder.add("swaggerUrl", new File("src/test/resources/petstore-2.0.json").toURI().toString());
         config.setConfiguration( builder.finish() );
 
         SwaggerComplianceAssertion assertion = new SwaggerComplianceAssertion(config, testStep);
