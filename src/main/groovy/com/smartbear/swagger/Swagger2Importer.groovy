@@ -64,6 +64,7 @@ class Swagger2Importer implements SwaggerImporter {
     private final boolean forRefactoring
     private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
     private Swagger swagger
+    private boolean generateTestCase
 
     static {
         yamlMapper = Yaml.mapper()
@@ -80,9 +81,14 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
+       this(project, defaultMediaType, forRefactoring, false)
+    }
+
+    public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring, boolean generateTestCase) {
         this.project = project
         this.defaultMediaType = defaultMediaType
         this.forRefactoring = forRefactoring
+        this.generateTestCase = generateTestCase
     }
 
     public Swagger2Importer(WsdlProject project) {
@@ -158,6 +164,9 @@ class Swagger2Importer implements SwaggerImporter {
         if (resource.options != null)
             addOperation(res, resource.options, RestRequestInterface.HttpMethod.OPTIONS)
 
+        if (generateTestCase) {
+            new Swagger2TestCaseGenerator().generateTestCases(project, res, resource);
+        }
         return res;
     }
 
