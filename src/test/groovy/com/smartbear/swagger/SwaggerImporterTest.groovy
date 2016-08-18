@@ -18,6 +18,11 @@ package com.smartbear.swagger
 
 import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
+import com.eviware.soapui.impl.wsdl.WsdlTestSuite
+import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
+import org.hamcrest.CoreMatchers
+
+import static org.junit.Assert.assertThat
 
 /**
  * Basic tests that use the examples at wordnik - if they change these tests will probably break
@@ -43,7 +48,7 @@ class SwaggerImporterTest extends GroovyTestCase {
     void testImportApiDeclaration() {
         def project = new WsdlProject();
         Swagger1XImporter importer = new Swagger1XImporter(project)
-        importer.importApiDeclaration(new File("src/test/resources/api-docs").toURL().toString());
+        importer.importApiDeclaration(new File("src/test/resources/api-docs").toURI().toString());
     }
 
     void testImportSwagger2() {
@@ -56,5 +61,21 @@ class SwaggerImporterTest extends GroovyTestCase {
 
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
         importer.importSwagger("https://api.rocrooster.net/api-docs.json")[0]
+    }
+
+    void testGeneratesTest() {
+        WsdlProject project = new WsdlProject()
+        project.name = 'Rest Project From Swagger'
+        Swagger2Importer swagger2Importer = new Swagger2Importer(project, "application/json", false, true)
+        swagger2Importer.importSwagger(new File("src/test/resources/petstore-2.0.json").toURI().toString())
+
+        //assert test suite it created and number of Test Case is same as number of resources/paths
+        assertThat(project.getTestSuiteCount(), CoreMatchers.is(1))
+        WsdlTestSuite testSuite = project.getTestSuiteAt(0)
+        assertThat(testSuite.getTestCaseCount(), CoreMatchers.is(project.getInterfaceAt(0).getOperationCount()))
+
+        //assert parameters with default value
+        RestTestRequestStep testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/findByStatus-TestCase').getTestStepAt(0)
+        assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('available'))
     }
 }
