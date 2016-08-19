@@ -20,6 +20,7 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite
 import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
+import com.eviware.soapui.security.assertion.ValidHttpStatusCodesAssertion
 import org.hamcrest.CoreMatchers
 
 import static org.junit.Assert.assertThat
@@ -77,5 +78,8 @@ class SwaggerImporterTest extends GroovyTestCase {
         //assert parameters with default value
         RestTestRequestStep testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/findByStatus-TestCase').getTestStepAt(0)
         assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('available'))
+
+        //assert assertion
+        assertThat(testStep.getAssertionAt(0).label, CoreMatchers.is(ValidHttpStatusCodesAssertion.LABEL))
     }
 }

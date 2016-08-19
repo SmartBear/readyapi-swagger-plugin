@@ -8,6 +8,7 @@ import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
 import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
 import com.eviware.soapui.impl.wsdl.teststeps.registry.RestRequestStepFactory
 import com.eviware.soapui.model.testsuite.TestProperty
+import com.smartbear.swagger.assertion.Assertions
 import io.swagger.models.Operation
 import io.swagger.models.Path
 import io.swagger.models.parameters.AbstractSerializableParameter
@@ -24,7 +25,15 @@ class Swagger2TestCaseGenerator {
                         testStep.testRequest.params.each {
                             setParameterValue(it.value, request.method, path, resource.path)
                         }
+                        addAssertions(testStep, request.method, path, resource.path)
                 }
+        }
+    }
+
+    private static void addAssertions(RestTestRequestStep restTestRequestStep, HttpMethod httpMethod, Path swaggerPath, String path) {
+        Operation operation = getSwaggerOperation(httpMethod, swaggerPath, path)
+        if (operation) {
+            Assertions.addAssertions(restTestRequestStep, operation.responses)
         }
     }
 
