@@ -14,6 +14,7 @@ import groovy.json.JsonSlurper
 class SwaggerUtils {
     public static final String DEFAULT_MEDIA_TYPE = "application/json";
     public static final boolean DEFAULT_FOR_REFACTORING_VALUE = false;
+    public static final boolean DEFAULT_FOR_CREATE_TEST_CASE = false;
 
     /**
      * Selects the appropriate SwaggerImporter for the specified URL. For .yaml urls the Swagger2Importer
@@ -28,10 +29,10 @@ class SwaggerUtils {
      */
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType,
-                                                 boolean forRefactoring) {
+                                                 boolean forRefactoring, boolean generateTestCase) {
 
         if (url.endsWith(".yaml"))
-            return new Swagger2Importer(project, defaulMediaType, forRefactoring)
+            return new Swagger2Importer(project, defaulMediaType, forRefactoring, generateTestCase)
 
         if (url.endsWith(".xml"))
             return new Swagger1XImporter(project, defaulMediaType, forRefactoring)
@@ -48,15 +49,16 @@ class SwaggerUtils {
     }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, boolean forRefactoring) {
-        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, forRefactoring)
+        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, forRefactoring, DEFAULT_FOR_CREATE_TEST_CASE)
     }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType) {
-        return createSwaggerImporter(url, project, defaulMediaType, DEFAULT_FOR_REFACTORING_VALUE)
+        return createSwaggerImporter(url, project, defaulMediaType, DEFAULT_FOR_REFACTORING_VALUE, DEFAULT_FOR_CREATE_TEST_CASE)
     }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project) {
-        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, DEFAULT_FOR_REFACTORING_VALUE)
+        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, DEFAULT_FOR_REFACTORING_VALUE,
+                DEFAULT_FOR_CREATE_TEST_CASE)
     }
 
     static SwaggerImporter importSwaggerFromUrl(
