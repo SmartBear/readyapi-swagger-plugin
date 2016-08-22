@@ -81,7 +81,7 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
-       this(project, defaultMediaType, forRefactoring, false)
+        this(project, defaultMediaType, forRefactoring, false)
     }
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring, boolean generateTestCase) {

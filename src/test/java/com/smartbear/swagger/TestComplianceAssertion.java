@@ -24,9 +24,9 @@ public class TestComplianceAssertion {
         WsdlTestCase wsdlTestCase = project.addNewTestSuite("TestSuite").addNewTestCase("TestCase");
         HttpTestRequestStep testStep =
             (HttpTestRequestStep) wsdlTestCase.addTestStep(HttpRequestStepFactory.HTTPREQUEST_TYPE,
-                "Request","http://petstore.swagger.io/v2/pet/findByTags", "GET" );
+                "Request", "http://petstore.swagger.io/v2/pet/findByTags", "GET");
 
-        testStep.getTestRequest().getParams().addProperty( "tags");
+        testStep.getTestRequest().getParams().addProperty("tags");
         testStep.getTestRequest().setSendEmptyParameters(true);
 
         // create the assertion

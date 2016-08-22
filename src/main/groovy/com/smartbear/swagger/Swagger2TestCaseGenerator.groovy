@@ -28,7 +28,8 @@ class Swagger2TestCaseGenerator {
         }
     }
 
-    private static void setParameterValue(TestProperty parameter, HttpMethod httpMethod, Path swaggerPath, String path) {
+    private
+    static void setParameterValue(TestProperty parameter, HttpMethod httpMethod, Path swaggerPath, String path) {
         Operation operation = getSwaggerOperation(httpMethod, swaggerPath, path)
         AbstractSerializableParameter swaggerParam = (AbstractSerializableParameter) operation.parameters.find {
             it.name == parameter.name
