@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @SuppressWarnings("unused")
-@PluginSilentApiImporter
+@PluginSilentApiImporter(formatName = "Swagger")
 public class SilentSwaggerImporter implements SilentApiImporter {
 
     private CreateSwaggerProjectAction createSwaggerProjectAction = new CreateSwaggerProjectAction();
@@ -27,10 +27,6 @@ public class SilentSwaggerImporter implements SilentApiImporter {
         SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(url.toString(), wsdlProject);
         Interface[] services = importer.importSwagger(url.toString());
         return Arrays.asList(services);
-    }
-
-    public String getFormatName() {
-        return "Swagger";
     }
 
 }
