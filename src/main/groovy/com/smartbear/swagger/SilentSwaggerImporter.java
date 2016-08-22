@@ -1,24 +1,26 @@
 package com.smartbear.swagger;
 
 import com.eviware.soapui.impl.WorkspaceImpl;
-import com.eviware.soapui.impl.actions.SilentImportMethod;
+import com.eviware.soapui.impl.actions.SilentApiImporter;
 import com.eviware.soapui.impl.actions.UnsupportedDefinitionException;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.model.iface.Interface;
+import com.eviware.soapui.plugins.auto.PluginSilentApiImporter;
 import com.eviware.soapui.support.action.SoapUIAction;
 
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
-//Instantiated using reflection
 @SuppressWarnings("unused")
-public class SilentSwaggerImporter implements SilentImportMethod {
+@PluginSilentApiImporter
+public class SilentSwaggerImporter implements SilentApiImporter {
 
     private CreateSwaggerProjectAction createSwaggerProjectAction = new CreateSwaggerProjectAction();
 
     public boolean acceptsURL(URL url) {
-        return url.toString().toLowerCase().contains("swagger.");
+        String urlToLowerCase = url.toString().toLowerCase();
+        return urlToLowerCase.endsWith(".yaml") || urlToLowerCase.endsWith(".json") || urlToLowerCase.endsWith(".xml");
     }
 
     public Collection<Interface> importApi(URL url, WsdlProject wsdlProject) throws UnsupportedDefinitionException {
@@ -27,11 +29,8 @@ public class SilentSwaggerImporter implements SilentImportMethod {
         return Arrays.asList(services);
     }
 
-    public SoapUIAction<WorkspaceImpl> getImportAction() {
-        return createSwaggerProjectAction;
+    public String getFormatName() {
+        return "Swagger";
     }
 
-    public String getLabel() {
-        return "Import Swagger Definition";
-    }
 }
