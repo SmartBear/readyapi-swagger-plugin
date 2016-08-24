@@ -64,7 +64,7 @@ class SwaggerImporterTest extends GroovyTestCase {
         importer.importSwagger("https://api.rocrooster.net/api-docs.json")[0]
     }
 
-    void testGeneratesTest() {
+    void testTestCaseGeneration() {
         WsdlProject project = new WsdlProject()
         project.name = 'Rest Project From Swagger'
         Swagger2Importer swagger2Importer = new Swagger2Importer(project, "application/json", false, true)

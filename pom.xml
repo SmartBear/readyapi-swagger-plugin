@@ -93,6 +93,13 @@
             <artifactId>ready-api-soapui-pro</artifactId>
             <version>1.8.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.smartbear</groupId>
+            <artifactId>ready-api-soapui</artifactId>
+            <version>1.8.0</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>io.swagger</groupId>
