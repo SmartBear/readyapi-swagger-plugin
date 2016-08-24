@@ -81,7 +81,7 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
-       this(project, defaultMediaType, forRefactoring, false)
+        this(project, defaultMediaType, forRefactoring, false)
     }
 
     public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring, boolean generateTestCase) {
@@ -96,7 +96,10 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     public RestService[] importSwagger(String url) {
+        return importSwaggerWithUpdatedEndpoint(url, null)
+    }
 
+    public RestService[] importSwaggerWithUpdatedEndpoint(String url, String endpoint) {
         def result = []
 
         if (url.startsWith("file:"))
@@ -105,7 +108,7 @@ class Swagger2Importer implements SwaggerImporter {
         logger.info("Importing swagger [$url]")
 
         swagger = new SwaggerParser().read(url)
-        RestService restService = createRestService(swagger, url)
+        RestService restService = createRestService(swagger, url, endpoint)
         swagger.paths.each {
             importPath(restService, it.key, it.value)
         }
@@ -315,7 +318,7 @@ class Swagger2Importer implements SwaggerImporter {
         return sampleValue
     }
 
-    private RestService createRestService(Swagger swagger, String url) {
+    private RestService createRestService(Swagger swagger, String url, String endpoint) {
         if (project == null) {
             return null
         }
@@ -333,7 +336,9 @@ class Swagger2Importer implements SwaggerImporter {
         RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE);
         restService.description = swagger.info?.description
 
-        if (swagger.host != null) {
+        if (endpoint?.trim()) {
+            restService.addEndpoint(endpoint)
+        } else if (swagger.host != null) {
             if (swagger.schemes != null) {
                 swagger.schemes.each { it ->
                     def scheme = it.toValue().toLowerCase()
@@ -354,8 +359,8 @@ class Swagger2Importer implements SwaggerImporter {
 
         if (swagger.basePath != null) {
             restService.basePath = swagger.basePath
-            if( restService.basePath.endsWith('/')){
-                restService.basePath = restService.basePath.substring(0,restService.basePath.length()-1)
+            if (restService.basePath.endsWith('/')) {
+                restService.basePath = restService.basePath.substring(0, restService.basePath.length() - 1)
             }
         }
 
