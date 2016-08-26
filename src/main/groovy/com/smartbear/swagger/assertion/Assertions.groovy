@@ -5,11 +5,13 @@ import io.swagger.models.Response
 
 
 class Assertions {
-    static AssertionCreator[] assertionCreators = [new ValidStatusCodesAssertionCreator()]
+    static AssertionCreator[] assertionCreators = [new ValidStatusCodesAssertionCreator(),
+                                                   new SwaggerComplianceAssertionCreator()]
 
-    static void addAssertions(RestTestRequestStep restTestRequestStep, Map<String, Response> responseMap) {
+    static void addAssertions(RestTestRequestStep restTestRequestStep, Map<String, Response> responseMap,
+                              Map<String, Object> context) {
         assertionCreators.each {
-            it.createAssertion(restTestRequestStep, responseMap)
+            it.createAssertion(restTestRequestStep, responseMap, context)
         }
     }
 }

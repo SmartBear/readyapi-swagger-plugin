@@ -107,7 +107,7 @@ class Swagger2Importer implements SwaggerImporter {
         swagger = new SwaggerParser().read(url)
         RestService restService = createRestService(swagger, url)
         swagger.paths.each {
-            importPath(restService, it.key, it.value)
+            importPath(restService, it.key, it.value, url)
         }
 
         result.add(restService)
@@ -140,7 +140,7 @@ class Swagger2Importer implements SwaggerImporter {
      * @return the created RestService
      */
 
-    RestResource importPath(RestService restService, String path, Path resource) {
+    RestResource importPath(RestService restService, String path, Path resource, String url) {
         if (restService == null) {
             return null
         }
@@ -165,7 +165,7 @@ class Swagger2Importer implements SwaggerImporter {
             addOperation(res, resource.options, RestRequestInterface.HttpMethod.OPTIONS)
 
         if (generateTestCase) {
-            new Swagger2TestCaseGenerator().generateTestCases(project, res, resource);
+            new Swagger2TestCaseGenerator().generateTestCases(project, res, resource, url);
         }
         return res;
     }

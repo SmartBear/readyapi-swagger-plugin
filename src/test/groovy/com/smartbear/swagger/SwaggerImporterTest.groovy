@@ -20,6 +20,9 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite
 import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.TestAssertionRegistry
+import com.eviware.soapui.plugins.auto.PluginTestAssertion
+import com.eviware.soapui.plugins.auto.factories.AutoTestAssertionFactory
 import com.eviware.soapui.security.assertion.ValidHttpStatusCodesAssertion
 import org.hamcrest.CoreMatchers
 
@@ -65,10 +68,12 @@ class SwaggerImporterTest extends GroovyTestCase {
     }
 
     void testTestCaseGeneration() {
+        TestAssertionRegistry.getInstance().addAssertion(new AutoTestAssertionFactory(SwaggerComplianceAssertion.getAnnotation(PluginTestAssertion.class), SwaggerComplianceAssertion.class));
         WsdlProject project = new WsdlProject()
         project.name = 'Rest Project From Swagger'
         Swagger2Importer swagger2Importer = new Swagger2Importer(project, "application/json", false, true)
-        swagger2Importer.importSwagger(new File("src/test/resources/petstore-2.0.json").toURI().toString())
+        String swaggerUrl = new File("src/test/resources/petstore-2.0.json").toURI().toString()
+        swagger2Importer.importSwagger(swaggerUrl)
 
         //assert test suite it created and number of Test Case is same as number of resources/paths
         assertThat(project.getTestSuiteCount(), CoreMatchers.is(1))
@@ -79,7 +84,12 @@ class SwaggerImporterTest extends GroovyTestCase {
         RestTestRequestStep testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/findByStatus-TestCase').getTestStepAt(0)
         assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('available'))
 
-        //assert assertion
+        //valid status codes assertion
         assertThat(testStep.getAssertionAt(0).label, CoreMatchers.is(ValidHttpStatusCodesAssertion.LABEL))
+
+        //valid status codes assertion
+        SwaggerComplianceAssertion swaggerComplianceAssertion = (SwaggerComplianceAssertion) testStep.getAssertionAt(1)
+        assertThat(swaggerComplianceAssertion.label, CoreMatchers.is("Swagger Compliance Assertion"))
+        assertThat(swaggerComplianceAssertion.swaggerUrl, CoreMatchers.is(swaggerUrl))
     }
 }
