@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 SmartBear Software, Inc.
+ *  Copyright 2013-2016 SmartBear Software, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,76 +25,22 @@ import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.rest.RestServiceFactory
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
-import com.eviware.soapui.impl.wsdl.InterfaceFactoryRegistry
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.smartbear.swagger4j.ApiDeclaration
 import com.smartbear.swagger4j.Parameter
-import com.smartbear.swagger4j.ResourceListing
-import com.smartbear.swagger4j.Swagger
 
-/**
- * A simple Swagger importer - now uses swagger4j library
- *
- * Improvements that need to be made:
- * - better error handling
- * - support for reading JSON Models and types
- *
- * @author Ole Lensmar
- */
-
-class Swagger1XImporter implements SwaggerImporter {
+abstract class AbstractSwagger1XImporter implements SwaggerImporter {
 
     private final WsdlProject project
     private final String defaultMediaType;
-    private final boolean forRefactoring
 
-    public Swagger1XImporter(WsdlProject project, String defaultMediaType) {
-        this(project, defaultMediaType, false)
-    }
-
-    public Swagger1XImporter(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
+    public AbstractSwagger1XImporter(WsdlProject project, String defaultMediaType) {
         this.project = project
         this.defaultMediaType = defaultMediaType
-        this.forRefactoring = forRefactoring;
     }
 
-    public Swagger1XImporter(WsdlProject project) {
+    public AbstractSwagger1XImporter(WsdlProject project) {
         this(project, "application/json")
-    }
-
-    public RestService[] importSwagger(String url) {
-
-        def result = []
-
-        ResourceListing resourceListing = Swagger.readSwagger(URI.create(url))
-        resourceListing.apis.each {
-
-            String name = it.path
-            if (name.startsWith("/api-docs")) {
-                def ix = name.indexOf("/", 1)
-                if (ix > 0)
-                    name = name.substring(ix)
-            }
-
-            Console.println("Importing API declaration with path $it.path")
-
-            def restService = importApiDeclaration(it.declaration, name)
-            ensureEndpoint(restService, url)
-            result.add(restService)
-        }
-
-        return result.toArray()
-    }
-
-    public RestService importApiDeclaration(String url) {
-        def declaration = Swagger.createReader().readApiDeclaration(URI.create(url))
-        def name = declaration.basePath == null ? url : declaration.basePath
-
-        def restService = importApiDeclaration(declaration, name);
-
-        ensureEndpoint(restService, url)
-
-        return restService
     }
 
     public void ensureEndpoint(RestService restService, String url) {
@@ -208,9 +154,7 @@ class Swagger1XImporter implements SwaggerImporter {
     }
 
     private RestService createRestService(String path, String name) {
-        RestService restService = forRefactoring ?
-                InterfaceFactoryRegistry.createNew(project, RestServiceFactory.REST_TYPE, name) :
-                project.addNewInterface(name, RestServiceFactory.REST_TYPE)
+        RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
 
         if (path != null) {
             try {

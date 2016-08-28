@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 SmartBear Software, Inc.
+ *  Copyright 2013-2016 SmartBear Software, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -114,11 +114,6 @@ class Swagger2Importer implements SwaggerImporter {
         ensureEndpoint(restService, url)
 
         return result.toArray()
-    }
-
-    @Override
-    RestService importApiDeclaration(String expUrl) {
-        return importSwagger(expUrl)
     }
 
     void ensureEndpoint(RestService restService, String url) {
