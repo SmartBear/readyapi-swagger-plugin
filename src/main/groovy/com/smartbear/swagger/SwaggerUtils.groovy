@@ -82,13 +82,12 @@ class SwaggerUtils {
     }
 
     static SwaggerImporter importSwaggerFromUrl(
-            final WsdlProject project, final String finalExpUrl, final boolean isResourceListing) throws Exception {
-        return importSwaggerFromUrl(project, finalExpUrl, isResourceListing, "application/json");
+            final WsdlProject project, final String finalExpUrl) throws Exception {
+        return importSwaggerFromUrl(project, finalExpUrl, "application/json");
     }
 
     static SwaggerImporter importSwaggerFromUrl(final WsdlProject project,
                                                 final String finalExpUrl,
-                                                final boolean isResourceListing,
                                                 final String defaultMediaType) throws Exception {
 
         final SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(finalExpUrl, project, defaultMediaType);
@@ -105,11 +104,7 @@ class SwaggerUtils {
                 List<RestService> result = new ArrayList<RestService>();
 
                 try {
-                    if (isResourceListing) {
-                        result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
-                    } else {
-                        result.add(importer.importApiDeclaration(finalExpUrl));
-                    }
+                    result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
 
                     // select the first imported REST Service (since a swagger definition can
                     // define multiple APIs
