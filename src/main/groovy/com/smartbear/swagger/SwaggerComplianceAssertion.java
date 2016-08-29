@@ -67,7 +67,7 @@ import java.util.Map;
 
 @PluginTestAssertion(id = "SwaggerComplianceAssertion", label = "Swagger Compliance Assertion",
     category = AssertionCategoryMapping.STATUS_CATEGORY,
-    description = "Asserts that the response message is compliant with a Swagger definition")
+    description = "Asserts that the request and response messages are compliant with a Swagger definition")
 public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements ResponseAssertion, PluginProvidedAssertion {
     private static final String SWAGGER_URL = "swaggerUrl";
     private static final String STRICT_MODE = "strictMode";
@@ -185,12 +185,12 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                         return true;
                     } else {
                         throw new AssertionException(new AssertionError(
-                            "Failed to find " + method + " method for path [" + path + "] in Swagger definition"));
+                            "No resource matching [" + method + " " + path + "] in Swagger definition"));
                     }
                 }
             }
 
-            throw new AssertionException(new AssertionError("Failed to find matching path for [" + path + "] in Swagger definition"));
+            throw new AssertionException(new AssertionError("Failed to find resource for [" + path + "] in Swagger definition"));
         }
 
         return false;
