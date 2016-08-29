@@ -25,7 +25,7 @@ class ValidStatusCodesAssertionCreatorTest {
     @Test
     public void createsValidStatusCodesAssertion() throws Exception {
         Map<String, Response> responseMap = ['200': new Response(), '201': new Response()]
-        validStatusCodesAssertionCreator.createAssertion(restTestRequestStep, responseMap)
+        validStatusCodesAssertionCreator.createAssertion(restTestRequestStep, responseMap, [:])
         WsdlMessageAssertion assertion = restTestRequestStep.getAssertionAt(0)
         assertThat(assertion, CoreMatchers.is(instanceOf(ValidHttpStatusCodesAssertion.class)))
         assertThat(((ValidHttpStatusCodesAssertion) assertion).getCodes(), CoreMatchers.is('200,201'))
@@ -34,7 +34,7 @@ class ValidStatusCodesAssertionCreatorTest {
     @Test
     public void doesNotCreateAssertionIfDefaultResponseIsSpecified() throws Exception {
         Map<String, Response> responseMap = ['200': new Response(), 'default': new Response()]
-        validStatusCodesAssertionCreator.createAssertion(restTestRequestStep, responseMap)
+        validStatusCodesAssertionCreator.createAssertion(restTestRequestStep, responseMap, [:])
         assertThat(restTestRequestStep.getAssertionCount(), CoreMatchers.is(0))
     }
 }

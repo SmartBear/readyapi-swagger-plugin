@@ -14,10 +14,9 @@ import io.swagger.models.Path
 import io.swagger.models.parameters.AbstractSerializableParameter
 
 class Swagger2TestCaseGenerator {
-    static void generateTestCases(WsdlProject project, RestResource resource, Path path, String swaggerUrl) {
+    static void generateTestCases(WsdlProject project, RestResource resource, Path path, Map<String, Object> context) {
         WsdlTestSuite testSuite = createTestSuiteIfNotPresent(project)
         WsdlTestCase testCase = testSuite.addNewTestCase("$resource.name-TestCase")
-        Map<String, Object> context = [swaggerUrl: swaggerUrl] as Map
         resource.restMethodList.each {
             method ->
                 method.requestList.each {
@@ -32,7 +31,7 @@ class Swagger2TestCaseGenerator {
     }
 
     private static void addAssertions(RestTestRequestStep restTestRequestStep, HttpMethod httpMethod, Path swaggerPath,
-                                      String path, context) {
+                                      String path, Map<String, Object> context) {
         Operation operation = getSwaggerOperation(httpMethod, swaggerPath, path)
         if (operation) {
             Assertions.addAssertions(restTestRequestStep, operation.responses, context)
