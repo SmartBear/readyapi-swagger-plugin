@@ -98,6 +98,7 @@ class Swagger2Importer implements SwaggerImporter {
     public RestService[] importSwagger(String url) {
 
         def result = []
+        Map<String, Object> context = [swaggerUrl: url] as Map
 
         if (url.startsWith("file:"))
             url = new File(new URL(url).toURI()).absolutePath
@@ -107,7 +108,7 @@ class Swagger2Importer implements SwaggerImporter {
         swagger = new SwaggerParser().read(url)
         RestService restService = createRestService(swagger, url)
         swagger.paths.each {
-            importPath(restService, it.key, it.value)
+            importPath(restService, it.key, it.value, context)
         }
 
         result.add(restService)
@@ -135,7 +136,7 @@ class Swagger2Importer implements SwaggerImporter {
      * @return the created RestService
      */
 
-    RestResource importPath(RestService restService, String path, Path resource) {
+    RestResource importPath(RestService restService, String path, Path resource, Map<String, Object> context) {
         if (restService == null) {
             return null
         }
@@ -160,7 +161,7 @@ class Swagger2Importer implements SwaggerImporter {
             addOperation(res, resource.options, RestRequestInterface.HttpMethod.OPTIONS)
 
         if (generateTestCase) {
-            new Swagger2TestCaseGenerator().generateTestCases(project, res, resource);
+            new Swagger2TestCaseGenerator().generateTestCases(project, res, resource, context);
         }
         return res;
     }
