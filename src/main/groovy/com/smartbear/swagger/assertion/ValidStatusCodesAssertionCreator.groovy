@@ -9,7 +9,8 @@ import static com.eviware.soapui.security.assertion.ValidHttpStatusCodesAssertio
 
 class ValidStatusCodesAssertionCreator implements AssertionCreator {
     @Override
-    void createAssertion(RestTestRequestStep restTestRequestStep, Map<String, Response> responseMap) {
+    void createAssertion(RestTestRequestStep restTestRequestStep, Map<String, Response> responseMap,
+                         Map<String, Object> context) {
         if (!responseMap.containsKey('default')) {
             ValidHttpStatusCodesAssertion assertion = (ValidHttpStatusCodesAssertion) restTestRequestStep.addAssertion(LABEL)
             assertion.codes = responseMap.keySet().join(',')

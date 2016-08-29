@@ -69,10 +69,23 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
 
     public SwaggerComplianceAssertion(TestAssertionConfig assertionConfig, Assertable modelItem) {
         super(assertionConfig, modelItem, true, false, false, true);
+        readValuesFromConfig();
+    }
 
+    @Override
+    public void setConfiguration(XmlObject configuration) {
+        super.setConfiguration(configuration);
+        readValuesFromConfig();
+    }
+
+    private void readValuesFromConfig() {
         XmlObjectConfigurationReader reader = new XmlObjectConfigurationReader(getConfiguration());
         swaggerUrl = reader.readString(SWAGGER_URL, null);
         strictMode = reader.readBoolean(STRICT_MODE, true);
+    }
+
+    public String getSwaggerUrl() {
+        return swaggerUrl;
     }
 
     @Override

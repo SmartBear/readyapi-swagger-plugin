@@ -14,7 +14,7 @@ import io.swagger.models.Path
 import io.swagger.models.parameters.AbstractSerializableParameter
 
 class Swagger2TestCaseGenerator {
-    static void generateTestCases(WsdlProject project, RestResource resource, Path path) {
+    static void generateTestCases(WsdlProject project, RestResource resource, Path path, Map<String, Object> context) {
         WsdlTestSuite testSuite = createTestSuiteIfNotPresent(project)
         WsdlTestCase testCase = testSuite.addNewTestCase("$resource.name-TestCase")
         resource.restMethodList.each {
@@ -25,19 +25,21 @@ class Swagger2TestCaseGenerator {
                         testStep.testRequest.params.each {
                             setParameterValue(it.value, request.method, path, resource.path)
                         }
-                        addAssertions(testStep, request.method, path, resource.path)
+                        addAssertions(testStep, request.method, path, resource.path, context)
                 }
         }
     }
 
-    private static void addAssertions(RestTestRequestStep restTestRequestStep, HttpMethod httpMethod, Path swaggerPath, String path) {
+    private static void addAssertions(RestTestRequestStep restTestRequestStep, HttpMethod httpMethod, Path swaggerPath,
+                                      String path, Map<String, Object> context) {
         Operation operation = getSwaggerOperation(httpMethod, swaggerPath, path)
         if (operation) {
-            Assertions.addAssertions(restTestRequestStep, operation.responses)
+            Assertions.addAssertions(restTestRequestStep, operation.responses, context)
         }
     }
 
-    private static void setParameterValue(TestProperty parameter, HttpMethod httpMethod, Path swaggerPath, String path) {
+    private static void setParameterValue(TestProperty parameter, HttpMethod httpMethod, Path swaggerPath,
+                                          String path) {
         Operation operation = getSwaggerOperation(httpMethod, swaggerPath, path)
         AbstractSerializableParameter swaggerParam = (AbstractSerializableParameter) operation.parameters.find {
             it.name == parameter.name
