@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 SmartBear Software, Inc.
+ *  Copyright 2013-2016 SmartBear Software, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,9 +43,6 @@ import java.io.File;
 
 @PluginImportMethod(label = "Swagger Definition (REST)")
 public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
-    public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
-    public static final String API_DECLARATION_TYPE = "API Declaration (Swagger 1.X only)";
-
     private XFormDialog dialog;
 
     public CreateSwaggerProjectAction() {
@@ -56,7 +53,6 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
         // initialize form
         if (dialog == null) {
             dialog = ADialogBuilder.buildDialog(Form.class);
-            dialog.setValue(Form.TYPE, RESOURCE_LISTING_TYPE);
             dialog.setValue(Form.DEFAULTMEDIATYPE, SwaggerUtils.DEFAULT_MEDIA_TYPE);
             dialog.getFormField(Form.SWAGGERURL).addFormFieldListener(new XFormFieldListener() {
                 public void valueChanged(XFormField sourceField, String newValue, String oldValue) {
@@ -88,7 +84,6 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
                     SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(
                             project,
                             expUrl,
-                            dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE),
                             dialog.getValue(Form.DEFAULTMEDIATYPE));
                     Analytics.trackAction("CreateSwaggerProject", "Importer", importer.getClass().getSimpleName());
 
@@ -132,10 +127,5 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
 
         @AField(name = "Default Media Type", description = "Default Media Type of the responses", type = AFieldType.STRING)
         String DEFAULTMEDIATYPE = "Default Media Type";
-
-        @AField(name = "Definition Type", description = "Resource Listing or API Declaration",
-                type = AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE})
-        String TYPE = "Definition Type";
     }
-
 }

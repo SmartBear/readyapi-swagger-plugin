@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 SmartBear Software, Inc.
+ *  Copyright 2013-2016 SmartBear Software, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ class SwaggerImporterTest extends GroovyTestCase {
 
     void testImportApiDeclaration() {
         def project = new WsdlProject();
-        Swagger1XImporter importer = new Swagger1XImporter(project)
-        importer.importApiDeclaration(new File("src/test/resources/api-docs").toURI().toString());
+        Swagger1XApiDeclarationImporter importer = new Swagger1XApiDeclarationImporter(project)
+        importer.importSwagger(new File("src/test/resources/api-docs").toURI().toString());
     }
 
     void testImportSwagger2() {

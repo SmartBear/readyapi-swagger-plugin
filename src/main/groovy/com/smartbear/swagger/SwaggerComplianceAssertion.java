@@ -1,3 +1,19 @@
+/**
+ * Copyright 2013-2016 SmartBear Software, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.smartbear.swagger;
 
 import com.eviware.soapui.config.TestAssertionConfig;
@@ -50,8 +66,8 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 @PluginTestAssertion(id = "SwaggerComplianceAssertion", label = "Swagger Compliance Assertion",
-        category = AssertionCategoryMapping.STATUS_CATEGORY,
-        description = "Asserts that the response message is compliant with a Swagger definition")
+    category = AssertionCategoryMapping.STATUS_CATEGORY,
+    description = "Asserts that the request and response messages are compliant with a Swagger definition")
 public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements ResponseAssertion, PluginProvidedAssertion {
     private static final String SWAGGER_URL = "swaggerUrl";
     private static final String STRICT_MODE = "strictMode";
@@ -120,7 +136,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         mainForm.addCheckBox(STRICT_MODE_FIELD, "Enables strict validation (fails for undefined responses)");
 
         dialog = builder.buildDialog(builder.buildOkCancelActions(),
-                "Specify Swagger URL and validation mode below", UISupport.OPTIONS_ICON);
+            "Specify Swagger URL and validation mode below", UISupport.OPTIONS_ICON);
     }
 
     public void setSwaggerUrl(String endpoint) {
@@ -176,18 +192,18 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                     Operation operation = findOperation(swagger.getPath(swaggerPath), method);
                     if (operation != null) {
                         validateOperation(swagger, operation, String.valueOf(messageExchange.getResponseStatusCode()),
-                                messageExchange.getResponseContent()
+                            messageExchange.getResponseContent()
                         );
 
                         return true;
                     } else {
                         throw new AssertionException(new AssertionError(
-                                "Failed to find " + method + " method for path [" + path + "] in Swagger definition"));
+                            "No resource matching [" + method + " " + path + "] in Swagger definition"));
                     }
                 }
             }
 
-            throw new AssertionException(new AssertionError("Failed to find matching path for [" + path + "] in Swagger definition"));
+            throw new AssertionException(new AssertionError("Failed to find resource for [" + path + "] in Swagger definition"));
         }
 
         return false;
@@ -223,7 +239,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             validateResponse(contentAsString, swagger, responseSchema);
         } else if (strictMode) {
             throw new AssertionException(new AssertionError(
-                    "Missing response for a " + responseCode + " response for operation " + operation.toString() + " in Swagger definition"));
+                "Missing response for a " + responseCode + " response for operation " + operation.toString() + " in Swagger definition"));
         }
     }
 
@@ -304,8 +320,8 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
 
                 // build custom schema factory that preloads existing schema
                 JsonSchemaFactory factory = JsonSchemaFactory.newBuilder().setLoadingConfiguration(
-                        LoadingConfiguration.newBuilder().preloadSchema(swaggerUrl,
-                                Json.mapper().readTree(Json.pretty(swagger))).freeze()
+                    LoadingConfiguration.newBuilder().preloadSchema(swaggerUrl,
+                        Json.mapper().readTree(Json.pretty(swagger))).freeze()
                 ).freeze();
                 jsonSchema = factory.getJsonSchema(schemaObject);
             } else {

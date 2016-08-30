@@ -1,3 +1,19 @@
+/**
+ *  Copyright 2013-2016 SmartBear Software, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.smartbear.swagger
 
 import com.eviware.soapui.impl.rest.RestService
@@ -13,7 +29,6 @@ import groovy.json.JsonSlurper
  */
 class SwaggerUtils {
     public static final String DEFAULT_MEDIA_TYPE = "application/json";
-    public static final boolean DEFAULT_FOR_REFACTORING_VALUE = false;
     public static final boolean DEFAULT_FOR_CREATE_TEST_CASE = false;
 
     /**
@@ -29,13 +44,13 @@ class SwaggerUtils {
      */
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType,
-                                                 boolean forRefactoring, boolean generateTestCase) {
+                                                 boolean generateTestCase) {
 
         if (url.endsWith(".yaml"))
-            return new Swagger2Importer(project, defaulMediaType, forRefactoring, generateTestCase)
+            return new Swagger2Importer(project, defaulMediaType, generateTestCase)
 
         if (url.endsWith(".xml"))
-            return new Swagger1XImporter(project, defaulMediaType, forRefactoring)
+            return new Swagger1XResourceListingImporter(project, defaulMediaType)
 
         def conn = new URL(url).openConnection()
         conn.addRequestProperty("Accept", "*/*")
@@ -43,32 +58,36 @@ class SwaggerUtils {
         def json = new JsonSlurper().parseText(conn.inputStream.text)
 
         if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
-            return new Swagger2Importer(project, defaulMediaType, forRefactoring)
-        else
-            return new Swagger1XImporter(project, defaulMediaType, forRefactoring)
+            return new Swagger2Importer(project, defaulMediaType)
+        else {
+
+            // only api-declarations have a basePath, see
+            // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/1.2.md#52-api-declaration
+            if (String.valueOf(json?.basePath != null)) {
+                return new Swagger1XApiDeclarationImporter(project, defaulMediaType)
+            } else {
+                return new Swagger1XResourceListingImporter(project, defaulMediaType)
+            }
+        }
     }
 
-    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, boolean forRefactoring) {
-        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, forRefactoring, DEFAULT_FOR_CREATE_TEST_CASE)
-    }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType) {
-        return createSwaggerImporter(url, project, defaulMediaType, DEFAULT_FOR_REFACTORING_VALUE, DEFAULT_FOR_CREATE_TEST_CASE)
+        return createSwaggerImporter(url, project, defaulMediaType, DEFAULT_FOR_CREATE_TEST_CASE)
     }
 
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project) {
-        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE, DEFAULT_FOR_REFACTORING_VALUE,
+        return createSwaggerImporter(url, project, DEFAULT_MEDIA_TYPE,
                 DEFAULT_FOR_CREATE_TEST_CASE)
     }
 
     static SwaggerImporter importSwaggerFromUrl(
-            final WsdlProject project, final String finalExpUrl, final boolean isResourceListing) throws Exception {
-        return importSwaggerFromUrl(project, finalExpUrl, isResourceListing, "application/json");
+            final WsdlProject project, final String finalExpUrl) throws Exception {
+        return importSwaggerFromUrl(project, finalExpUrl, "application/json");
     }
 
     static SwaggerImporter importSwaggerFromUrl(final WsdlProject project,
                                                 final String finalExpUrl,
-                                                final boolean isResourceListing,
                                                 final String defaultMediaType) throws Exception {
 
         final SwaggerImporter importer = SwaggerUtils.createSwaggerImporter(finalExpUrl, project, defaultMediaType);
@@ -85,11 +104,7 @@ class SwaggerUtils {
                 List<RestService> result = new ArrayList<RestService>();
 
                 try {
-                    if (isResourceListing) {
-                        result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
-                    } else {
-                        result.add(importer.importApiDeclaration(finalExpUrl));
-                    }
+                    result.addAll(Arrays.asList(importer.importSwagger(finalExpUrl)));
 
                     // select the first imported REST Service (since a swagger definition can
                     // define multiple APIs

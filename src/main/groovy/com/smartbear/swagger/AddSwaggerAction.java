@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 SmartBear Software, Inc.
+ *  Copyright 2013-2016 SmartBear Software, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,8 +40,6 @@ import java.io.File;
 
 @ActionConfiguration(actionGroup = "EnabledWsdlProjectActions", afterAction = "AddWadlAction", separatorBefore = true)
 public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
-    public static final String RESOURCE_LISTING_TYPE = "Resource Listing";
-    public static final String API_DECLARATION_TYPE = "API Declaration (only for Swagger 1.X)";
 
     private XFormDialog dialog;
 
@@ -53,7 +51,6 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
         // initialize form
         if (dialog == null) {
             dialog = ADialogBuilder.buildDialog(Form.class);
-            dialog.setValue(Form.TYPE, RESOURCE_LISTING_TYPE);
             dialog.setValue(Form.DEFAULT_MEDIA_TYPE, SwaggerUtils.DEFAULT_MEDIA_TYPE);
         } else {
             dialog.setValue(Form.SWAGGER_URL, "");
@@ -73,7 +70,6 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                     }
 
                     importSwaggerDefinition(project, expUrl,
-                            dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE),
                             dialog.getValue(Form.DEFAULT_MEDIA_TYPE));
                     break;
                 }
@@ -85,10 +81,9 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
 
     public SwaggerImporter importSwaggerDefinition(final WsdlProject project,
                                                    final String definitionUrl,
-                                                   final boolean isResourceListing,
                                                    final String defaultMediaType) throws Exception{
         SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(
-                project, definitionUrl, isResourceListing, defaultMediaType);
+            project, definitionUrl, defaultMediaType);
         Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
         return importer;
     }
@@ -100,10 +95,5 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
 
         @AField(name = "Default Media Type", description = "Default Media Type of the responses", type = AFieldType.STRING)
         String DEFAULT_MEDIA_TYPE = "Default Media Type";
-
-        @AField(name = "Definition Type", description = "Resource Listing or API Declaration",
-                type = AFieldType.RADIOGROUP, values = {RESOURCE_LISTING_TYPE, API_DECLARATION_TYPE})
-        String TYPE = "Definition Type";
     }
-
 }
