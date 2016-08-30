@@ -6,11 +6,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.smartbear</groupId>
+    <groupId>com.smartbear.soapui.plugins</groupId>
     <artifactId>soapui-swagger-plugin</artifactId>
     <version>2.5.0</version>
 
-    <name>Ready! API Swagger plugin</name>
+    <name>Swagger Plugin</name>
+    <description>Provides Swagger 1.X/2.0 import/export functionality for REST APIs</description>
+    <url>https://github.com/SmartBear/readyapi-swagger-plugin</url>
 
     <properties>
         <jackson-version>2.4.2</jackson-version>
@@ -169,6 +171,25 @@
         </resources>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>filter-src</id>
+                        <goals>
+                            <goal>filter-sources</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/templates</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>

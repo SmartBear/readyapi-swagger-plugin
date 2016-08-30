@@ -29,7 +29,7 @@
             <unpack>true</unpack>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>com.smartbear:soapui-swagger-plugin</include>
+                <include>com.smartbear.soapui.plugins:soapui-swagger-plugin</include>
             </includes>
         </dependencySet>
     </dependencySets>
