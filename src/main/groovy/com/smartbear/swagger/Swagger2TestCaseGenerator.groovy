@@ -46,21 +46,22 @@ class Swagger2TestCaseGenerator {
             it.name == parameter.name
         }
 
-        if (swaggerParam.required && StringUtils.isNullOrEmpty(parameter.value)) {
+        if (swaggerParam.example) {
+            parameter.value = String.valueOf(swaggerParam.example)
+        }
+
+        if (StringUtils.isNullOrEmpty(parameter.value) && swaggerParam.required) {
             parameter.value = buildExampleValue(swaggerParam)
         }
     }
 
     static String buildExampleValue(AbstractSerializableParameter parameter) {
-        if (parameter.example) {
-            return String.valueOf(parameter.example)
-        }
 
         switch (parameter.type) {
             case "string": return createStringExample(parameter.format)
-            case "number": return "0.0"
-            case "integer": return "0"
-            case "boolean": return "false"
+            case "number": return "double" == parameter.format ? String.valueOf((double) Math.random() * 1000) : String.valueOf((float) Math.random() * 1000)
+            case "integer": return String.valueOf((int) (Math.random() * 1000))
+            case "boolean": return Math.random() > 0.5 ? "true" : "false"
         }
 
         return ""
