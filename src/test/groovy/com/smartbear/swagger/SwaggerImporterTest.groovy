@@ -71,7 +71,7 @@ class SwaggerImporterTest extends GroovyTestCase {
         TestAssertionRegistry.getInstance().addAssertion(new AutoTestAssertionFactory(SwaggerComplianceAssertion.getAnnotation(PluginTestAssertion.class), SwaggerComplianceAssertion.class));
         WsdlProject project = new WsdlProject()
         project.name = 'Rest Project From Swagger'
-        Swagger2Importer swagger2Importer = new Swagger2Importer(project, "application/json", false, true)
+        Swagger2Importer swagger2Importer = new Swagger2Importer(project, "application/json", true)
         String swaggerUrl = new File("src/test/resources/petstore-2.0.json").toURI().toString()
         swagger2Importer.importSwagger(swaggerUrl)
 
@@ -83,6 +83,9 @@ class SwaggerImporterTest extends GroovyTestCase {
         //assert parameters with default value
         RestTestRequestStep testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/findByStatus-TestCase').getTestStepAt(0)
         assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('available'))
+
+        testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/{petId}-TestCase').getTestStepAt(0)
+        Integer.parseInt(testStep.getTestRequest().getParams().getProperty('petId').getValue())
 
         //valid status codes assertion
         assertThat(testStep.getAssertionAt(0).label, CoreMatchers.is(ValidHttpStatusCodesAssertion.LABEL))

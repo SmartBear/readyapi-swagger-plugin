@@ -8,6 +8,7 @@ import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
 import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
 import com.eviware.soapui.impl.wsdl.teststeps.registry.RestRequestStepFactory
 import com.eviware.soapui.model.testsuite.TestProperty
+import com.eviware.soapui.support.StringUtils
 import com.smartbear.swagger.assertion.Assertions
 import io.swagger.models.Operation
 import io.swagger.models.Path
@@ -45,11 +46,37 @@ class Swagger2TestCaseGenerator {
             it.name == parameter.name
         }
 
-        if (swaggerParam.default) {
-            parameter.setValue(String.valueOf(swaggerParam.default))
-        } else if (swaggerParam.example) {
-            parameter.setValue(String.valueOf(swaggerParam.example))
+        if (swaggerParam.example) {
+            parameter.value = String.valueOf(swaggerParam.example)
         }
+
+        if (StringUtils.isNullOrEmpty(parameter.value) && swaggerParam.required) {
+            parameter.value = buildExampleValue(swaggerParam)
+        }
+    }
+
+    static String buildExampleValue(AbstractSerializableParameter parameter) {
+
+        switch (parameter.type) {
+            case "string": return createStringExample(parameter.format)
+            case "number": return "double" == parameter.format ? String.valueOf((double) Math.random() * 1000) : String.valueOf((float) Math.random() * 1000)
+            case "integer": return String.valueOf((int) (Math.random() * 1000))
+            case "boolean": return Math.random() > 0.5 ? "true" : "false"
+        }
+
+        return ""
+    }
+
+    static String createStringExample(String format) {
+        switch (format) {
+            case "byte": return Base64.encoder.encodeToString("bytes".bytes)
+            case "binary ": return "01234567"
+            case "date": return "2015-07-20"
+            case "date-time": return "2015-07-20T15:49:04-07:00"
+            case "password": return "asdfghjk"
+        }
+
+        return ""
     }
 
     private static Operation getSwaggerOperation(HttpMethod httpMethod, Path swaggerPath, String path) {
