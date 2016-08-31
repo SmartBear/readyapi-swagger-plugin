@@ -61,7 +61,6 @@ class Swagger2Importer implements SwaggerImporter {
     static ObjectMapper jsonMapper
     private final WsdlProject project
     private final String defaultMediaType;
-    private final boolean forRefactoring
     private static Logger logger = LoggerFactory.getLogger(Swagger2Importer)
     private Swagger swagger
     private boolean generateTestCase
@@ -80,14 +79,9 @@ class Swagger2Importer implements SwaggerImporter {
         this(project, defaultMediaType, false)
     }
 
-    public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring) {
-        this(project, defaultMediaType, forRefactoring, false)
-    }
-
-    public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean forRefactoring, boolean generateTestCase) {
+    public Swagger2Importer(WsdlProject project, String defaultMediaType, boolean generateTestCase) {
         this.project = project
         this.defaultMediaType = defaultMediaType
-        this.forRefactoring = forRefactoring
         this.generateTestCase = generateTestCase
     }
 
@@ -208,6 +202,10 @@ class Swagger2Importer implements SwaggerImporter {
 
                 p.description = it.description
                 p.required = it.required
+
+                if (it.defaultValue != null) {
+                    p.defaultValue = it.defaultValue
+                }
             } else {
 
                 BodyParameter bodyParam = it

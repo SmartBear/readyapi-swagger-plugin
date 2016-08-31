@@ -239,7 +239,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             validateResponse(contentAsString, swagger, responseSchema);
         } else if (strictMode) {
             throw new AssertionException(new AssertionError(
-                "Missing response for a " + responseCode + " response for operation " + operation.toString() + " in Swagger definition"));
+                "Missing response definition for " + responseCode + " response in operation " + operation.getOperationId()));
         }
     }
 
