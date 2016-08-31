@@ -87,6 +87,9 @@ class SwaggerImporterTest extends GroovyTestCase {
         testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/{petId}-TestCase').getTestStepAt(0)
         Integer.parseInt(testStep.getTestRequest().getParams().getProperty('petId').getValue())
 
+        testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/user/{username}-TestCase').getTestStepAt(0)
+        assertFalse(testStep.getTestRequest().getParams().getProperty('username').getValue().isEmpty())
+
         //valid status codes assertion
         assertThat(testStep.getAssertionAt(0).label, CoreMatchers.is(ValidHttpStatusCodesAssertion.LABEL))
 

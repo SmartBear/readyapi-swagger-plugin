@@ -64,7 +64,7 @@ class Swagger2TestCaseGenerator {
             case "boolean": return Math.random() > 0.5 ? "true" : "false"
         }
 
-        return ""
+        return "exampleValue"
     }
 
     static String createStringExample(String format) {
@@ -76,7 +76,7 @@ class Swagger2TestCaseGenerator {
             case "password": return "asdfghjk"
         }
 
-        return ""
+        return "stringValue"
     }
 
     private static Operation getSwaggerOperation(HttpMethod httpMethod, Path swaggerPath, String path) {
