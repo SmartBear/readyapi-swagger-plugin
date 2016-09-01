@@ -81,6 +81,11 @@ class SwaggerUtils {
                 DEFAULT_FOR_CREATE_TEST_CASE)
     }
 
+    @Deprecated
+    static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, boolean removedParameterForRefactoring) {
+        return createSwaggerImporter(url, project)
+    }
+
     static SwaggerImporter importSwaggerFromUrl(
             final WsdlProject project, final String finalExpUrl) throws Exception {
         return importSwaggerFromUrl(project, finalExpUrl, "application/json");
