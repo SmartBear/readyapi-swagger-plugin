@@ -27,6 +27,8 @@ class Swagger2TestCaseGenerator {
                             setParameterValue(it.value, request.method, path, resource.path)
                         }
                         addAssertions(testStep, request.method, path, resource.path, context)
+
+                        testStep.name = testStep.name + ": " + request.method + " " + resource.path
                 }
         }
     }

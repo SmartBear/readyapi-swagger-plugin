@@ -83,17 +83,20 @@ class SwaggerImporterTest extends GroovyTestCase {
         //assert parameters with default value
         RestTestRequestStep testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/findByStatus-TestCase').getTestStepAt(0)
         assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('available'))
+        assertEquals("Request 1: GET /pet/findByStatus", testStep.name)
 
         testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/{petId}-TestCase').getTestStepAt(0)
         Integer.parseInt(testStep.getTestRequest().getParams().getProperty('petId').getValue())
+        assertEquals("Request 1: GET /pet/{petId}", testStep.name)
 
         testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/user/{username}-TestCase').getTestStepAt(0)
         assertFalse(testStep.getTestRequest().getParams().getProperty('username').getValue().isEmpty())
+        assertEquals("Request 1: GET /user/{username}", testStep.name)
 
-        //valid status codes assertion
+        // valid status codes assertion
         assertThat(testStep.getAssertionAt(0).label, CoreMatchers.is(ValidHttpStatusCodesAssertion.LABEL))
 
-        //valid status codes assertion
+        // valid status codes assertion
         SwaggerComplianceAssertion swaggerComplianceAssertion = (SwaggerComplianceAssertion) testStep.getAssertionAt(1)
         assertThat(swaggerComplianceAssertion.label, CoreMatchers.is("Swagger Compliance Assertion"))
         assertThat(swaggerComplianceAssertion.swaggerUrl, CoreMatchers.is(swaggerUrl))
