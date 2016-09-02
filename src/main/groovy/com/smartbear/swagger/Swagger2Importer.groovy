@@ -355,4 +355,12 @@ class Swagger2Importer implements SwaggerImporter {
 
         return restService
     }
+
+    WsdlProject getProject() {
+        return project
+    }
+
+    Swagger getSwagger() {
+        return swagger
+    }
 }
