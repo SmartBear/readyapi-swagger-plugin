@@ -38,20 +38,26 @@ class SwaggerImporterTest extends GroovyTestCase {
     void testImportResourceListing() {
         def project = new WsdlProject();
 
-        SwaggerImporter importer = new Swagger2Importer(project)
+        def file = new File("src/test/resources/resource-listing")
+        def importer = SwaggerUtils.createSwaggerImporter(file.toURL().toString(), project)
 
-        RestService[] result = importer.importSwagger("http://petstore.swagger.io/v2/swagger.json")
+        assertTrue(importer instanceof Swagger1XResourceListingImporter)
 
-        RestService service = result[0]
-        assertTrue(service.endpoints.length > 0)
-
-        assertEquals("http://petstore.swagger.io", service.endpoints[0])
-        assertEquals("/v2", service.basePath,)
+        def service = importer.importSwagger(file.toURL().toString())[0]
+        assertEquals(36, service.getResourceList().size())
     }
 
     void testImportApiDeclaration() {
         def project = new WsdlProject();
-        Swagger1XApiDeclarationImporter importer = new Swagger1XApiDeclarationImporter(project)
+
+        def file = new File("src/test/resources/resource-listing-test/API-Declaration.swagger")
+        def importer = SwaggerUtils.createSwaggerImporter(file.toURL().toString(), project)
+
+        assertTrue(importer instanceof Swagger1XApiDeclarationImporter)
+
+        def service = importer.importSwagger(file.toURL().toString())[0]
+        assertEquals(36, service.getResourceList().size())
+
         importer.importSwagger(new File("src/test/resources/api-docs").toURI().toString());
     }
 
@@ -65,6 +71,14 @@ class SwaggerImporterTest extends GroovyTestCase {
 
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
         importer.importSwagger("https://api.rocrooster.net/api-docs.json")[0]
+
+        def result = importer.importSwagger("http://petstore.swagger.io/v2/swagger.json")
+
+        RestService service = result[0]
+        assertTrue(service.endpoints.length > 0)
+
+        assertEquals("http://petstore.swagger.io", service.endpoints[0])
+        assertEquals("/v2", service.basePath,)
     }
 
     void testTestCaseGeneration() {

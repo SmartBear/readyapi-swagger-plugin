@@ -1,0 +1,478 @@
+{
+    "swaggerVersion": "1.2",
+    "basePath": "http://rapis02.aqa.com.ru/wcfrest/service.svc",
+    "apis": [
+        {
+            "path": "/Vse",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/Vse",
+                    "parameters": [
+                        {
+                            "name": "x",
+                            "type": "integer",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "y",
+                            "type": "integer",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "z",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/transferArray",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/transferArray"
+                }
+            ]
+        },
+        {
+            "path": "/HelloWorld",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/HelloWorld"
+                }
+            ]
+        },
+        {
+            "path": "/Date",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/Date"
+                }
+            ]
+        },
+        {
+            "path": "/delayResponse",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/delayResponse",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/GetAllRecords",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/GetAllRecords"
+                }
+            ]
+        },
+        {
+            "path": "/testUshort",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testUshort",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/ConStroka",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/ConStroka",
+                    "parameters": [
+                        {
+                            "name": "x",
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "y",
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testUlong",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testUlong",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testUint",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testUint",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testString",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testString",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testInt",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testInt",
+                    "parameters": [
+                        {
+                            "href": "#tParam"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testLong",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testLong",
+                    "parameters": [
+                        {
+                            "href": "#tParam"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testSbyte",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testSbyte",
+                    "parameters": [
+                        {
+                            "href": "#tParam"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testShort",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testShort",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testFloat",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testFloat",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "float",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testDouble",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testDouble",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "float",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testDecimal",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testDecimal",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "float",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testClassArray",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testClassArray"
+                }
+            ]
+        },
+        {
+            "path": "/testClass",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testClass"
+                }
+            ]
+        },
+        {
+            "path": "/testChar",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testChar",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testByte",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testByte",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testBool",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/testBool",
+                    "parameters": [
+                        {
+                            "name": "t",
+                            "type": "boolean",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/testComplexClass",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/testComplexClass"
+                }
+            ]
+        },
+        {
+            "path": "/testClassTransferArray",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/testClassTransferArray"
+                }
+            ]
+        },
+        {
+            "path": "/testClassArrayInputArray",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/testClassArrayInputArray"
+                }
+            ]
+        },
+        {
+            "path": "/TestClassArray2InputArray",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/TestClassArray2InputArray"
+                }
+            ]
+        },
+        {
+            "path": "/getArrayInt",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/getArrayInt"
+                }
+            ]
+        },
+        {
+            "path": "/getArrayString",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/getArrayString"
+                }
+            ]
+        },
+        {
+            "path": "/inheritanceClass",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/inheritanceClass"
+                }
+            ]
+        },
+        {
+            "path": "/inheritanceClassSuper",
+            "operations": [
+                {
+                    "method": "POST",
+                    "nickname": "/inheritanceClassSuper"
+                }
+            ]
+        },
+        {
+            "path": "/massiv",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/massiv"
+                }
+            ]
+        },
+        {
+            "path": "/InputDate",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/InputDate",
+                    "parameters": [
+                        {
+                            "name": "d",
+                            "type": "dateTime",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/Ran",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/Ran",
+                    "parameters": [
+                        {
+                            "name": "x",
+                            "type": "integer",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/Stroka",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/Stroka",
+                    "parameters": [
+                        {
+                            "name": "x",
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/objectInObject",
+            "operations": [
+                {
+                    "method": "GET",
+                    "nickname": "/objectInObject"
+                }
+            ]
+        }
+    ],
+    "models": {}
+}

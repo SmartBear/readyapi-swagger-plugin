@@ -75,6 +75,10 @@ class Swagger2Importer implements SwaggerImporter {
         jsonMapper.registerModule(simpleModule);
     }
 
+    public Swagger2Importer(String defaultMediaType) {
+        this(null, defaultMediaType)
+    }
+
     public Swagger2Importer(WsdlProject project, String defaultMediaType) {
         this(project, defaultMediaType, false)
     }
@@ -154,7 +158,7 @@ class Swagger2Importer implements SwaggerImporter {
         if (resource.options != null)
             addOperation(res, resource.options, RestRequestInterface.HttpMethod.OPTIONS)
 
-        if (generateTestCase) {
+        if (project != null && generateTestCase) {
             new Swagger2TestCaseGenerator().generateTestCases(project, res, resource, context);
         }
         return res;
@@ -310,10 +314,6 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
     private RestService createRestService(Swagger swagger, String url) {
-        if (project == null) {
-            return null
-        }
-
         String name = swagger.info && swagger.info.title ? swagger.info.title : null
         if (name == null) {
             if (url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://")) {
@@ -324,7 +324,7 @@ class Swagger2Importer implements SwaggerImporter {
             }
         }
 
-        RestService restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE);
+        def restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
         restService.description = swagger.info?.description
 
         if (swagger.host != null) {

@@ -63,7 +63,7 @@ class SwaggerUtils {
 
             // only api-declarations have a basePath, see
             // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/1.2.md#52-api-declaration
-            if (String.valueOf(json?.basePath != null)) {
+            if (json?.basePath != null) {
                 return new Swagger1XApiDeclarationImporter(project, defaulMediaType)
             } else {
                 return new Swagger1XResourceListingImporter(project, defaulMediaType)
