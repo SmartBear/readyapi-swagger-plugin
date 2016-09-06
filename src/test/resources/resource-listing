@@ -1,0 +1,10 @@
+{
+    "apiVersion": "1.0",
+    "swaggerVersion": "1.2",
+    "apis": [
+        {
+            "path": "-test/API-Declaration.swagger"
+        }
+    ],
+    "info": {}
+}
