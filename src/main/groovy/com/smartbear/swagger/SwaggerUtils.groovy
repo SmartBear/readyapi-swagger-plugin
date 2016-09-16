@@ -60,13 +60,21 @@ class SwaggerUtils {
         if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
             return new Swagger2Importer(project, defaulMediaType)
         else {
-
-            // only api-declarations have a basePath, see
+            def version = json?.swaggerVersion
+            // in 1.2 only api-declarations have a basePath, see
             // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/1.2.md#52-api-declaration
-            if (json?.basePath != null) {
-                return new Swagger1XApiDeclarationImporter(project, defaulMediaType)
+            if (version == "1.1") {
+                if (json?.models != null || json?.resourcePath != null) {
+                    return new Swagger1XApiDeclarationImporter(project, defaulMediaType)
+                } else {
+                    return new Swagger1XResourceListingImporter(project, defaulMediaType)
+                }
             } else {
-                return new Swagger1XResourceListingImporter(project, defaulMediaType)
+                if (json?.basePath != null) {
+                    return new Swagger1XApiDeclarationImporter(project, defaulMediaType)
+                } else {
+                    return new Swagger1XResourceListingImporter(project, defaulMediaType)
+                }
             }
         }
     }

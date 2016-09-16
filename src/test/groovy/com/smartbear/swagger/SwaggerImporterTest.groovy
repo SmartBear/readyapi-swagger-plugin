@@ -70,12 +70,13 @@ class SwaggerImporterTest extends GroovyTestCase {
         assertEquals(2, restService.endpoints.length)
 
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
-        importer.importSwagger("https://api.rocrooster.net/api-docs.json")[0]
-
-        def result = importer.importSwagger("http://petstore.swagger.io/v2/swagger.json")
+        def result = importer.importSwagger("src/test/resources/petstore-2.0.json")
 
         RestService service = result[0]
         assertTrue(service.endpoints.length > 0)
+        def restMethod = service.getResourceByFullPath("/v2/store/order").getRestMethodAt(0)
+        assertEquals(1, restMethod.getRequestCount())
+        assertNotNull(restMethod.getRequestAt(0).getRequestContent())
 
         assertEquals("http://petstore.swagger.io", service.endpoints[0])
         assertEquals("/v2", service.basePath,)
@@ -96,7 +97,7 @@ class SwaggerImporterTest extends GroovyTestCase {
 
         //assert parameters with default value
         RestTestRequestStep testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/findByStatus-TestCase').getTestStepAt(0)
-        assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('available'))
+        assertThat(testStep.getTestRequest().getParams().getProperty('status').getValue(), CoreMatchers.is('exampleValue'))
         assertEquals("Request 1: GET /pet/findByStatus", testStep.name)
 
         testStep = (RestTestRequestStep) testSuite.getTestCaseByName('/pet/{petId}-TestCase').getTestStepAt(0)

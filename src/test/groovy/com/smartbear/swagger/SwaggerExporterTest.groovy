@@ -33,7 +33,7 @@ class SwaggerExporterTest extends GroovyTestCase {
 
         SwaggerImporter importer = new Swagger2Importer(project)
 
-        RestService[] result = importer.importSwagger("http://petstore.swagger.io/v2/swagger.json")
+        RestService[] result = importer.importSwagger("src/test/resources/petstore-2.0.json")
 
         assertEquals(1, result.length)
 

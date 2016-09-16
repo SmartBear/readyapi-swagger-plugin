@@ -214,7 +214,12 @@ class Swagger2Importer implements SwaggerImporter {
 
                 BodyParameter bodyParam = it
 
-                operation.consumes?.each {
+                def consumes = operation.consumes
+                if (consumes == null || consumes.empty) {
+                    consumes = ["application/json"]
+                }
+
+                consumes.each {
                     def representation = method.addNewRepresentation(RestRepresentation.Type.REQUEST)
                     representation.mediaType = it
 
