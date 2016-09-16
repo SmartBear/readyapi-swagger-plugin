@@ -23,6 +23,8 @@ mvn clean install assembly:single
 * March 2015 - Version 2.1 - Bug-fix release which ties into the updated plugin system in Ready! API and adds dynamic swagger generation for REST Virts 
 * September 2014 - Version 2.0 - Initial release for Ready! API with Swagger 2.0 support
 
+The latest above version is available from inside the Ready! API Plugin Manager. 
+
 Previous releases were on sourceforge (and are still available there) 
 
 * Version 2.0 (aligned with version 2.0 of Swagger) - now only available via the Plugin Repository from inside Ready! API and SoapUI Pro - adds Swagger 2.0 support
@@ -31,7 +33,7 @@ Previous releases were on sourceforge (and are still available there)
 * Version 0.2 - See [http://olensmar.blogspot.se/2013/05/soapui-swagger-true.html](http://olensmar.blogspot.se/2013/05/soapui-swagger-true.html)
 * Version 0.1 - See [http://olensmar.blogspot.se/2012/12/testing-swagger-apis-with-soapui-groovy.html](http://olensmar.blogspot.se/2012/12/testing-swagger-apis-with-soapui-groovy.html)
 
-Download from sourceforge: [https://sourceforge.net/projects/soapui-plugins/files](https://sourceforge.net/projects/soapui-plugins/files)
+Download old versions from sourceforge: [https://sourceforge.net/projects/soapui-plugins/files](https://sourceforge.net/projects/soapui-plugins/files)
 
 Please post issues here at GitHub - you can find me on twitter at @olensmar
 
