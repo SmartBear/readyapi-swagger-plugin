@@ -18,9 +18,6 @@
                 <include>io.swagger:swagger-models</include>
                 <include>io.swagger:swagger-inflector</include>
                 <include>com.github.fge:json-schema-validator</include>
-                <include>com.fasterxml.jackson.core:jackson-annotations</include>
-                <include>com.fasterxml.jackson.core:jackson-core</include>
-                <include>com.fasterxml.jackson.core:jackson-databind</include>
                 <include>com.fasterxml.jackson.datatype:jackson-datatype-joda</include>
                 <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</include>
             </includes>
