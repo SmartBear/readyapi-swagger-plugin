@@ -332,7 +332,7 @@ class Swagger2Importer implements SwaggerImporter {
         def restService = project.addNewInterface(name, RestServiceFactory.REST_TYPE)
         restService.description = swagger.info?.description
 
-        if (swagger.host != null) {
+        if (!StringUtils.isNullOrEmpty(swagger.host)) {
             if (swagger.schemes != null) {
                 swagger.schemes.each { it ->
                     def scheme = it.toValue().toLowerCase()
