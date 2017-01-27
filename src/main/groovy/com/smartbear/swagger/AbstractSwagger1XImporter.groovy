@@ -31,8 +31,8 @@ import com.smartbear.swagger4j.Parameter
 
 abstract class AbstractSwagger1XImporter implements SwaggerImporter {
 
-    private final WsdlProject project
-    private final String defaultMediaType;
+    protected final WsdlProject project
+    protected final String defaultMediaType;
 
     public AbstractSwagger1XImporter(WsdlProject project, String defaultMediaType) {
         this.project = project

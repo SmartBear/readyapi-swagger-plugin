@@ -55,6 +55,7 @@
         <swagger-version>1.5.9</swagger-version>
         <swagger-parser.version>1.0.21</swagger-parser.version>
         <swagger-inflector.version>1.0.8</swagger-inflector.version>
+        <readyapi-version>1.9.0</readyapi-version>
     </properties>
 
     <repositories>
@@ -108,12 +109,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.codehaus.gmaven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.8</artifactId>
-            <version>1.5</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.4.3</version>
@@ -129,12 +124,13 @@
         <dependency>
             <groupId>com.smartbear</groupId>
             <artifactId>ready-api-soapui-pro</artifactId>
-            <version>1.8.2-SNAPSHOT</version>
+            <version>${readyapi-version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.smartbear</groupId>
             <artifactId>ready-api-soapui</artifactId>
-            <version>1.8.0</version>
+            <version>${readyapi-version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -227,23 +223,25 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>1.5</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!-- 2.8.0-01 and later require maven-compiler-plugin 3.1 or higher -->
+                <version>3.1</version>
                 <configuration>
-                    <source>${project.basedir}/src/main/groovy</source>
-                    <providerSelection>1.8</providerSelection>
+                    <compilerId>groovy-eclipse-compiler</compilerId>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-compiler</artifactId>
+                        <version>2.9.1-01</version>
+                    </dependency>
+                    <!-- for 2.8.0-01 and later you must have an explicit dependency on groovy-eclipse-batch -->
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-batch</artifactId>
+                        <version>2.3.7-01</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
