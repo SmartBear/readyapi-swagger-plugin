@@ -27,6 +27,7 @@ import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.support.StringUtils
+import com.eviware.soapui.support.xml.XmlUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import io.swagger.inflector.examples.ExampleBuilder
@@ -216,7 +217,7 @@ class Swagger2Importer implements SwaggerImporter {
 
                 def consumes = operation.consumes
                 if (consumes == null || consumes.empty) {
-                    consumes = ["application/json"]
+                    consumes = swagger.consumes
                 }
 
                 consumes.each {
@@ -254,6 +255,10 @@ class Swagger2Importer implements SwaggerImporter {
 
         operation.responses?.each {
             def response = it
+
+            if (operation.produces == null || operation.produces.empty){
+                operation.produces = swagger.produces
+            }
 
             if (operation.produces == null || operation.produces.empty) {
                 def representation = method.addNewRepresentation(RestRepresentation.Type.RESPONSE)
@@ -307,13 +312,13 @@ class Swagger2Importer implements SwaggerImporter {
         def mapper = null
 
         switch (mediaType) {
-            case "application/xml": sampleValue = new XmlExampleSerializer().serialize(output); break;
+            case "application/xml": sampleValue = XmlUtils.prettyPrintXml(new XmlExampleSerializer().serialize(output)); break;
             case "application/yaml": mapper = yamlMapper; break;
             case "application/json": mapper = jsonMapper; break;
         }
 
         if (mapper != null) {
-            sampleValue = mapper.writer().writeValueAsString(output)
+            sampleValue = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(output)
         }
         return sampleValue
     }

@@ -52,9 +52,9 @@
 
     <properties>
         <jackson-version>2.4.2</jackson-version>
-        <swagger-version>1.5.9</swagger-version>
-        <swagger-parser.version>1.0.21</swagger-parser.version>
-        <swagger-inflector.version>1.0.8</swagger-inflector.version>
+        <swagger-version>1.5.10</swagger-version>
+        <swagger-parser.version>1.0.22</swagger-parser.version>
+        <swagger-inflector.version>1.0.10</swagger-inflector.version>
         <readyapi-version>1.9.0</readyapi-version>
     </properties>
 
