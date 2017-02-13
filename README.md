@@ -16,6 +16,7 @@ mvn clean install assembly:single
 
 ### Release History
 
+* Feb 2017 - Version 2.5.2 - Updated core Swagger dependencies, sample response creation and host handling
 * Sept 2016 - Version 2.5.1 - Fixed autodetection of Swagger 1.X files and added Testcase generation from Swagger
 * July 2016 - Version 2.4.0 - Bug fixes for R!A 1.8.0 release bundling
 * June 2016 - Version 2.3.1 - Dependency updates for improved message creation
