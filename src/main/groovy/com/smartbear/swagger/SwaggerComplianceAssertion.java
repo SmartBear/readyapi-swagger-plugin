@@ -40,6 +40,8 @@ import com.eviware.x.form.XFormDialog;
 import com.eviware.x.form.XFormDialogBuilder;
 import com.eviware.x.form.XFormFactory;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
 import com.github.fge.jsonschema.main.JsonSchema;
@@ -192,7 +194,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                     Operation operation = findOperation(swagger.getPath(swaggerPath), method);
                     if (operation != null) {
                         validateOperation(swagger, operation, String.valueOf(messageExchange.getResponseStatusCode()),
-                            messageExchange.getResponseContent()
+                            messageExchange.getResponseContent(), messageExchange.getResponseContentType()
                         );
 
                         return true;
@@ -228,7 +230,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return null;
     }
 
-    void validateOperation(Swagger swagger, Operation operation, String responseCode, String contentAsString) throws AssertionException {
+    void validateOperation(Swagger swagger, Operation operation, String responseCode, String contentAsString, String contentType) throws AssertionException {
 
         Response responseSchema = operation.getResponses().get(responseCode);
         if (responseSchema == null) {
@@ -236,23 +238,23 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         }
 
         if (responseSchema != null) {
-            validateResponse(contentAsString, swagger, responseSchema);
+            validateResponse(contentAsString, contentType, swagger, responseSchema);
         } else if (strictMode) {
             throw new AssertionException(new AssertionError(
                 "Missing response definition for " + responseCode + " response in operation " + operation.getOperationId()));
         }
     }
 
-    void validateResponse(String contentAsString, Swagger swagger, Response responseSchema) throws AssertionException {
+    void validateResponse(String contentAsString, String contentType, Swagger swagger, Response responseSchema) throws AssertionException {
         if (responseSchema.getSchema() != null) {
             Property schema = responseSchema.getSchema();
             if (schema instanceof RefProperty) {
                 Model model = swagger.getDefinitions().get(((RefProperty) schema).getSimpleRef());
                 if (model != null) {
-                    validatePayload(contentAsString, null);
+                    validatePayload(contentAsString, null, contentType );
                 }
             } else {
-                validatePayload(contentAsString, Json.pretty(schema));
+                validatePayload(contentAsString, Json.pretty(schema), contentType);
             }
         }
     }
@@ -309,7 +311,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         }
     }
 
-    public void validatePayload(String payload, String schema) throws AssertionException {
+    public void validatePayload(String payload, String schema, String contentType) throws AssertionException {
         try {
             JsonSchema jsonSchema;
 
@@ -328,7 +330,16 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                 jsonSchema = getSwaggerSchema();
             }
 
-            JsonNode contentObject = Json.mapper().readTree(payload);
+            JsonNode contentObject;
+
+            if (contentType.equalsIgnoreCase("application/json")) {
+                contentObject = Json.mapper().readTree(payload);
+            } else if (contentType.equalsIgnoreCase("application/xml")) {
+                final XmlMapper xmlMapper = new XmlMapper();
+                contentObject = xmlMapper.readTree(payload);
+            } else {
+                throw new AssertionException(new AssertionError("Swagger Compliance testing failed. Invalid content type: " + contentType));
+            }
 
             ValidationSupport.validateMessage(jsonSchema, contentObject);
         } catch (AssertionException e) {

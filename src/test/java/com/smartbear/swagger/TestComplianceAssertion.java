@@ -54,10 +54,15 @@ public class TestComplianceAssertion {
         SwaggerComplianceAssertion assertion = new SwaggerComplianceAssertion(config, testStep);
         Swagger swagger = assertion.getSwagger(new WsdlSubmitContext(project));
 
-        assertion.validateOperation(swagger, swagger.getPath("/pet/findByTags").getGet(), "200", "[{\"id\":1500,\"category\":{\"id\":0,\"name\":\"\"},\"name\":\"butch\",\"photoUrls\":[\"\"],\"tags\":[{\"id\":0,\"name\":\"\"}],\"status\":\"available\"}]");
+        assertion.validateOperation(swagger, swagger.getPath("/pet/findByTags").getGet(), "200",
+            "[{\"id\":1500,\"category\":{\"id\":0,\"name\":\"\"},\"name\":\"butch\",\"photoUrls\":[\"\"],\"tags\":[{\"id\":0,\"name\":\"\"}],\"status\":\"available\"}]",
+            "application/json");
 
         try {
-            assertion.validateOperation(swagger, swagger.getPath("/pet/findByTags").getGet(), "200", "[{\"id\":1500,\"category\":{\"id\":0,\"name\":\"\"},\"name\":\"butch\",\"photoUrdls\":[\"\"],\"tags\":[{\"id\":0,\"name\":\"\"}],\"status\":\"available\"}]");
+            assertion.validateOperation(swagger, swagger.getPath("/pet/findByTags").getGet(), "200",
+                "[{\"id\":1500,\"category\":{\"id\":0,\"name\":\"\"},\"name\":\"butch\",\"photoUrdls\":[\"\"],\"tags\":[{\"id\":0,\"name\":\"\"}],\"status\":\"available\"}]",
+                "application/json");
+
             assertTrue("Validation should have failed", false);
         } catch (Exception e) {
         }
