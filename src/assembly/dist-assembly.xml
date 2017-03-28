@@ -17,6 +17,7 @@
                 <include>io.swagger:swagger-core</include>
                 <include>io.swagger:swagger-models</include>
                 <include>io.swagger:swagger-inflector</include>
+                <include>org.yaml:snakeyaml</include>
                 <include>com.github.fge:json-schema-validator</include>
                 <include>com.fasterxml.jackson.datatype:jackson-datatype-joda</include>
                 <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</include>

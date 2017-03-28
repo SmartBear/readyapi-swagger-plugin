@@ -189,7 +189,6 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.16</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
