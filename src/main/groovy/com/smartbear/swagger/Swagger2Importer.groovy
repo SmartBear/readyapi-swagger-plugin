@@ -34,17 +34,20 @@ import io.swagger.inflector.examples.ExampleBuilder
 import io.swagger.inflector.examples.XmlExampleSerializer
 import io.swagger.inflector.examples.models.Example
 import io.swagger.inflector.processors.JsonNodeExampleSerializer
-import io.swagger.models.Operation
-import io.swagger.models.Path
-import io.swagger.models.RefModel
-import io.swagger.models.Swagger
-import io.swagger.models.parameters.BodyParameter
-import io.swagger.models.properties.ObjectProperty
-import io.swagger.parser.SwaggerParser
 import io.swagger.util.Json
 import io.swagger.util.Yaml
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import v2.io.swagger.models.Operation
+import v2.io.swagger.models.Path
+import v2.io.swagger.models.RefModel
+import v2.io.swagger.models.Response
+import v2.io.swagger.models.Swagger
+import v2.io.swagger.models.parameters.BodyParameter
+import v2.io.swagger.models.properties.ObjectProperty
+import v2.io.swagger.parser.SwaggerParser
+import v2.io.swagger.models.properties.Property;
+import v2.io.swagger.models.Model;
 
 /**
  * A simple Swagger 2.0 importer - now uses swagger-core library
@@ -239,11 +242,11 @@ class Swagger2Importer implements SwaggerImporter {
                             }
                         }
 
-                        Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
-                        if (output instanceof Example) {
-                            request.requestContent = serializeExample(it, output)
-                            representation.sampleContent = request.requestContent
-                        }
+                        /*  Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
+                          if (output instanceof Example) {
+                              request.requestContent = serializeExample(it, output)
+                              representation.sampleContent = request.requestContent
+                          }*/
                     }
                 }
             }
@@ -255,8 +258,9 @@ class Swagger2Importer implements SwaggerImporter {
 
         operation.responses?.each {
             def response = it
+            Response responseElement = it.value;
 
-            if (operation.produces == null || operation.produces.empty){
+            if (operation.produces == null || operation.produces.empty) {
                 operation.produces = swagger.produces
             }
 
@@ -285,10 +289,11 @@ class Swagger2Importer implements SwaggerImporter {
                     }
 
                     if (representation.sampleContent == null) {
-                        Object output = ExampleBuilder.fromProperty(response.value.schema, swagger.definitions);
+                        //TODO Waiting for inflector update
+                       /* Object output = ExampleBuilder.fromProperty(responseElement.getSchema(), swagger.definitions);
                         if (output instanceof Example) {
                             representation.sampleContent = serializeExample(representation.mediaType, output)
-                        }
+                        }*/
                     }
                 }
             }
@@ -358,8 +363,8 @@ class Swagger2Importer implements SwaggerImporter {
 
         if (swagger.basePath != null) {
             restService.basePath = swagger.basePath
-            if( restService.basePath.endsWith('/')){
-                restService.basePath = restService.basePath.substring(0,restService.basePath.length()-1)
+            if (restService.basePath.endsWith('/')) {
+                restService.basePath = restService.basePath.substring(0, restService.basePath.length() - 1)
             }
         }
 

@@ -26,18 +26,18 @@ import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterSt
 import com.eviware.soapui.model.mock.MockResult
 import com.eviware.soapui.support.StringUtils
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.swagger.models.Info
-import io.swagger.models.Operation
-import io.swagger.models.Path
-import io.swagger.models.Response
-import io.swagger.models.Swagger
-import io.swagger.models.parameters.BodyParameter
-import io.swagger.models.parameters.HeaderParameter
-import io.swagger.models.parameters.Parameter
-import io.swagger.models.parameters.PathParameter
-import io.swagger.models.parameters.QueryParameter
-import io.swagger.models.properties.StringProperty
+import io.swagger.oas.models.parameters.Parameter
 import io.swagger.util.Json
+import v2.io.swagger.models.Info
+import v2.io.swagger.models.Operation
+import v2.io.swagger.models.Path
+import v2.io.swagger.models.Response
+import v2.io.swagger.models.Swagger
+import v2.io.swagger.models.parameters.BodyParameter
+import v2.io.swagger.models.parameters.HeaderParameter
+import v2.io.swagger.models.parameters.PathParameter
+import v2.io.swagger.models.parameters.QueryParameter
+import v2.io.swagger.models.properties.StringProperty
 
 /**
  * A simple Swagger exporter - now uses swagger4j library

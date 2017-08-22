@@ -25,7 +25,7 @@ import com.eviware.soapui.plugins.PluginApiImporter;
 import java.util.ArrayList;
 import java.util.List;
 
-@PluginApiImporter(label = "Swagger 1.X/2.0")
+@PluginApiImporter(label = "Swagger 1.X/2.0 | OpenAPI 3.0.0")
 public class SwaggerApiImporter implements ApiImporter {
     public List<Interface> importApis(Project project) {
 

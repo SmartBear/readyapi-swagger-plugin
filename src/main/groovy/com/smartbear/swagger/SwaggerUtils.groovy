@@ -22,7 +22,18 @@ import com.eviware.soapui.support.UISupport
 import com.eviware.x.dialogs.Worker
 import com.eviware.x.dialogs.XProgressDialog
 import com.eviware.x.dialogs.XProgressMonitor
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonSlurper
+import io.swagger.parser.v3.util.ClasspathHelper
+import io.swagger.parser.v3.util.DeserializationUtils
+import io.swagger.parser.v3.util.RemoteUrl
+import io.swagger.util.Json
+import org.apache.commons.io.FileUtils
+
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Created by ole on 16/09/14.
@@ -46,8 +57,12 @@ class SwaggerUtils {
     static SwaggerImporter createSwaggerImporter(String url, WsdlProject project, String defaulMediaType,
                                                  boolean generateTestCase) {
 
-        if (url.endsWith(".yaml"))
+        if (url.endsWith(".yaml")) {
+            if (isOpenApi(url)) {
+                return new OpenAPI3Importer(project, defaulMediaType, generateTestCase)
+            }
             return new Swagger2Importer(project, defaulMediaType, generateTestCase)
+        }
 
         if (url.endsWith(".xml"))
             return new Swagger1XResourceListingImporter(project, defaulMediaType)
@@ -57,7 +72,9 @@ class SwaggerUtils {
 
         def json = new JsonSlurper().parseText(conn.inputStream.text)
 
-        if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
+        if (String.valueOf(json?.openapi) == "3.0.0") {
+            return new OpenAPI3Importer(project)
+        } else if (String.valueOf(json?.swagger) == "2.0" || String.valueOf(json?.swaggerVersion) == "2.0")
             return new Swagger2Importer(project, defaulMediaType)
         else {
             def version = json?.swaggerVersion
@@ -97,6 +114,41 @@ class SwaggerUtils {
     static SwaggerImporter importSwaggerFromUrl(
             final WsdlProject project, final String finalExpUrl) throws Exception {
         return importSwaggerFromUrl(project, finalExpUrl, "application/json");
+    }
+
+    static boolean isOpenApi(String location) {
+        String data;
+        try {
+            location = location.replaceAll("\\\\", "/");
+            if (location.toLowerCase().startsWith("http")) {
+                data = RemoteUrl.urlToString(location, null);
+            } else {
+                final String fileScheme = "file:";
+                Path path;
+                if (location.toLowerCase().startsWith(fileScheme)) {
+                    path = Paths.get(URI.create(location));
+                } else {
+                    path = Paths.get(location);
+                }
+                if (Files.exists(path)) {
+                    data = FileUtils.readFileToString(path.toFile(), "UTF-8");
+                } else {
+                    data = ClasspathHelper.loadFileFromClasspath(location);
+                }
+            }
+            JsonNode rootNode;
+            if (data.trim().startsWith("{")) {
+                ObjectMapper mapper = Json.mapper();
+                rootNode = mapper.readTree(data);
+            } else {
+                rootNode = DeserializationUtils.readYamlTree(data);
+            }
+            JsonNode openapiNode = rootNode.get("openapi");
+            return openapiNode != null
+        }
+        catch (Exception e) {
+            return false
+        }
     }
 
     static SwaggerImporter importSwaggerFromUrl(final WsdlProject project,

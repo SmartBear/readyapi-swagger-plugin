@@ -2,6 +2,7 @@ package com.smartbear.swagger
 
 import com.eviware.soapui.impl.rest.RestRequestInterface.HttpMethod
 import com.eviware.soapui.impl.rest.RestResource
+import com.eviware.soapui.impl.rest.RestService
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
@@ -10,9 +11,9 @@ import com.eviware.soapui.impl.wsdl.teststeps.registry.RestRequestStepFactory
 import com.eviware.soapui.model.testsuite.TestProperty
 import com.eviware.soapui.support.StringUtils
 import com.smartbear.swagger.assertion.Assertions
-import io.swagger.models.Operation
-import io.swagger.models.Path
-import io.swagger.models.parameters.AbstractSerializableParameter
+import v2.io.swagger.models.Operation
+import v2.io.swagger.models.Path
+import v2.io.swagger.models.parameters.AbstractSerializableParameter
 
 class Swagger2TestCaseGenerator {
     static void generateTestCases(WsdlProject project, RestResource resource, Path path, Map<String, Object> context) {
