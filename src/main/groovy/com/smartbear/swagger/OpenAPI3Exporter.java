@@ -66,6 +66,7 @@ public class OpenAPI3Exporter implements SwaggerExporter {
         Info info = new Info();
         info.setVersion("3.0.0");
         info.setDescription(project.getDescription() == null ? "" : project.getDescription());
+        info.setTitle(project.getName());
         openAPI.setInfo(info);
 
         Paths paths = new Paths();
