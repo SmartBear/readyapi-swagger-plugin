@@ -232,7 +232,7 @@ public class OpenAPI3Exporter implements SwaggerExporter {
         if (StringUtils.hasContent(auth2Profile.getScope())) {
             String[] extractedScopes = auth2Profile.getScope().split(" ");
             for (String scope : extractedScopes) {
-                scopes.put(scope, "");
+                scopes.put("\"" + scope + "\"", "");
             }
         }
         return scopes;
