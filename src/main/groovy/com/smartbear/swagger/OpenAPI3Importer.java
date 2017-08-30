@@ -173,6 +173,12 @@ public class OpenAPI3Importer implements SwaggerImporter {
         } else if (parameter.getIn().equalsIgnoreCase("path")) {
             paramProperty.setStyle(RestParamsPropertyHolder.ParameterStyle.TEMPLATE);
         }
+        if (parameter.getRequired() != null) {
+            paramProperty.setRequired(parameter.getRequired());
+        }
+        if (parameter.getDescription() != null) {
+            paramProperty.setDescription(parameter.getDescription());
+        }
     }
 
     private void createResourceMethods(RestResource restResource, PathItem pathItem) {

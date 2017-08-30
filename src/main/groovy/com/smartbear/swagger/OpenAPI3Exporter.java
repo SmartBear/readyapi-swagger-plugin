@@ -52,6 +52,7 @@ import static com.eviware.soapui.impl.rest.RestRequestInterface.HttpMethod.TRACE
 import static com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle.HEADER;
 import static com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle.QUERY;
 import static com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle.TEMPLATE;
+import static com.smartbear.swagger.OpenAPIUtils.xmlSchemaTypesToJsonTypes;
 
 
 public class OpenAPI3Exporter implements SwaggerExporter {
@@ -64,7 +65,7 @@ public class OpenAPI3Exporter implements SwaggerExporter {
     public String exportToFolder(String path, String apiVersion, String format, RestService[] services, String basePath) {
         OpenAPI openAPI = new OpenAPI();
         Info info = new Info();
-        info.setVersion("3.0.0");
+        info.setVersion("1.0.0");
         info.setDescription(project.getDescription() == null ? "" : project.getDescription());
         info.setTitle(project.getName());
         openAPI.setInfo(info);
@@ -134,6 +135,8 @@ public class OpenAPI3Exporter implements SwaggerExporter {
             Parameter parameter = new Parameter();
             parameter.setName(propertyName);
             parameter.setIn(convertReadyApiParameterToOpenApiParameterType(paramProperty));
+            parameter.setSchema(xmlSchemaTypesToJsonTypes(paramProperty.getSchemaType()));
+            parameter.setRequired(paramProperty.getRequired());
             operation.addParametersItem(parameter);
         }
     }
@@ -168,6 +171,7 @@ public class OpenAPI3Exporter implements SwaggerExporter {
                 response = apiResponses.get(representation.getStatus());
             } else {
                 response = new ApiResponse();
+                response.setDescription(representation.getDescription() == null ? "" : representation.getDescription());
                 response.setContent(new Content());
                 if (org.apache.commons.lang3.StringUtils.isNumeric(representation.getStatus().toString())) {
                     apiResponses.put(representation.getStatus().toString(), response);
@@ -178,6 +182,11 @@ public class OpenAPI3Exporter implements SwaggerExporter {
                 mediaType.setExample(StringUtils.hasContent(representation.getDefaultContent()) ? representation.getDefaultContent() : "");
                 response.getContent().put(representation.getMediaType(), mediaType);
             }
+        }
+        if (apiResponses.isEmpty()) {
+            ApiResponse defaultResponse = new ApiResponse();
+            defaultResponse.setDescription("Default response");
+            apiResponses.setDefault(defaultResponse);
         }
         operation.setResponses(apiResponses);
     }
@@ -233,7 +242,7 @@ public class OpenAPI3Exporter implements SwaggerExporter {
         if (StringUtils.hasContent(auth2Profile.getScope())) {
             String[] extractedScopes = auth2Profile.getScope().split(" ");
             for (String scope : extractedScopes) {
-                scopes.put("\"" + scope + "\"", "");
+                scopes.put(scope, "");
             }
         }
         return scopes;

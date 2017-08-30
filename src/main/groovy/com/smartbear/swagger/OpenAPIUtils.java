@@ -9,12 +9,15 @@ import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.Operation;
 import io.swagger.oas.models.PathItem;
 import io.swagger.oas.models.media.MediaType;
+import io.swagger.oas.models.media.Schema;
 import io.swagger.oas.models.responses.ApiResponse;
 import io.swagger.oas.models.servers.Server;
 import io.swagger.oas.models.servers.ServerVariable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.xmlbeans.SchemaType;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -180,5 +183,49 @@ public class OpenAPIUtils {
             }
         }
         return false;
+    }
+
+    public static Schema xmlSchemaTypesToJsonTypes(SchemaType schemaType) {
+        if (schemaType == null) {
+            return null;
+        }
+        Schema schema = new Schema();
+        String schemaString = schemaType.toString();
+        String[] splitted = schemaString.split("@");
+        if (splitted.length > 1) {
+            String[] primitiveType = splitted[0].split("=");
+            if (primitiveType.length > 1) {
+                String type = primitiveType[0];
+                if (type.equals("double") || type.equals("decimal") || type.equals("float") || type.equals("long") || type.equals("short") || type.equals("int")) {
+                    schema.setType("number");
+                } else if (type.equals("boolean")) {
+                    schema.setType("boolean");
+                } else if (type.equals("positiveInteger")) {
+                    schema.setType("number");
+                    schema.setMinimum(new BigDecimal(1));
+                    schema.setExclusiveMinimum(false);
+                } else if (type.equals("negativeInteger")) {
+                    schema.setType("number");
+                    schema.setMaximum(new BigDecimal(-1));
+                    schema.setExclusiveMaximum(false);
+                } else if (type.equals("nonPositiveInteger")) {
+                    schema.setType("number");
+                    schema.setMaximum(new BigDecimal(0));
+                    schema.setExclusiveMaximum(false);
+                } else if (type.equals("nonNegativeInteger")) {
+                    schema.setType("number");
+                    schema.setMinimum(new BigDecimal(0));
+                    schema.setExclusiveMinimum(false);
+                } else {
+                    schema.setType("string");
+                }
+                return schema;
+            } else {
+                schema.setType("string");
+            }
+        } else {
+            schema.setType("string");
+        }
+        return schema;
     }
 }
