@@ -15,7 +15,11 @@ import com.eviware.soapui.impl.rest.support.RestParamProperty;
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.support.StringUtils;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.swagger.oas.models.Components;
 import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.Operation;
@@ -86,7 +90,7 @@ public class OpenAPI3Exporter implements SwaggerExporter {
         openAPI.setPaths(paths);
         createSecurityComponent(openAPI);
 
-        ObjectMapper mapper = format.equals("yaml") ? ObjectMapperFactory.createYaml() : ObjectMapperFactory.createJson();
+        ObjectMapper mapper = format.equals("yaml") ? createYamlMapper() : ObjectMapperFactory.createJson();
 
         try {
             mapper.writeValue(new FileWriter(path + File.separatorChar + "api-docs." + format), openAPI);
@@ -95,6 +99,16 @@ public class OpenAPI3Exporter implements SwaggerExporter {
         }
 
         return path;
+    }
+
+    private ObjectMapper createYamlMapper() {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
     }
 
 
