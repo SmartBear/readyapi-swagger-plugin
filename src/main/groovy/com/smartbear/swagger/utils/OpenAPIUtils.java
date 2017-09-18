@@ -1,4 +1,4 @@
-package com.smartbear.swagger;
+package com.smartbear.swagger.utils;
 
 import com.eviware.soapui.impl.rest.RestRequestInterface;
 import com.eviware.soapui.impl.rest.mock.RestMockAction;

@@ -45,6 +45,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.smartbear.swagger.utils.OpenAPIUtils;
 import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.PathItem;
 import io.swagger.oas.models.media.MediaType;

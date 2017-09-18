@@ -19,7 +19,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.smartbear.swagger.utils.ApiResponsesSerializer;
+import com.smartbear.swagger.utils.ResponseCodeSerializer;
+import com.smartbear.swagger.utils.YamlFactoryExtended;
 import io.swagger.oas.models.Components;
 import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.Operation;
@@ -56,7 +60,7 @@ import static com.eviware.soapui.impl.rest.RestRequestInterface.HttpMethod.TRACE
 import static com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle.HEADER;
 import static com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle.QUERY;
 import static com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle.TEMPLATE;
-import static com.smartbear.swagger.OpenAPIUtils.xmlSchemaTypesToJsonTypes;
+import static com.smartbear.swagger.utils.OpenAPIUtils.xmlSchemaTypesToJsonTypes;
 
 
 public class OpenAPI3Exporter implements SwaggerExporter {
@@ -102,7 +106,11 @@ public class OpenAPI3Exporter implements SwaggerExporter {
     }
 
     private ObjectMapper createYamlMapper() {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        ObjectMapper mapper = new ObjectMapper(new YamlFactoryExtended());
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(ApiResponses.class, new ApiResponsesSerializer(null, SimpleType.constructUnsafe(String.class),
+                SimpleType.constructUnsafe(ApiResponse.class), false, null, new ResponseCodeSerializer(), null));
+        mapper.registerModule(simpleModule);
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
