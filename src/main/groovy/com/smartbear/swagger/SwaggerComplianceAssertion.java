@@ -40,7 +40,6 @@ import com.eviware.x.form.XFormDialog;
 import com.eviware.x.form.XFormDialogBuilder;
 import com.eviware.x.form.XFormFactory;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
@@ -68,8 +67,8 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 @PluginTestAssertion(id = "SwaggerComplianceAssertion", label = "Swagger Compliance Assertion",
-    category = AssertionCategoryMapping.STATUS_CATEGORY,
-    description = "Asserts that the request and response messages are compliant with a Swagger definition")
+        category = AssertionCategoryMapping.STATUS_CATEGORY,
+        description = "Asserts that the request and response messages are compliant with a Swagger definition")
 public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements ResponseAssertion, PluginProvidedAssertion {
     private static final String SWAGGER_URL = "swaggerUrl";
     private static final String STRICT_MODE = "strictMode";
@@ -138,7 +137,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         mainForm.addCheckBox(STRICT_MODE_FIELD, "Enables strict validation (fails for undefined responses)");
 
         dialog = builder.buildDialog(builder.buildOkCancelActions(),
-            "Specify Swagger URL and validation mode below", UISupport.OPTIONS_ICON);
+                "Specify Swagger URL and validation mode below", UISupport.OPTIONS_ICON);
     }
 
     public void setSwaggerUrl(String endpoint) {
@@ -183,8 +182,9 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         URL endpoint = new URL(messageExchange.getEndpoint());
         String path = endpoint.getPath();
         if (path != null) {
-            if (swagger.getBasePath() != null && path.startsWith(swagger.getBasePath())) {
-                path = path.substring(swagger.getBasePath().length());
+            String basePath = swagger.getBasePath();
+            if (basePath != null && !basePath.equals("/") && path.startsWith(basePath)) {
+                path = path.substring(basePath.length());
             }
 
             for (String swaggerPath : swagger.getPaths().keySet()) {
@@ -194,13 +194,13 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                     Operation operation = findOperation(swagger.getPath(swaggerPath), method);
                     if (operation != null) {
                         validateOperation(swagger, operation, String.valueOf(messageExchange.getResponseStatusCode()),
-                            messageExchange.getResponseContent(), messageExchange.getResponseContentType()
+                                messageExchange.getResponseContent(), messageExchange.getResponseContentType()
                         );
 
                         return true;
                     } else {
                         throw new AssertionException(new AssertionError(
-                            "No resource matching [" + method + " " + path + "] in Swagger definition"));
+                                "No resource matching [" + method + " " + path + "] in Swagger definition"));
                     }
                 }
             }
@@ -241,7 +241,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             validateResponse(contentAsString, contentType, swagger, responseSchema);
         } else if (strictMode) {
             throw new AssertionException(new AssertionError(
-                "Missing response definition for " + responseCode + " response in operation " + operation.getOperationId()));
+                    "Missing response definition for " + responseCode + " response in operation " + operation.getOperationId()));
         }
     }
 
@@ -251,7 +251,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             if (schema instanceof RefProperty) {
                 Model model = swagger.getDefinitions().get(((RefProperty) schema).getSimpleRef());
                 if (model != null) {
-                    validatePayload(contentAsString, null, contentType );
+                    validatePayload(contentAsString, null, contentType);
                 }
             } else {
                 validatePayload(contentAsString, Json.pretty(schema), contentType);
@@ -322,8 +322,8 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
 
                 // build custom schema factory that preloads existing schema
                 JsonSchemaFactory factory = JsonSchemaFactory.newBuilder().setLoadingConfiguration(
-                    LoadingConfiguration.newBuilder().preloadSchema(swaggerUrl,
-                        Json.mapper().readTree(Json.pretty(swagger))).freeze()
+                        LoadingConfiguration.newBuilder().preloadSchema(swaggerUrl,
+                                Json.mapper().readTree(Json.pretty(swagger))).freeze()
                 ).freeze();
                 jsonSchema = factory.getJsonSchema(schemaObject);
             } else {
