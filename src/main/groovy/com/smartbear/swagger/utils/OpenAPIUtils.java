@@ -11,6 +11,7 @@ import io.swagger.oas.models.PathItem;
 import io.swagger.oas.models.media.MediaType;
 import io.swagger.oas.models.media.Schema;
 import io.swagger.oas.models.responses.ApiResponse;
+import io.swagger.oas.models.responses.ApiResponses;
 import io.swagger.oas.models.servers.Server;
 import io.swagger.oas.models.servers.ServerVariable;
 import org.apache.commons.lang.StringUtils;
@@ -99,7 +100,7 @@ public class OpenAPIUtils {
         return null;
     }
 
-    public static List<Operation> extractOperationList(PathItem pathItem) {
+    private static List<Operation> extractOperationList(PathItem pathItem) {
         List<Operation> operationList = new ArrayList();
         if (pathItem.getGet() != null) {
             operationList.add(pathItem.getGet());
@@ -151,9 +152,10 @@ public class OpenAPIUtils {
         PathItem pathItem = openAPI.getPaths().get(((RestMockAction) mockOperation).getResourcePath());
         if (pathItem != null) {
             for (Operation operation : extractOperationList(pathItem)) {
-                if (operation.getResponses() != null) {
-                    for (String responseCode : operation.getResponses().keySet()) {
-                        ApiResponse apiResponse = operation.getResponses().get(responseCode);
+                ApiResponses apiResponses = operation.getResponses();
+                if (apiResponses != null) {
+                    for (String responseCode : apiResponses.keySet()) {
+                        ApiResponse apiResponse = apiResponses.get(responseCode);
                         if (apiResponse.getContent() != null) {
                             for (String contentType : apiResponse.getContent().keySet()) {
                                 if (isOperationHasSameResponse(restMockAction, contentType, responseCode)) {

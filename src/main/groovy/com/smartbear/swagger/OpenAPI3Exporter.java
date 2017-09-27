@@ -276,21 +276,22 @@ public class OpenAPI3Exporter implements SwaggerExporter {
         OAuthFlows oAuthFlows = new OAuthFlows();
         OAuth2Profile oAuth2Profile = (OAuth2Profile) authEntry;
         OAuthFlow oAuthFlow = new OAuthFlow();
+        OAuth2FlowConfig.Enum entry = oAuth2Profile.getOAuth2Flow();
 
-        if (oAuth2Profile.getOAuth2Flow().equals(OAuth2FlowConfig.IMPLICIT_GRANT)) {
+        if (entry.equals(OAuth2FlowConfig.IMPLICIT_GRANT)) {
             oAuthFlow.setAuthorizationUrl(oAuth2Profile.getAuthorizationURI() == null ? "" : oAuth2Profile.getAuthorizationURI());
             oAuthFlow.setScopes(extractScopes(oAuth2Profile));
             oAuthFlows.setImplicit(oAuthFlow);
-        } else if (oAuth2Profile.getOAuth2Flow().equals(OAuth2FlowConfig.AUTHORIZATION_CODE_GRANT)) {
+        } else if (entry.equals(OAuth2FlowConfig.AUTHORIZATION_CODE_GRANT)) {
             oAuthFlow.setAuthorizationUrl(oAuth2Profile.getAuthorizationURI() == null ? "" : oAuth2Profile.getAuthorizationURI());
             oAuthFlow.setTokenUrl(oAuth2Profile.getAccessTokenURI() == null ? "" : oAuth2Profile.getAccessTokenURI());
             oAuthFlow.setScopes(extractScopes(oAuth2Profile));
             oAuthFlows.setAuthorizationCode(oAuthFlow);
-        } else if (oAuth2Profile.getOAuth2Flow().equals(OAuth2FlowConfig.CLIENT_CREDENTIALS_GRANT)) {
+        } else if (entry.equals(OAuth2FlowConfig.CLIENT_CREDENTIALS_GRANT)) {
             oAuthFlow.setTokenUrl(oAuth2Profile.getAccessTokenURI() == null ? "" : oAuth2Profile.getAccessTokenURI());
             oAuthFlow.setScopes(extractScopes(oAuth2Profile));
             oAuthFlows.setClientCredentials(oAuthFlow);
-        } else if (oAuth2Profile.getOAuth2Flow().equals(OAuth2FlowConfig.RESOURCE_OWNER_PASSWORD_CREDENTIALS)) {
+        } else if (entry.equals(OAuth2FlowConfig.RESOURCE_OWNER_PASSWORD_CREDENTIALS)) {
             oAuthFlow.setTokenUrl(oAuth2Profile.getAccessTokenURI() == null ? "" : oAuth2Profile.getAccessTokenURI());
             oAuthFlow.setScopes(extractScopes(oAuth2Profile));
             oAuthFlows.setPassword(oAuthFlow);

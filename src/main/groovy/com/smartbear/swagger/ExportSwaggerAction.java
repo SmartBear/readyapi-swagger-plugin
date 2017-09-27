@@ -56,7 +56,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
 
     private static final String SWAGGER_1_2 = "Swagger 1.2";
     private static final String SWAGGER_2_0 = "Swagger 2.0";
-    private static final String OPEN_API_3_0_0 = "OpenAPI 3.0.0";
+    private static final String OPEN_API_3_0 = "OpenAPI 3.0";
 
     private XFormDialog dialog;
 
@@ -79,11 +79,11 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
             dialog.setValue(Form.VERSION, settings.getString(VERSION, "1.0"));
             dialog.setValue(Form.BASEPATH, settings.getString(BASE_PATH, ""));
             dialog.setValue(Form.FOLDER, settings.getString(TARGET_PATH, ""));
-            dialog.setValue(Form.SWAGGER_VERSION, settings.getString(SWAGGER_VERSION, OPEN_API_3_0_0));
+            dialog.setValue(Form.SWAGGER_VERSION, settings.getString(SWAGGER_VERSION, OPEN_API_3_0));
         }
 
         XFormRadioGroup radioGroup = (XFormRadioGroup) dialog.getFormField(Form.SWAGGER_VERSION);
-        final JRadioButton radioButton = radioGroup.getComponentFromGroup(OPEN_API_3_0_0);
+        final JRadioButton radioButton = radioGroup.getComponentFromGroup(OPEN_API_3_0);
         hideOrShowFields(radioButton.isSelected(), dialog);
         radioButton.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -117,7 +117,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                 String swaggerVersion = dialog.getValue(Form.SWAGGER_VERSION);
                 String format = dialog.getValue(Form.FORMAT);
 
-                if (format.equals("xml") && (swaggerVersion.equals(SWAGGER_2_0) || swaggerVersion.equals(OPEN_API_3_0_0))) {
+                if (format.equals("xml") && (swaggerVersion.equals(SWAGGER_2_0) || swaggerVersion.equals(OPEN_API_3_0))) {
                     throw new Exception("XML format is only supported for Swagger Version 1.2");
                 }
 
@@ -183,7 +183,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
         @AField(name = "Base Path", description = "Base Path that the Swagger definition will be hosted on", type = AFieldType.STRING)
         String BASEPATH = "Base Path";
 
-        @AField(name = "Version", description = "Select version", type = AFieldType.RADIOGROUP, values = {SWAGGER_1_2, SWAGGER_2_0, OPEN_API_3_0_0})
+        @AField(name = "Version", description = "Select version", type = AFieldType.RADIOGROUP, values = {SWAGGER_1_2, SWAGGER_2_0, OPEN_API_3_0})
         String SWAGGER_VERSION = "Version";
 
         @AField(name = "Format", description = "Select format", type = AFieldType.RADIOGROUP, values = {"json", "yaml", "xml"})

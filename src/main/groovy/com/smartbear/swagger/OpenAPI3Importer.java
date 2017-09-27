@@ -15,10 +15,13 @@ import com.eviware.soapui.impl.rest.support.RestParamProperty;
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.support.ModelItemNamer;
+import com.eviware.soapui.support.StringUtils;
 import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.Operation;
 import io.swagger.oas.models.PathItem;
+import io.swagger.oas.models.Paths;
 import io.swagger.oas.models.examples.Example;
+import io.swagger.oas.models.info.Info;
 import io.swagger.oas.models.media.Content;
 import io.swagger.oas.models.media.MediaType;
 import io.swagger.oas.models.parameters.Parameter;
@@ -27,10 +30,12 @@ import io.swagger.oas.models.security.OAuthFlows;
 import io.swagger.oas.models.security.Scopes;
 import io.swagger.oas.models.security.SecurityScheme;
 import io.swagger.oas.models.servers.Server;
+import io.swagger.oas.models.servers.ServerVariables;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.parser.models.ParseOptions;
 import io.swagger.parser.models.SwaggerParseResult;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -79,8 +84,15 @@ public class OpenAPI3Importer implements SwaggerImporter {
         }
         OpenAPI openAPI = parseResult.getOpenAPI();
         String name = null;
-        if (openAPI.getInfo() != null && openAPI.getInfo().getTitle() != null) {
-            name = openAPI.getInfo().getTitle();
+        String description = "";
+        Info info = openAPI.getInfo();
+
+        if (info != null) {
+            String title = info.getTitle();
+            if (title != null) {
+                name = title;
+            }
+            description = info.getDescription();
         }
 
         if (name == null) {
@@ -97,11 +109,10 @@ public class OpenAPI3Importer implements SwaggerImporter {
         }
 
         RestService restService = (RestService) project.addNewInterface(name, RestServiceFactory.REST_TYPE);
-        if (openAPI.getInfo().getDescription() != null) {
-            restService.setDescription(openAPI.getInfo().getDescription());
-        }
-        if (openAPI.getServers() != null) {
-            addEndpoints(openAPI.getServers(), restService);
+        restService.setDescription(description);
+        List<Server> servers = openAPI.getServers();
+        if (servers != null) {
+            addEndpoints(servers, restService);
         }
         createResources(openAPI, restService);
         createAuthProfiles(openAPI);
@@ -115,13 +126,14 @@ public class OpenAPI3Importer implements SwaggerImporter {
             for (Server server : servers) {
                 String url = server.getUrl();
                 if (server.getVariables() != null) {
-                    for (String variable : server.getVariables().keySet()) {
-                        String defaultValue = server.getVariables().get(variable).getDefault();
+                    ServerVariables serverVariables = server.getVariables();
+                    for (String variable : serverVariables.keySet()) {
+                        String defaultValue = serverVariables.get(variable).getDefault();
                         if (defaultValue == null) {
                             continue;
                         }
                         String variableTemplate = "{" + variable + "}";
-                        if (defaultValue != null && url.contains(variableTemplate)) {
+                        if (url.contains(variableTemplate)) {
                             url = url.replace(variableTemplate, defaultValue);
                         }
                     }
@@ -139,11 +151,12 @@ public class OpenAPI3Importer implements SwaggerImporter {
     }
 
     private void createResources(OpenAPI openAPI, RestService restService) {
-        if (openAPI == null && openAPI.getPaths() == null) {
+        if (openAPI == null || openAPI.getPaths() == null) {
             return;
         }
-        for (String pathKey : openAPI.getPaths().keySet()) {
-            PathItem path = openAPI.getPaths().get(pathKey);
+        Paths paths = openAPI.getPaths();
+        for (String pathKey : paths.keySet()) {
+            PathItem path = paths.get(pathKey);
             String resourceName = path.getSummary() != null ? path.getSummary() : pathKey;
             RestResource restResource = restService.addNewResource(resourceName, pathKey);
             addEndpoints(path.getServers(), restService);
@@ -157,7 +170,7 @@ public class OpenAPI3Importer implements SwaggerImporter {
             return;
         }
         for (Parameter parameter : parameters) {
-            if (parameter == null && parameter.getDeprecated() != null && parameter.getDeprecated()) {
+            if (parameter == null || BooleanUtils.isTrue(parameter.getDeprecated())) {
                 continue;
             }
             createParameter(restResource.getParams(), parameter);
@@ -166,11 +179,12 @@ public class OpenAPI3Importer implements SwaggerImporter {
 
     private void createParameter(RestParamsPropertyHolder propertyHolder, Parameter parameter) {
         RestParamProperty paramProperty = propertyHolder.addProperty(parameter.getName());
-        if (parameter.getIn().equalsIgnoreCase("query")) {
+        String parameterIn = parameter.getIn();
+        if (parameterIn.equalsIgnoreCase("query")) {
             paramProperty.setStyle(RestParamsPropertyHolder.ParameterStyle.QUERY);
-        } else if (parameter.getIn().equalsIgnoreCase("header")) {
+        } else if (parameterIn.equalsIgnoreCase("header")) {
             paramProperty.setStyle(RestParamsPropertyHolder.ParameterStyle.HEADER);
-        } else if (parameter.getIn().equalsIgnoreCase("path")) {
+        } else if (parameterIn.equalsIgnoreCase("path")) {
             paramProperty.setStyle(RestParamsPropertyHolder.ParameterStyle.TEMPLATE);
         }
         if (parameter.getRequired() != null) {
@@ -209,14 +223,14 @@ public class OpenAPI3Importer implements SwaggerImporter {
     }
 
     private void createMethod(RestResource restResource, HttpMethod method, Operation operation) {
-        if (operation == null || (operation.getDeprecated() != null && operation.getDeprecated())) {
+        if (operation == null || BooleanUtils.isTrue(operation.getDeprecated())) {
             return;
         }
-        String name = "";
-        if (operation.getOperationId() != null) {
+        String name;
+        if (StringUtils.hasContent(operation.getOperationId())) {
             name = operation.getOperationId();
         } else {
-            method.toString();
+            name = method.toString();
         }
         RestMethod restMethod = restResource.addNewMethod(name);
         restMethod.setMethod(method);
@@ -240,7 +254,7 @@ public class OpenAPI3Importer implements SwaggerImporter {
             return;
         }
         for (Parameter parameter : parameters) {
-            if (parameter.getDeprecated() != null && parameter.getDeprecated()) {
+            if (BooleanUtils.isTrue(parameter.getDeprecated())) {
                 continue;
             }
             createParameter(restMethod.getParams(), parameter);
@@ -307,11 +321,12 @@ public class OpenAPI3Importer implements SwaggerImporter {
             for (String securityName : securitySchemeMap.keySet()) {
                 SecurityScheme securityScheme = securitySchemeMap.get(securityName);
                 if (securityScheme != null && securityScheme.getType() != null) {
-                    if (securityScheme.getType().toString().equals("oauth2")) {
+                    String securitySchemeType = securityScheme.getType().toString();
+                    if (securitySchemeType.equals("oauth2")) {
                         createOauth2Profile(securityName, securityScheme);
-                    } else if (securityScheme.getType().toString().equals("apikey")) {
+                    } else if (securitySchemeType.equals("apikey")) {
                         createApiKey(securityScheme);
-                    } else if (securityScheme.getType().toString().equals("http")) {
+                    } else if (securitySchemeType.equals("http")) {
                         createHttpAuth(securityName, securityScheme);
                     }
                 }
@@ -369,7 +384,6 @@ public class OpenAPI3Importer implements SwaggerImporter {
     private void createApiKey(SecurityScheme securityScheme) {
         if (securityScheme != null && securityScheme.getIn() != null) {
             String type = securityScheme.getIn().toString();
-            String name = securityScheme.getName();
             //TODO ADD TO REQUESTS PARAMETERS
             if (type.equalsIgnoreCase("query")) {
 
