@@ -44,7 +44,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     private XFormDialog dialog;
 
     public AddSwaggerAction() {
-        super("Import Swagger", "Imports a Swagger definition into SoapUI");
+        super("Import Swagger/OpenAPI Definition", "Imports a Swagger/OpenAPI definition into SoapUI");
     }
 
     public void perform(final WsdlProject project, Object param) {

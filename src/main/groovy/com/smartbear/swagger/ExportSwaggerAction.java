@@ -61,7 +61,7 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     private XFormDialog dialog;
 
     public ExportSwaggerAction() {
-        super("Export Swagger", "Creates a Swagger definition for selected REST APIs");
+        super("Export Swagger/OpenAPI Definition", "Creates a Swagger/OpenAPI definition for selected REST APIs");
     }
 
     public void perform(WsdlProject project, Object param) {
