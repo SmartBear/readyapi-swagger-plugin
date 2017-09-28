@@ -30,6 +30,7 @@ import com.eviware.soapui.support.StringUtils
 import com.eviware.soapui.support.xml.XmlUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.smartbear.swagger.utils.SwaggerExampleBuilder
 import io.swagger.inflector.examples.ExampleBuilder
 import io.swagger.inflector.examples.XmlExampleSerializer
 import io.swagger.inflector.examples.models.Example
@@ -242,11 +243,11 @@ class Swagger2Importer implements SwaggerImporter {
                             }
                         }
 
-                        /*  Object output = ExampleBuilder.fromProperty(op, swagger.definitions);
+                          Object output = SwaggerExampleBuilder.fromProperty(op, swagger.definitions);
                           if (output instanceof Example) {
                               request.requestContent = serializeExample(it, output)
                               representation.sampleContent = request.requestContent
-                          }*/
+                          }
                     }
                 }
             }
@@ -289,11 +290,10 @@ class Swagger2Importer implements SwaggerImporter {
                     }
 
                     if (representation.sampleContent == null) {
-                        //TODO Waiting for inflector update
-                       /* Object output = ExampleBuilder.fromProperty(responseElement.getSchema(), swagger.definitions);
+                        Object output = SwaggerExampleBuilder.fromProperty(responseElement.getSchema(), swagger.definitions);
                         if (output instanceof Example) {
                             representation.sampleContent = serializeExample(representation.mediaType, output)
-                        }*/
+                        }
                     }
                 }
             }
