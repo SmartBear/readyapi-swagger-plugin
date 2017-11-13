@@ -1,22 +1,21 @@
 /**
- *  Copyright 2013 SmartBear Software, Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Copyright 2013 SmartBear Software, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.smartbear.swagger;
 
-import com.eviware.soapui.analytics.Analytics;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.rest.RestServiceFactory;
 import com.eviware.soapui.impl.settings.XmlBeansSettingsImpl;
@@ -32,6 +31,9 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AField.AFieldType;
 import com.eviware.x.form.support.AForm;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Shows a simple dialog for specifying the swagger definition and performs the
@@ -125,8 +127,10 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                 settings.setString(VERSION, dialog.getValue(Form.VERSION));
                 settings.setString(SWAGGER_VERSION, dialog.getValue(Form.SWAGGER_VERSION));
 
-                Analytics.trackAction("ExportSwagger", "Version", dialog.getValue(Form.SWAGGER_VERSION),
-                        "Format", dialog.getValue(Form.FORMAT));
+                Map analyticsParamsMap = new HashMap();
+                analyticsParamsMap.put("Version", dialog.getValue(Form.SWAGGER_VERSION));
+                analyticsParamsMap.put("Format", dialog.getValue(Form.FORMAT));
+                AnalyticsUtils.sendAnalytics("ExportSwagger", analyticsParamsMap);
 
                 break;
             } catch (Exception ex) {
