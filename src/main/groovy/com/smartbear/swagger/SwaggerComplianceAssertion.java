@@ -209,8 +209,9 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         URL endpoint = new URL(messageExchange.getEndpoint());
         String path = endpoint.getPath();
         if (path != null) {
-            if (swagger.getBasePath() != null && path.startsWith(swagger.getBasePath())) {
-                path = path.substring(swagger.getBasePath().length());
+            String basePath = swagger.getBasePath();
+            if (basePath != null && !basePath.equals("/") && path.startsWith(basePath)) {
+                path = path.substring(basePath.length());
             }
 
             for (String swaggerPath : swagger.getPaths().keySet()) {
