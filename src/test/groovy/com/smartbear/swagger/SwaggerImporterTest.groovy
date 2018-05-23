@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013-2016 SmartBear Software, Inc.
+ *  Copyright 2013-2017 SmartBear Software, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import com.eviware.soapui.security.assertion.ValidHttpStatusCodesAssertion
 import org.hamcrest.CoreMatchers
 
 import static org.junit.Assert.assertThat
+import static org.junit.Assert.assertTrue
 
 /**
  * Basic tests that use the examples at wordnik - if they change these tests will probably break
@@ -80,6 +81,26 @@ class SwaggerImporterTest extends GroovyTestCase {
 
         assertEquals("http://petstore.swagger.io", service.endpoints[0])
         assertEquals("/v2", service.basePath,)
+    }
+
+    void testImportSwagger3() {
+        def project = new WsdlProject()
+
+        def yamlUrl = "src/test/resources/petstore-3.0.yaml"
+        def jsonUrl = "src/test/resources/petstore-3.0.json"
+
+        OpenAPI3Importer importer = new OpenAPI3Importer(project)
+
+        def restService1 = importer.importSwagger(yamlUrl)[0]
+        assertEquals(2, restService1.endpoints.length)
+        assertEquals(2, restService1.resources.size())
+        assertEquals("http://test.demo", restService1.endpoints[1])
+        assertTrue(restService1.getResourceByFullPath("/pets/{petId}").getRestMethodByName("showPetById").getRepresentations().length > 0)
+
+        def restService2 = importer.importSwagger(jsonUrl)[0]
+        assertEquals(2, restService2.endpoints.length)
+        assertEquals(2, restService2.resources.size())
+        assertEquals("http://test.demo", restService2.endpoints[1])
     }
 
     void testTestCaseGeneration() {

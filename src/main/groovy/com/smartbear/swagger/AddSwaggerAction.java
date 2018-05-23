@@ -1,17 +1,17 @@
 /**
- *  Copyright 2013-2016 SmartBear Software, Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Copyright 2013-2017 SmartBear Software, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.smartbear.swagger;
@@ -44,7 +44,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
     private XFormDialog dialog;
 
     public AddSwaggerAction() {
-        super("Import Swagger", "Imports a Swagger definition into SoapUI");
+        super("Import Swagger/OpenAPI Definition", "Imports a Swagger/OpenAPI definition into SoapUI");
     }
 
     public void perform(final WsdlProject project, Object param) {
@@ -81,17 +81,17 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
 
     public SwaggerImporter importSwaggerDefinition(final WsdlProject project,
                                                    final String definitionUrl,
-                                                   final String defaultMediaType) throws Exception{
+                                                   final String defaultMediaType) throws Exception {
         SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(
-            project, definitionUrl, defaultMediaType);
+                project, definitionUrl, defaultMediaType);
         Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
         return importer;
     }
 
-    @AForm(name = "Add Swagger Definition", description = "Creates a REST API from the specified Swagger definition")
+    @AForm(name = "Add Swagger/OpenAPI Definition", description = "Creates a REST API from the specified Swagger/OpenAPI definition")
     public interface Form {
-        @AField(name = "Swagger Definition", description = "Location or URL of Swagger definition", type = AFieldType.FILE)
-        String SWAGGER_URL = "Swagger Definition";
+        @AField(name = "Swagger/OpenAPI Definition", description = "Location or URL of Swagger/OpenAPI definition", type = AFieldType.FILE)
+        String SWAGGER_URL = "Swagger/OpenAPI Definition";
 
         @AField(name = "Default Media Type", description = "Default Media Type of the responses", type = AFieldType.STRING)
         String DEFAULT_MEDIA_TYPE = "Default Media Type";

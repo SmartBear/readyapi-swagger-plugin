@@ -4,10 +4,10 @@ import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlMessageAssertion
 import com.eviware.soapui.security.assertion.ValidHttpStatusCodesAssertion
 import com.eviware.soapui.utils.ModelItemFactory
-import io.swagger.models.Response
 import org.hamcrest.CoreMatchers
 import org.junit.Before
 import org.junit.Test
+import v2.io.swagger.models.Response
 
 import static org.hamcrest.CoreMatchers.instanceOf
 import static org.junit.Assert.assertThat

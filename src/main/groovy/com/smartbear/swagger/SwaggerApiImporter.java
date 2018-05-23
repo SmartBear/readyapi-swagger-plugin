@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2016 SmartBear Software, Inc.
+ * Copyright 2013-2017 SmartBear Software, Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.eviware.soapui.plugins.PluginApiImporter;
 import java.util.ArrayList;
 import java.util.List;
 
-@PluginApiImporter(label = "Swagger 1.X/2.0")
+@PluginApiImporter(label = "Swagger 1.X/2.0 | OpenAPI 3.0.0")
 public class SwaggerApiImporter implements ApiImporter {
     public List<Interface> importApis(Project project) {
 

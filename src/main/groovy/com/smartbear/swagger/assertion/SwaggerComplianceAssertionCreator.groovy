@@ -4,7 +4,7 @@ import com.eviware.soapui.config.TestAssertionConfig
 import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlMessageAssertion
 import com.eviware.soapui.support.xml.XmlObjectConfigurationBuilder
-import io.swagger.models.Response
+import v2.io.swagger.models.Response
 
 class SwaggerComplianceAssertionCreator implements AssertionCreator {
 

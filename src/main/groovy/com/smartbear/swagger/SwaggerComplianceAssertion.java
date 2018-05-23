@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2016 SmartBear Software, Inc.
+ * Copyright 2013-2017 SmartBear Software, Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,26 +45,38 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.parser.SwaggerParser;
-import io.swagger.parser.util.ClasspathHelper;
+import com.smartbear.swagger.utils.OpenAPIUtils;
+import io.swagger.oas.models.OpenAPI;
+import io.swagger.oas.models.PathItem;
+import io.swagger.oas.models.media.MediaType;
+import io.swagger.oas.models.responses.ApiResponse;
+import io.swagger.oas.models.responses.ApiResponses;
+import io.swagger.oas.models.servers.Server;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.parser.models.ParseOptions;
+import io.swagger.parser.models.SwaggerParseResult;
+import io.swagger.parser.v3.util.ClasspathHelper;
 import io.swagger.util.Json;
 import org.apache.commons.io.FileUtils;
 import org.apache.xmlbeans.XmlObject;
+import v2.io.swagger.models.Model;
+import v2.io.swagger.models.Operation;
+import v2.io.swagger.models.Response;
+import v2.io.swagger.models.Swagger;
+import v2.io.swagger.models.properties.Property;
+import v2.io.swagger.models.properties.RefProperty;
+import v2.io.swagger.parser.SwaggerParser;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @PluginTestAssertion(id = "SwaggerComplianceAssertion", label = "Swagger Compliance Assertion",
         category = AssertionCategoryMapping.STATUS_CATEGORY,
@@ -79,6 +91,8 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
     private Swagger swagger;
     private JsonSchema swaggerSchema;
     private XFormDialog dialog;
+    private OpenAPI openAPI;
+    private Boolean isOpenAPI;
 
     /**
      * Assertions need to have a constructor that takes a TestAssertionConfig and the ModelItem to be asserted
@@ -143,7 +157,9 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
     public void setSwaggerUrl(String endpoint) {
         swaggerUrl = endpoint;
         swagger = null;
+        openAPI = null;
         swaggerSchema = null;
+        isOpenAPI = null;
     }
 
     protected XmlObject createConfiguration() {
@@ -174,6 +190,17 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
     }
 
     private boolean validateMessage(HttpMessageExchange messageExchange, SubmitContext submitContext) throws MalformedURLException, AssertionException {
+        if (isOpenAPI == null) {
+            isOpenAPI = SwaggerUtils.isOpenApi(swaggerUrl);
+        }
+        if (isOpenAPI) {
+            return validateOpenAPIOperation(messageExchange, submitContext);
+        } else {
+            return validateSwaggerResponse(messageExchange, submitContext);
+        }
+    }
+
+    private boolean validateSwaggerResponse(HttpMessageExchange messageExchange, SubmitContext submitContext) throws AssertionException, MalformedURLException {
         Swagger swagger = getSwagger(submitContext);
 
         HttpTestRequestInterface<?> testRequest = ((HttpTestRequestInterface) messageExchange.getModelItem());
@@ -211,7 +238,34 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return false;
     }
 
-    private Operation findOperation(Path path, RestRequestInterface.HttpMethod method) {
+    private boolean validateOpenAPIOperation(HttpMessageExchange messageExchange, SubmitContext submitContext) throws AssertionException, MalformedURLException {
+        getOpenAPI(submitContext);
+
+        HttpTestRequestInterface<?> testRequest = ((HttpTestRequestInterface) messageExchange.getModelItem());
+        RestRequestInterface.HttpMethod method = testRequest.getMethod();
+
+        String endpoint = messageExchange.getEndpoint();
+
+        if (endpoint != null) {
+            PathItem path = findPathItem(endpoint);
+
+            if (path == null) {
+                throw new AssertionException(new AssertionError("No resource matching in OpenAPI definition"));
+            }
+            io.swagger.oas.models.Operation operation = OpenAPIUtils.extractOperation(path, method);
+
+            if (operation == null) {
+                throw new AssertionException(new AssertionError("No method matching [" + method + " " + path + "] in OpenAPI definition"));
+            }
+
+            validateOpenAPIOperation(operation, String.valueOf(messageExchange.getResponseStatusCode()), messageExchange.getResponseContent(), messageExchange.getResponseContentType());
+            return true;
+        }
+
+        return false;
+    }
+
+    private Operation findOperation(v2.io.swagger.models.Path path, RestRequestInterface.HttpMethod method) {
         switch (method) {
             case GET:
                 return path.getGet();
@@ -245,6 +299,23 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         }
     }
 
+    void validateOpenAPIOperation(io.swagger.oas.models.Operation operation, String responseCode, String contentAsString, String contentType) throws AssertionException {
+        if (operation.getResponses() != null) {
+            ApiResponses apiResponses = operation.getResponses();
+            ApiResponse apiResponse = apiResponses.get(responseCode);
+            if (apiResponse == null) {
+                apiResponse = apiResponses.get("default");
+            }
+
+            if (apiResponse != null) {
+                validateOpenAPIResponse(contentAsString, contentType, apiResponse);
+            } else if (strictMode) {
+                throw new AssertionException(new AssertionError("Missing response definition for " + responseCode + " response in operation " + operation.getOperationId()));
+            }
+        }
+
+    }
+
     void validateResponse(String contentAsString, String contentType, Swagger swagger, Response responseSchema) throws AssertionException {
         if (responseSchema.getSchema() != null) {
             Property schema = responseSchema.getSchema();
@@ -255,6 +326,18 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
                 }
             } else {
                 validatePayload(contentAsString, Json.pretty(schema), contentType);
+            }
+        }
+    }
+
+    void validateOpenAPIResponse(String contentAsString, String contentType, ApiResponse apiResponse) throws AssertionException {
+        contentType = OpenAPIUtils.extractMediaType(contentType);
+        if (apiResponse.getContent() != null) {
+            MediaType mediaType = apiResponse.getContent().get(contentType);
+            if (mediaType != null) {
+                if (mediaType.getSchema() != null) {
+                    validateOpenApiPayload(contentAsString, Json.pretty(mediaType.getSchema()), contentType);
+                }
             }
         }
     }
@@ -300,7 +383,7 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
     private Swagger parseFileContent() throws AssertionException {
         try {
             SwaggerParser parser = new SwaggerParser();
-            java.nio.file.Path path = Paths.get(URI.create(swaggerUrl));
+            Path path = Paths.get(URI.create(swaggerUrl));
             if (Files.exists(path)) {
                 return parser.parse(FileUtils.readFileToString(path.toFile(), "UTF-8"));
             } else {
@@ -310,6 +393,45 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
             throw new AssertionException(new AssertionError("Failed to load Swagger definition from [" + swaggerUrl + "]"));
         }
     }
+
+    public void validateOpenApiPayload(String payload, String schema, String contentType) throws AssertionException {
+        try {
+            JsonSchema jsonSchema;
+
+            if (schema != null) {
+                // make local refs absolute to match existing schema
+                schema = schema.replaceAll("\"#\\/definitions\\/", "\"" + swaggerUrl + "#/definitions/");
+                JsonNode schemaObject = Json.mapper().readTree(schema);
+
+                // build custom schema factory that preloads existing schema
+                JsonSchemaFactory factory = JsonSchemaFactory.newBuilder().setLoadingConfiguration(
+                        LoadingConfiguration.newBuilder().preloadSchema(swaggerUrl,
+                                Json.mapper().readTree(Json.pretty(openAPI))).freeze()
+                ).freeze();
+                jsonSchema = factory.getJsonSchema(schemaObject);
+            } else {
+                jsonSchema = getOpenApiSchema();
+            }
+
+            JsonNode contentObject;
+
+            if (contentType.equalsIgnoreCase("application/json")) {
+                contentObject = Json.mapper().readTree(payload);
+            } else if (contentType.equalsIgnoreCase("application/xml")) {
+                final XmlMapper xmlMapper = new XmlMapper();
+                contentObject = xmlMapper.readTree(payload);
+            } else {
+                throw new AssertionException(new AssertionError("Swagger Compliance testing failed. Invalid content type: " + contentType));
+            }
+
+            ValidationSupport.validateMessage(jsonSchema, contentObject);
+        } catch (AssertionException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AssertionException(new AssertionError("Swagger Compliance testing failed; [" + e.toString() + "]"));
+        }
+    }
+
 
     public void validatePayload(String payload, String schema, String contentType) throws AssertionException {
         try {
@@ -359,6 +481,16 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
         return swaggerSchema;
     }
 
+    private JsonSchema getOpenApiSchema() throws IOException, ProcessingException {
+        if (swaggerSchema == null) {
+            JsonNode schemaObject = Json.mapper().readTree(Json.pretty(openAPI));
+            JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+            swaggerSchema = factory.getJsonSchema(schemaObject);
+        }
+
+        return swaggerSchema;
+    }
+
     @Override
     protected String internalAssertProperty(TestPropertyHolder source, String propertyName, MessageExchange messageExchange, SubmitContext context) throws AssertionException {
         return null;
@@ -367,6 +499,60 @@ public class SwaggerComplianceAssertion extends WsdlMessageAssertion implements 
     public void configureAssertion(Map<String, Object> configMap) {
         swaggerUrl = (String) configMap.get(SWAGGER_URL);
         strictMode = Boolean.valueOf((String) configMap.get(STRICT_MODE));
+    }
+
+    private OpenAPI getOpenAPI(SubmitContext submitContext) throws AssertionException {
+        if (openAPI == null) {
+            OpenAPIParser parser = new OpenAPIParser();
+            ParseOptions options = new ParseOptions();
+            options.setResolveFully(true);
+            options.setResolve(true);
+            SwaggerParseResult result = parser.readLocation(submitContext.expand(swaggerUrl), null, options);
+            if (result.getOpenAPI() == null) {
+                throw new AssertionException(new AssertionError("Failed to load OpenAPI definition from [" + swaggerUrl + "]"));
+            } else {
+                openAPI = result.getOpenAPI();
+            }
+        }
+        return openAPI;
+    }
+
+    private PathItem findPathItem(String endpoint) {
+        for (Server server : openAPI.getServers()) {
+            String regex = OpenAPIUtils.generateRegexForServerUrl(server);
+            if (regex != null) {
+                Pattern p = Pattern.compile(regex);
+                Matcher m = p.matcher(endpoint);
+                String resourcePath = m.replaceAll("/");
+                return findPathInDefinition(resourcePath);
+            } else {
+                if (endpoint.startsWith(server.getUrl())) {
+                    String resourcePath = endpoint.substring(server.getUrl().length());
+                    if (resourcePath.contains("?")) {
+                        resourcePath = resourcePath.substring(0, resourcePath.indexOf("?"));
+                    }
+                    return findPathInDefinition(resourcePath);
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isPathContainsTemplateSymbols(String path) {
+        return path.contains("{") && path.contains("}");
+    }
+
+    private PathItem findPathInDefinition(String resourcePath) {
+        if (openAPI.getPaths().keySet().contains(resourcePath)) {
+            return openAPI.getPaths().get(resourcePath);
+        } else {
+            for (String path : openAPI.getPaths().keySet()) {
+                if (isPathContainsTemplateSymbols(resourcePath) && OpenAPIUtils.compareTemplateWithPath(resourcePath, path)) {
+                    return openAPI.getPaths().get(path);
+                }
+            }
+        }
+        return null;
     }
 }
 
